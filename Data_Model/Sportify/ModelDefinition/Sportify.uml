@@ -189,7 +189,20 @@
                   isDerivedUnion="false"
                   aggregation="None"
                   isComposite="false"
-                  isNavigableOwned="false" />
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="2dc04454-d32c-48e2-8f91-9b2aff8e299b"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="9f8461e7-1165-418f-9981-94f7240af56f"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
                 <memberEnd
@@ -240,7 +253,20 @@
                   isDerivedUnion="false"
                   aggregation="None"
                   isComposite="false"
-                  isNavigableOwned="false" />
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="81974a6f-8db3-439d-a9a1-2310ee0d2691"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="879d3d63-487f-47d1-9e33-adc4aa9dd29f"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
                 <memberEnd
@@ -251,7 +277,20 @@
                   isDerived="false"
                   isDerivedUnion="false"
                   aggregation="None"
-                  isComposite="false" />
+                  isComposite="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="e430ff38-cc86-407f-aa3c-c4dd6a48c51b"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="9efac171-4608-41c4-81a8-f956a32976d9"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
             </relationshipOwnedElementsInternal>
           </association>
@@ -407,13 +446,13 @@
                     <literalString
                       Id="bbe5c0cd-2fe1-4cf5-baba-887576361964"
                       name="Lower"
-                      value="*" />
+                      value="0,1" />
                   </lowerValueInternal>
                   <upperValueInternal>
                     <literalString
                       Id="56f646f0-95b4-4646-b712-bc3de9d415c6"
                       name="Upper"
-                      value="*" />
+                      value="0,1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -613,13 +652,13 @@
                     <literalString
                       Id="b88732f7-b849-4ed7-a471-12cce4e02d32"
                       name="Lower"
-                      value="*" />
+                      value="0,1" />
                   </lowerValueInternal>
                   <upperValueInternal>
                     <literalString
                       Id="246c0761-6388-4abe-a501-1028712d8b7a"
                       name="Upper"
-                      value="*" />
+                      value="0,1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -632,7 +671,20 @@
                   isDerived="false"
                   isDerivedUnion="false"
                   aggregation="None"
-                  isComposite="false" />
+                  isComposite="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="20d2a7b3-8d9c-44f4-978f-a9634f9c1276"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="666c536a-adaf-4877-8656-994dbae8f42a"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
             </relationshipOwnedElementsInternal>
           </association>
@@ -1135,6 +1187,25 @@
             isDerivedUnion="false"
             aggregation="None"
             isComposite="false" />
+          <property
+            Id="11d26f83-16f9-414b-baed-5a9e37665ae8"
+            name="type"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <undefinedTypeMoniker
+                Id="1e803298-82f5-40eb-a58f-777d48026654"
+                LastKnownName="enum"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
         </ownedAttributesInternal>
       </class>
     </packageHasNamedElement>
@@ -1364,25 +1435,6 @@
             </type_NamedElement>
           </property>
           <property
-            Id="5b525934-fd6b-4c29-a920-d68e3cdf7de8"
-            name="pictureSRC"
-            visibility="Private"
-            isLeaf="false"
-            isStatic="false"
-            isReadOnly="false"
-            isUnique="false"
-            isDerived="false"
-            isDerivedUnion="false"
-            aggregation="None"
-            isComposite="false">
-            <type_NamedElement>
-              <primitiveTypeMoniker
-                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
-                LastKnownName="String"
-                LastKnownLocation="Sportify.uml" />
-            </type_NamedElement>
-          </property>
-          <property
             Id="778c0ad8-685e-4206-b2d7-6c5aca946600"
             name="idCreator"
             visibility="Private"
@@ -1417,25 +1469,6 @@
               <undefinedTypeMoniker
                 Id="240fbc41-8681-4039-a317-bb4fb77af266"
                 LastKnownName="DateTime"
-                LastKnownLocation="Sportify.uml" />
-            </type_NamedElement>
-          </property>
-          <property
-            Id="50872e4d-bfef-4e39-964e-0feb907df20c"
-            name="comments"
-            visibility="Private"
-            isLeaf="false"
-            isStatic="false"
-            isReadOnly="false"
-            isUnique="false"
-            isDerived="false"
-            isDerivedUnion="false"
-            aggregation="None"
-            isComposite="false">
-            <type_NamedElement>
-              <primitiveTypeMoniker
-                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
-                LastKnownName="String"
                 LastKnownLocation="Sportify.uml" />
             </type_NamedElement>
           </property>
@@ -1492,7 +1525,20 @@
                   isDerivedUnion="false"
                   aggregation="None"
                   isComposite="false"
-                  isNavigableOwned="false" />
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="f31027f6-89e5-4ff7-83fa-c7583b718a35"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="6b3cabe9-3935-4c86-94f6-cc9012db3741"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
                 <memberEnd
@@ -2228,6 +2274,11 @@
       <undefinedType
         Id="240fbc41-8681-4039-a317-bb4fb77af266"
         name="DateTime" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <undefinedType
+        Id="1e803298-82f5-40eb-a58f-777d48026654"
+        name="enum" />
     </packageHasNamedElement>
   </packagedElements>
   <primitiveType
