@@ -96,3 +96,12 @@ create table sp_containsWE (
     constraint fk_containsWE_exercise foreign key(idExercise) references sp_exercise(idExercise),
     constraint fk_containsWE_workout foreign key(idWorkout) references sp_workout(idWorkout)
 );
+
+create sequence seq_user;
+create sequence seq_post;
+create sequence seq_comment;
+create sequence seq_location;
+create sequence seq_exercise;
+create sequence seq_dailyworkout;
+create sequence seq_workout;
+create sequence seq_plan;
