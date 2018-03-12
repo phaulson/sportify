@@ -7,3 +7,4 @@ This is a fitness app
 * Allgemeine Beschreibung: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/ofnerm_edu_htl-villach_at/Ec2mdycBxjhKqZbgV3hj9asBJ3rMGQNw-Vqh3xjU7Uet_A?e=012tE3)
 * Icon: [PNG](https://drive.google.com/file/d/1U4bt2wKzjk38yMzVAUXZpofS_Twp17uY/view)
 * User Stories: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/ofnerm_edu_htl-villach_at/EUfeAuCabJVHhh7jTAg2yKcBzy2b4qcj2hSA9tUyU00AAQ?e=bOx9i2)
+* Wettserviceschnittstelle [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/muehlbap_edu_htl-villach_at/EWPSAxonp8pMrIdG62xMdAABv-EUqb2kXk_5Nwro7frIYg?e=Lt7NbU)
