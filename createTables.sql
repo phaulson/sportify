@@ -28,17 +28,17 @@ create table sp_comment
 create table sp_location
 (
     idLocation integer primary key,
-    idPage integer,
+    idUser integer,
     name varchar2(50),
-    lat double,
-    lng double,
+    lat number,
+    lng number,
     type varchar2(20) check(type in ('EVENT', 'PUBLIC_PLACE', 'GYM', 'OTHER')),
     startdatetime date,
     enddatetime date,
-    constraint fk_location_page foreign key(idPost) references sp_post(idPost),
+    constraint fk_location_user foreign key(idUser) references sp_user(idUser),
     constraint ck_location check(startdatetime < enddatetime and 
       ((startdatetime is null and enddatetime is null and type not like 'EVENT') or
-      (startdatetime is not null and enddatetime is not null and type = 'EVENT')))
+      (startdatetime is not null and enddatetime is not null and type like 'EVENT')))
 );
 create table sp_follows 
 (
