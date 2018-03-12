@@ -167,21 +167,20 @@
             </relationshipOwnedElementsInternal>
           </association>
           <association
-            Id="6433c0b5-cbec-4262-b81c-0d8337b3fa7f"
+            Id="6bd187ed-b895-4c98-bebc-52e55f9748a1"
             isDerived="false"
             sourceEndRoleName=""
-            targetEndRoleName=""
+            targetEndRoleName="follows User"
             isLeaf="false"
-            name="follows"
             isAbstract="false">
             <classMoniker
-              Id="d7f92a30-9119-4287-9d10-a04f3f80ca50"
-              LastKnownName="User"
+              Id="05e2efa0-92af-4673-9734-534f14e2bf75"
+              LastKnownName="follows"
               LastKnownLocation="Sportify.uml" />
             <relationshipOwnedElementsInternal>
               <associationHasOwnedEnds>
                 <memberEnd
-                  Id="b5c1c5f3-5519-44ec-854f-61567db230c7"
+                  Id="e6f4319c-4e02-47ab-8611-a4d904a04b7f"
                   isLeaf="false"
                   isStatic="false"
                   isReadOnly="false"
@@ -189,24 +188,12 @@
                   isDerivedUnion="false"
                   aggregation="None"
                   isComposite="false"
-                  isNavigableOwned="false">
-                  <lowerValueInternal>
-                    <literalString
-                      Id="2dc04454-d32c-48e2-8f91-9b2aff8e299b"
-                      name="Lower"
-                      value="*" />
-                  </lowerValueInternal>
-                  <upperValueInternal>
-                    <literalString
-                      Id="9f8461e7-1165-418f-9981-94f7240af56f"
-                      name="Upper"
-                      value="*" />
-                  </upperValueInternal>
-                </memberEnd>
+                  isNavigableOwned="false" />
               </associationHasOwnedEnds>
               <associationHasOwnedEnds>
                 <memberEnd
-                  Id="16475bb6-1964-42dc-985a-f5e374033022"
+                  Id="c22eb7fc-9139-4b4e-80be-b1fe46df600d"
+                  name="follows User"
                   isLeaf="false"
                   isStatic="false"
                   isReadOnly="false"
@@ -216,77 +203,13 @@
                   isComposite="false">
                   <lowerValueInternal>
                     <literalString
-                      Id="8953df27-142f-4981-86ca-04c1c8e38087"
+                      Id="d24cdfb0-3090-4b37-822c-e68c349b840f"
                       name="Lower"
                       value="*" />
                   </lowerValueInternal>
                   <upperValueInternal>
                     <literalString
-                      Id="ba64ff9a-b726-4f12-a61a-0d5f5c809f9a"
-                      name="Upper"
-                      value="*" />
-                  </upperValueInternal>
-                </memberEnd>
-              </associationHasOwnedEnds>
-            </relationshipOwnedElementsInternal>
-          </association>
-          <association
-            Id="a1187aa7-6c50-41e0-9b72-2d3a38ae94bf"
-            isDerived="false"
-            sourceEndRoleName=""
-            targetEndRoleName=""
-            isLeaf="false"
-            name="follows"
-            isAbstract="false">
-            <classMoniker
-              Id="e9fc9dc3-fc55-40cd-9d5b-47e8f54dc624"
-              LastKnownName="Page"
-              LastKnownLocation="Sportify.uml" />
-            <relationshipOwnedElementsInternal>
-              <associationHasOwnedEnds>
-                <memberEnd
-                  Id="8492cb35-e6ff-421c-a44a-a787dadffabe"
-                  isLeaf="false"
-                  isStatic="false"
-                  isReadOnly="false"
-                  isDerived="false"
-                  isDerivedUnion="false"
-                  aggregation="None"
-                  isComposite="false"
-                  isNavigableOwned="false">
-                  <lowerValueInternal>
-                    <literalString
-                      Id="81974a6f-8db3-439d-a9a1-2310ee0d2691"
-                      name="Lower"
-                      value="*" />
-                  </lowerValueInternal>
-                  <upperValueInternal>
-                    <literalString
-                      Id="879d3d63-487f-47d1-9e33-adc4aa9dd29f"
-                      name="Upper"
-                      value="*" />
-                  </upperValueInternal>
-                </memberEnd>
-              </associationHasOwnedEnds>
-              <associationHasOwnedEnds>
-                <memberEnd
-                  Id="2eb31154-0b4b-4987-81c4-a2ef16e2007f"
-                  isLeaf="false"
-                  isStatic="false"
-                  isReadOnly="false"
-                  isDerived="false"
-                  isDerivedUnion="false"
-                  aggregation="None"
-                  isComposite="false">
-                  <lowerValueInternal>
-                    <literalString
-                      Id="e430ff38-cc86-407f-aa3c-c4dd6a48c51b"
-                      name="Lower"
-                      value="*" />
-                  </lowerValueInternal>
-                  <upperValueInternal>
-                    <literalString
-                      Id="9efac171-4608-41c4-81a8-f956a32976d9"
+                      Id="f3d537b5-7968-4f86-a5fd-0df6156d63a7"
                       name="Upper"
                       value="*" />
                   </upperValueInternal>
@@ -316,27 +239,8 @@
             </type_NamedElement>
           </property>
           <property
-            Id="8c5c582f-7c79-4f3f-94c9-180b746e5f45"
-            name="firstName"
-            visibility="Private"
-            isLeaf="false"
-            isStatic="false"
-            isReadOnly="false"
-            isUnique="false"
-            isDerived="false"
-            isDerivedUnion="false"
-            aggregation="None"
-            isComposite="false">
-            <type_NamedElement>
-              <primitiveTypeMoniker
-                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
-                LastKnownName="String"
-                LastKnownLocation="Sportify.uml" />
-            </type_NamedElement>
-          </property>
-          <property
             Id="ccd9e1d8-a8f1-44ad-8adc-f761384800f1"
-            name="lastName"
+            name="username"
             visibility="Private"
             isLeaf="false"
             isStatic="false"
@@ -356,6 +260,25 @@
           <property
             Id="f255e5d6-0054-44aa-81a9-936e1929d6b6"
             name="biographie"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+                LastKnownName="String"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="747d89f7-a2f7-41c5-8ff1-4f96e3ebaa9a"
+            name="password"
             visibility="Private"
             isLeaf="false"
             isStatic="false"
@@ -535,7 +458,7 @@
           </property>
           <property
             Id="295ee735-4f38-49d4-84da-24e67233649c"
-            name="idCreator"
+            name="idPage"
             visibility="Private"
             isLeaf="false"
             isStatic="false"
@@ -564,7 +487,7 @@
         isActiveClass="false">
         <generalsInternal>
           <generalization
-            Id="f2622ba2-2264-4cc9-93c5-6b89d405fa34"
+            Id="81dd8d23-4a55-4b4c-9993-fc251ce820e9"
             isSubstitutable="false">
             <classMoniker
               Id="d7f92a30-9119-4287-9d10-a04f3f80ca50"
@@ -652,13 +575,13 @@
                     <literalString
                       Id="b88732f7-b849-4ed7-a471-12cce4e02d32"
                       name="Lower"
-                      value="0,1" />
+                      value="1" />
                   </lowerValueInternal>
                   <upperValueInternal>
                     <literalString
                       Id="246c0761-6388-4abe-a501-1028712d8b7a"
                       name="Upper"
-                      value="0,1" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -740,65 +663,6 @@
             </relationshipOwnedElementsInternal>
           </association>
         </targetEnds>
-        <ownedAttributesInternal>
-          <property
-            Id="7e3256fd-4b05-4d9e-b721-cf9ab7bc75d0"
-            name="idPage"
-            visibility="Private"
-            isLeaf="false"
-            isStatic="false"
-            isReadOnly="false"
-            isUnique="false"
-            isDerived="false"
-            isDerivedUnion="false"
-            aggregation="None"
-            isComposite="false">
-            <type_NamedElement>
-              <primitiveTypeMoniker
-                Id="220a3521-e091-4221-bae9-3ef9018e845c"
-                LastKnownName="Integer"
-                LastKnownLocation="Sportify.uml" />
-            </type_NamedElement>
-          </property>
-          <property
-            Id="da221f3b-cd18-4857-b8a4-2071c59d3639"
-            name="description"
-            visibility="Private"
-            isLeaf="false"
-            isStatic="false"
-            isReadOnly="false"
-            isUnique="false"
-            isDerived="false"
-            isDerivedUnion="false"
-            aggregation="None"
-            isComposite="false">
-            <type_NamedElement>
-              <primitiveTypeMoniker
-                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
-                LastKnownName="String"
-                LastKnownLocation="Sportify.uml" />
-            </type_NamedElement>
-          </property>
-          <property
-            Id="f34e7663-8efb-44d2-af69-2d9bb61fd7ec"
-            name="name"
-            visibility="Private"
-            isLeaf="false"
-            isStatic="false"
-            isReadOnly="false"
-            isUnique="false"
-            isDerived="false"
-            isDerivedUnion="false"
-            aggregation="None"
-            isComposite="false">
-            <type_NamedElement>
-              <primitiveTypeMoniker
-                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
-                LastKnownName="String"
-                LastKnownLocation="Sportify.uml" />
-            </type_NamedElement>
-          </property>
-        </ownedAttributesInternal>
       </class>
     </packageHasNamedElement>
     <packageHasNamedElement>
@@ -842,7 +706,7 @@
                     <literalString
                       Id="09e747bd-7fa0-4453-b8bc-6ef088d7ba79"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -895,7 +759,7 @@
           </property>
           <property
             Id="6059f091-a431-46bd-bf1e-384eb67d509d"
-            name="idCreator"
+            name="idPage"
             visibility="Private"
             isLeaf="false"
             isStatic="false"
@@ -909,6 +773,25 @@
               <primitiveTypeMoniker
                 Id="220a3521-e091-4221-bae9-3ef9018e845c"
                 LastKnownName="Integer"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="d4661ac9-c562-42f4-9886-ea956d9363cf"
+            name="name"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+                LastKnownName="String"
                 LastKnownLocation="Sportify.uml" />
             </type_NamedElement>
           </property>
@@ -956,7 +839,7 @@
                     <literalString
                       Id="cd4a7ea3-d35d-46c4-8996-159e0a00110f"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -1070,7 +953,7 @@
                     <literalString
                       Id="d432fb87-733b-45af-8107-3c7ed926f18d"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -1123,7 +1006,7 @@
           </property>
           <property
             Id="f5b1688b-a8b3-46d1-93b2-3c56f6fd164e"
-            name="weekday :enum"
+            name="day"
             visibility="Private"
             isLeaf="false"
             isStatic="false"
@@ -1132,7 +1015,33 @@
             isDerived="false"
             isDerivedUnion="false"
             aggregation="None"
-            isComposite="false" />
+            isComposite="false">
+            <type_NamedElement>
+              <undefinedTypeMoniker
+                Id="9632d904-a9d8-40ef-bccd-50d56b550c01"
+                LastKnownName="int"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="3c5dcc0d-320d-42cf-a99d-da2bf8773f8b"
+            name="name"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+                LastKnownName="String"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
         </ownedAttributesInternal>
       </class>
     </packageHasNamedElement>
@@ -1203,6 +1112,44 @@
               <undefinedTypeMoniker
                 Id="1e803298-82f5-40eb-a58f-777d48026654"
                 LastKnownName="enum"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="0137236d-9472-41c1-996e-f3b689ce0db7"
+            name="name"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+                LastKnownName="String"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="0dc720f7-6555-4ced-87cb-10be07f76641"
+            name="idPage"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="220a3521-e091-4221-bae9-3ef9018e845c"
+                LastKnownName="Integer"
                 LastKnownLocation="Sportify.uml" />
             </type_NamedElement>
           </property>
@@ -1767,7 +1714,7 @@
                     <literalString
                       Id="a2dd7ac6-4842-4b13-945a-0c1add3cd1cf"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -1830,7 +1777,7 @@
                     <literalString
                       Id="330c861d-026d-4bc5-b809-d1f164d493f3"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -1944,7 +1891,7 @@
                     <literalString
                       Id="112452b2-460b-49ca-b002-cd5b94d8b78e"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -2058,7 +2005,7 @@
                     <literalString
                       Id="5bf69390-a509-44ed-a6fe-22385f159f35"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -2172,7 +2119,7 @@
                     <literalString
                       Id="79679142-de9c-418a-8bf7-b1abc89cec4b"
                       name="Upper"
-                      value="*" />
+                      value="1" />
                   </upperValueInternal>
                 </memberEnd>
               </associationHasOwnedEnds>
@@ -2267,6 +2214,25 @@
                 LastKnownLocation="Sportify.uml" />
             </type_NamedElement>
           </property>
+          <property
+            Id="58d1d02d-4816-4175-9010-019bd2855aec"
+            name="name"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+                LastKnownName="String"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
         </ownedAttributesInternal>
       </class>
     </packageHasNamedElement>
@@ -2279,6 +2245,162 @@
       <undefinedType
         Id="1e803298-82f5-40eb-a58f-777d48026654"
         name="enum" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <undefinedType
+        Id="9632d904-a9d8-40ef-bccd-50d56b550c01"
+        name="int" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="05e2efa0-92af-4673-9734-534f14e2bf75"
+        name="follows"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="47beea9a-89d6-45b2-8cd3-f1c84e151c2a"
+            isDerived="false"
+            sourceEndRoleName=""
+            targetEndRoleName=""
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="d7f92a30-9119-4287-9d10-a04f3f80ca50"
+              LastKnownName="User"
+              LastKnownLocation="Sportify.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="6e854520-87b8-4d69-a85a-3e58948b8e14"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="f27e8767-00b5-4204-a2f2-9d90e0532aa0"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="16748417-b73c-4d18-ab59-ad3bd824279d"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="ecaf412c-f42d-4d66-9c7b-5f9a14731121"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+          <association
+            Id="38663c6e-d85c-47e0-9d14-3201e47cca0d"
+            isDerived="false"
+            sourceEndRoleName=""
+            targetEndRoleName=""
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="e9fc9dc3-fc55-40cd-9d5b-47e8f54dc624"
+              LastKnownName="Page"
+              LastKnownLocation="Sportify.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="47e178f5-a946-4b59-bcae-026c4e47afcf"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="4a692283-3dfa-48ab-b031-12695231ac5b"
+                      name="Lower"
+                      value="*" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="2363be2c-ae98-40ac-aef9-fca007c440a1"
+                      name="Upper"
+                      value="*" />
+                  </upperValueInternal>
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="ccd031a8-b528-403e-bba7-bd81eee7f108"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+        <ownedAttributesInternal>
+          <property
+            Id="4a10bd40-6b36-4399-b457-0fb5a0164160"
+            name="idFollowerr"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="220a3521-e091-4221-bae9-3ef9018e845c"
+                LastKnownName="Integer"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
+          <property
+            Id="a14cc8cf-f181-436d-8781-d808f35cb5b1"
+            name="idOl"
+            visibility="Private"
+            isLeaf="false"
+            isStatic="false"
+            isReadOnly="false"
+            isUnique="false"
+            isDerived="false"
+            isDerivedUnion="false"
+            aggregation="None"
+            isComposite="false">
+            <type_NamedElement>
+              <primitiveTypeMoniker
+                Id="220a3521-e091-4221-bae9-3ef9018e845c"
+                LastKnownName="Integer"
+                LastKnownLocation="Sportify.uml" />
+            </type_NamedElement>
+          </property>
+        </ownedAttributesInternal>
+      </class>
     </packageHasNamedElement>
   </packagedElements>
   <primitiveType
