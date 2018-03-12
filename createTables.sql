@@ -105,3 +105,6 @@ create sequence seq_exercise;
 create sequence seq_dailyworkout;
 create sequence seq_workout;
 create sequence seq_plan;
+
+ALTER TABLE sp_user
+add constraint uq_username unique(username);
