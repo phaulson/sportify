@@ -6,6 +6,7 @@ drop table sp_follows cascade constraints;
 drop table sp_exercise cascade constraints;
 drop table sp_workout cascade constraints;
 drop table sp_dailyWorkout cascade constraints;
+drop table sp_plan cascade constraints;
 drop table sp_subscription cascade constraints;
 drop table sp_containsPD cascade constraints;
 drop table sp_containsDW cascade constraints;
