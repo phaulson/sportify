@@ -1,7 +1,29 @@
+drop table sp_user cascade constraints;
+drop table sp_post cascade constraints;
+drop table sp_comment cascade constraints;
+drop table sp_location cascade constraints;
+drop table sp_follows cascade constraints;
+drop table sp_exercise cascade constraints;
+drop table sp_workout cascade constraints;
+drop table sp_dailyWorkout cascade constraints;
+drop table sp_subscription cascade constraints;
+drop table sp_containsPD cascade constraints;
+drop table sp_containsDW cascade constraints;
+drop table sp_containsWE cascade constraints;
+
+drop sequence seq_user;
+drop sequence seq_post;
+drop sequence seq_comment;
+drop sequence seq_location;
+drop sequence seq_exercise;
+drop sequence seq_dailyworkout;
+drop sequence seq_workout;
+drop sequence seq_plan;
+
 create table sp_user
 (
     idUser integer Primary Key,
-    username varchar2(20),
+    username varchar2(20) unique,
     password varchar2(20),
     biographie varchar2(500),
     isPro number(1,0)
@@ -51,16 +73,22 @@ create table sp_follows
 );
 create table sp_exercise (
     idExercise integer primary key,
+    idCreator integer,
     name varchar2(50),
-    description varchar2(500)
+    description varchar2(500),
+    constraint fk_exercise_creator foreign key(idCreator) references sp_user(idUser)
 );
 create table sp_workout (
     idWorkout integer primary key,
-    name varchar2(50)
+    idCreator integer,
+    name varchar2(50),
+    constraint fk_workout_creator foreign key(idCreator) references sp_user(idUser)
 );
 create table sp_dailyWorkout (
     idDailyWorkout integer primary key,
-    name varchar2(50)
+    idCreator integer,
+    name varchar2(50),
+    constraint fk_dailyworkout_creator foreign key(idCreator) references sp_user(idUser)
 );
 create table sp_plan (
     idPlan integer primary key,
@@ -106,5 +134,4 @@ create sequence seq_dailyworkout;
 create sequence seq_workout;
 create sequence seq_plan;
 
-ALTER TABLE sp_user
-add constraint uq_username unique(username);
+commit;
