@@ -35,7 +35,6 @@ create table sp_post
     idPost integer Primary Key,
     idCreator integer,
     caption varchar2(500),
-    likes integer,
     timestamp date,
     constraint fk_post_user foreign key(idCreator) references sp_user(idUser)
 );
