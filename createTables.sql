@@ -25,8 +25,8 @@ drop sequence seq_plan;
 create table sp_user
 (
     idUser integer Primary Key,
-    username varchar2(20) unique,
-    password varchar2(20),
+    username varchar2(30) unique,
+    password varchar2(30),
     biographie varchar2(500),
     isPro number(1,0)
 );
