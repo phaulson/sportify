@@ -126,6 +126,9 @@ create table sp_containsWE (
     constraint fk_containsWE_workout foreign key(idWorkout) references sp_workout(idWorkout)
 );
 
+create or replace view sp_revPost as
+select * from sp_post order by idPost desc;
+
 create sequence seq_user;
 create sequence seq_post;
 create sequence seq_comment;
