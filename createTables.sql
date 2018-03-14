@@ -35,7 +35,7 @@ create table sp_post
     idPost integer Primary Key,
     idCreator integer,
     caption varchar2(500),
-    timestamp date,
+    timestamp timestamp,
     constraint fk_post_user foreign key(idCreator) references sp_user(idUser)
 );
 create table sp_comment
@@ -44,7 +44,7 @@ create table sp_comment
     idCreator integer,
     idPost integer,
     content varchar2(100),
-    timestamp date,
+    timestamp timestamp,
     constraint fk_comment_user foreign key(idCreator) references sp_user(idUser),
     constraint fk_comment_post foreign key(idPost) references sp_post(idPost)
 );
@@ -56,12 +56,12 @@ create table sp_location
     lat number,
     lng number,
     type varchar2(20) check(type in ('EVENT', 'PUBLIC_PLACE', 'GYM', 'OTHER')),
-    startdatetime date,
-    enddatetime date,
+    starttimestamptime timestamp,
+    endtimestamptime timestamp,
     constraint fk_location_user foreign key(idUser) references sp_user(idUser),
-    constraint ck_location check(startdatetime < enddatetime and 
-      ((startdatetime is null and enddatetime is null and type not like 'EVENT') or
-      (startdatetime is not null and enddatetime is not null and type like 'EVENT')))
+    constraint ck_location check(starttimestamptime < endtimestamptime and 
+      ((starttimestamptime is null and endtimestamptime is null and type not like 'EVENT') or
+      (starttimestamptime is not null and endtimestamptime is not null and type like 'EVENT')))
 );
 create table sp_follows 
 (
