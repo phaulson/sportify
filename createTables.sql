@@ -63,7 +63,7 @@ create table sp_location
       ((starttimestamptime is null and endtimestamptime is null and type not like 'EVENT') or
       (starttimestamptime is not null and endtimestamptime is not null and type like 'EVENT')))
 );
-create table sp_follow
+create table sp_follows
 (
     idFollower integer,
     idOl integer,
@@ -125,7 +125,7 @@ create table sp_containsWE (
     constraint fk_containsWE_exercise foreign key(idExercise) references sp_exercise(idExercise),
     constraint fk_containsWE_workout foreign key(idWorkout) references sp_workout(idWorkout)
 );
-create table sp_like
+create table sp_likes
 (
   idPost number,
   idUser number,
