@@ -87,3 +87,5 @@ insert into sp_likes values(3,3);
 insert into sp_likes values(4,2);
 insert into sp_likes values(4,5);
 insert into sp_likes values(4,4);
+
+commit;
