@@ -125,7 +125,7 @@ create table sp_containsWE (
     constraint fk_containsWE_exercise foreign key(idExercise) references sp_exercise(idExercise),
     constraint fk_containsWE_workout foreign key(idWorkout) references sp_workout(idWorkout)
 );
-create table sp_likes
+create table sp_like
 (
   idPost number,
   idUser number,
