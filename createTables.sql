@@ -11,6 +11,7 @@ drop table sp_subscription cascade constraints;
 drop table sp_containsPD cascade constraints;
 drop table sp_containsDW cascade constraints;
 drop table sp_containsWE cascade constraints;
+drop table sp_likes cascade constraints;
 
 drop sequence seq_user;
 drop sequence seq_post;
@@ -124,6 +125,14 @@ create table sp_containsWE (
     constraint pk_containsWE primary key (idExercise, idWorkout),
     constraint fk_containsWE_exercise foreign key(idExercise) references sp_exercise(idExercise),
     constraint fk_containsWE_workout foreign key(idWorkout) references sp_workout(idWorkout)
+);
+create table sp_likes
+(
+  idPost number,
+  idUser number,
+  constraint fk_likes_post foreign key(idPost) references sp_post(idPost),
+  constraint fk_likes_user foreign key(idUser) references sp_user(idUser),
+  constraint pk_likes primary key(idpost, iduser)
 );
 
 create or replace view sp_revPost as
