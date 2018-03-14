@@ -63,7 +63,7 @@ create table sp_location
       ((starttimestamptime is null and endtimestamptime is null and type not like 'EVENT') or
       (starttimestamptime is not null and endtimestamptime is not null and type like 'EVENT')))
 );
-create table sp_follows 
+create table sp_follow
 (
     idFollower integer,
     idOl integer,
