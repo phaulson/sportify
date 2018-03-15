@@ -11,7 +11,7 @@ insert into sp_user values(seq_user.nextval, 'jugo der kein deutsch kann', 'chel
 insert into sp_user values(seq_user.nextval, 'cora deborah rapgod', 'rapstar123', 'there is no better mc than me', 0);
 insert into sp_user values(seq_user.nextval, 'jugo der deutsch kann', 'krajic99', 'my parents dont know how to spell christian lol', 0);
 insert into sp_user values(seq_user.nextval, 'valone', 'milfs<3', 'milfhunter', 0);
-insert into sp_user values(seq_user.nextval, 'flo_mikula', 'burr', 'schule -> unnötig', 0);
+insert into sp_user values(seq_user.nextval, 'flo_mikula', 'burr', 'schule -> unnoetig', 0);
 insert into sp_user values(seq_user.nextval, 'blaschke', 'iloveasians', 'i love asian women', 0);
 insert into sp_user values(seq_user.nextval, 'judth', 'eishockey', '17 | eishockey | vsv', 0);
 insert into sp_user values(seq_user.nextval, 'guenther', 'gmuend', 'always tired', 0);
