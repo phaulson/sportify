@@ -2,7 +2,7 @@ drop table sp_user cascade constraints;
 drop table sp_post cascade constraints;
 drop table sp_comment cascade constraints;
 drop table sp_location cascade constraints;
-drop table sp_follows cascade constraints;
+drop table sp_follow cascade constraints;
 drop table sp_exercise cascade constraints;
 drop table sp_workout cascade constraints;
 drop table sp_dailyWorkout cascade constraints;
@@ -11,7 +11,7 @@ drop table sp_subscription cascade constraints;
 drop table sp_containsPD cascade constraints;
 drop table sp_containsDW cascade constraints;
 drop table sp_containsWE cascade constraints;
-drop table sp_likes cascade constraints;
+drop table sp_like cascade constraints;
 
 drop sequence seq_user;
 drop sequence seq_post;
@@ -63,14 +63,14 @@ create table sp_location
       ((starttimestamptime is null and endtimestamptime is null and type not like 'EVENT') or
       (starttimestamptime is not null and endtimestamptime is not null and type like 'EVENT')))
 );
-create table sp_follows
+create table sp_follow
 (
     idFollower integer,
     idOl integer,
-    constraint pk_follows primary key (idFollower, idOl),
-    constraint fk_follows_follower foreign key(idFollower) references sp_user(idUser),
-    constraint fk_follows_ol foreign key(idOl) references sp_user(idUser),
-    constraint ck_follows check (idFollower != idOl)
+    constraint pk_follow primary key (idFollower, idOl),
+    constraint fk_follow_follower foreign key(idFollower) references sp_user(idUser),
+    constraint fk_follow_ol foreign key(idOl) references sp_user(idUser),
+    constraint ck_follow check (idFollower != idOl)
 );
 create table sp_exercise (
     idExercise integer primary key,
@@ -125,13 +125,13 @@ create table sp_containsWE (
     constraint fk_containsWE_exercise foreign key(idExercise) references sp_exercise(idExercise),
     constraint fk_containsWE_workout foreign key(idWorkout) references sp_workout(idWorkout)
 );
-create table sp_likes
+create table sp_like
 (
   idPost number,
   idUser number,
-  constraint fk_likes_post foreign key(idPost) references sp_post(idPost),
-  constraint fk_likes_user foreign key(idUser) references sp_user(idUser),
-  constraint pk_likes primary key(idpost, iduser)
+  constraint fk_like_post foreign key(idPost) references sp_post(idPost),
+  constraint fk_like_user foreign key(idUser) references sp_user(idUser),
+  constraint pk_like primary key(idpost, iduser)
 );
 
 create or replace view sp_revPost as
