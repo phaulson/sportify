@@ -137,6 +137,9 @@ create table sp_likes
 create or replace view sp_revPost as
 select * from sp_post order by idPost desc;
 
+create or replace view sp_revComment as
+select * from sp_comment order by idcomment desc;
+
 create sequence seq_user;
 create sequence seq_post;
 create sequence seq_comment;
