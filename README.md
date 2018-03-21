@@ -10,3 +10,4 @@ This is a fitness app
 * Webserviceschnittstelle: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/muehlbap_edu_htl-villach_at/EWPSAxonp8pMrIdG62xMdAABv-EUqb2kXk_5Nwro7frIYg?e=Lt7NbU)
 * Sportify Community: [Link](https://github.com/phaulson/SportifyCommunity)
 * Sportify Pro: [Link](https://github.com/phaulson/SportifyPro)
+* Sportify Webservice: [Link](https://github.com/phaulson/SportifyWebservice)
