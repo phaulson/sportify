@@ -9,3 +9,4 @@ This is a fitness app
 * User Stories: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/ofnerm_edu_htl-villach_at/EUfeAuCabJVHhh7jTAg2yKcBzy2b4qcj2hSA9tUyU00AAQ?e=bOx9i2)
 * Webserviceschnittstelle: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/muehlbap_edu_htl-villach_at/EWPSAxonp8pMrIdG62xMdAABv-EUqb2kXk_5Nwro7frIYg?e=Lt7NbU)
 * Sportify Community: [Link](https://github.com/phaulson/SportifyCommunity)
+* Sportify Pro: [Link](https://github.com/phaulson/SportifyPro)
