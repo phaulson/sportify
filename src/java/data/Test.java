@@ -18,4 +18,8 @@ public class Test {
     public String sayByeOrHi(boolean bye) {
         return bye ? "Bye" : "Hii";
     }
+    @WebMethod (operationName="Hello World")
+    public String helloWorld(){
+        return "SCUUUUURR";
+    }
 }
