@@ -16,9 +16,9 @@ import javax.jws.WebService;
 public class Test {
     @WebMethod (operationName = "say")
     public String sayByeOrHi(boolean bye) {
-        return bye ? "Bye" : "Hii";
+        return bye ? "Bye" : "Hai";
     }
-    @WebMethod (operationName="Hello World")
+    @WebMethod (operationName="HelloWorld")
     public String helloWorld(){
         return "SCUUUUURR";
     }
