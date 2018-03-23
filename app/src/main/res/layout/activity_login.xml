@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="com.spogss.sportifypro.LoginActivity">
+    tools:context="com.spogss.sportifypro.activity.LoginActivity">
 
     <ProgressBar
         android:id="@+id/progressBar_login"

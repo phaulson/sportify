@@ -1,4 +1,4 @@
-package com.spogss.sportifypro;
+package com.spogss.sportifypro.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
+
+import com.spogss.sportifypro.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
