@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sportify Community</string>
+    <string name="app_name">Sportify</string>
 
     <!-- Strings related to login -->
     <string name="username">Username</string>
@@ -18,7 +18,11 @@
     <string name="error_password_match">Passwords don\'t match</string>
 
 
+    <string name="action_search">Search...</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
 </resources>

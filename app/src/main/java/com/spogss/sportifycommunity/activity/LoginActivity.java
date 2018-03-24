@@ -1,8 +1,9 @@
-package com.spogss.sportifycommunity;
+package com.spogss.sportifycommunity.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TabHost;
+
+import com.spogss.sportifycommunity.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,37 +112,43 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         String username = editText_username.getText().toString();
         String password = editText_password.getText().toString();
 
-        boolean cancel = false;
-        View focusView = null;
+        showProgress(true);
+        authTask = new UserLoginTask(username, password);
+        authTask.execute((Void) null);
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            editText_password.setError(getString(R.string.error_invalid_password));
-            focusView = editText_password;
-            cancel = true;
-        }
+        if(false) {
+            boolean cancel = false;
+            View focusView = null;
 
-        // Check for a valid email username.
-        if (TextUtils.isEmpty(username)) {
-            editText_username.setError(getString(R.string.error_field_required));
-            focusView = editText_username;
-            cancel = true;
-        } else if (!isUsernameValid(username)) {
-            editText_username.setError(getString(R.string.error_invalid_username));
-            focusView = editText_username;
-            cancel = true;
-        }
+            // Check for a valid password, if the user entered one.
+            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+                editText_password.setError(getString(R.string.error_invalid_password));
+                focusView = editText_password;
+                cancel = true;
+            }
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            authTask = new UserLoginTask(username, password);
-            authTask.execute((Void) null);
+            // Check for a valid email username.
+            if (TextUtils.isEmpty(username)) {
+                editText_username.setError(getString(R.string.error_field_required));
+                focusView = editText_username;
+                cancel = true;
+            } else if (!isUsernameValid(username)) {
+                editText_username.setError(getString(R.string.error_invalid_username));
+                focusView = editText_username;
+                cancel = true;
+            }
+
+            if (cancel) {
+                // There was an error; don't attempt login and focus the first
+                // form field with an error.
+                focusView.requestFocus();
+            } else {
+                // Show a progress spinner, and kick off a background task to
+                // perform the user login attempt.
+                showProgress(true);
+                authTask = new UserLoginTask(username, password);
+                authTask.execute((Void) null);
+            }
         }
     }
 
@@ -256,11 +265,17 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
 
     private void onLoginSuccess(){
         // TODO: 15/03/2018 start next activity
-        finish();
+        launchFeed();
     }
 
     private void onRegistrationSuccess(){
+        // TODO: 23.03.2018 start next activity
+        launchFeed();
+    }
 
+    private void launchFeed() {
+        Intent intent = new Intent(this, FeedActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -296,7 +311,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
                 }
             }
 
-            return false;
+            return true;
         }
 
         @Override
