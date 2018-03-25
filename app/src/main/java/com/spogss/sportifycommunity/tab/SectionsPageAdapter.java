@@ -19,6 +19,11 @@ public class SectionsPageAdapter extends FragmentPagerAdapter {
         super(fm);
     }
 
+    /**
+     * adds a new Fragment with title to the adapter
+     * @param fragment the new fragment
+     * @param title the title of the fragment
+     */
     public void addFragment(Fragment fragment, String title) {
         fragments.add(fragment);
         fragmentTitles.add(title);

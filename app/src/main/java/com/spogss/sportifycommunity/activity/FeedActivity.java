@@ -153,6 +153,7 @@ public class FeedActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextChange(String newText) {
         // TODO: implement switch over selected tab
+        // TODO: replace with connection to webservice and load data from database
         String[] search = {
                 "nico", "pauli", "nina", "simon", "samuel"
         };
@@ -163,6 +164,7 @@ public class FeedActivity extends AppCompatActivity
                     list.add(s);
             }
         }
+
         ((TabFragmentSearch)sectionsPageAdapter.getItem(viewPager.getCurrentItem())).fillListSearch(this, list);
         return false;
     }

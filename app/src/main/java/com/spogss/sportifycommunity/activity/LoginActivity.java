@@ -112,10 +112,12 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         String username = editText_username.getText().toString();
         String password = editText_password.getText().toString();
 
+        // TODO: remove when testing is done
         showProgress(true);
         authTask = new UserLoginTask(username, password);
         authTask.execute((Void) null);
 
+        // TODO: remove 'if' when testing is done
         if(false) {
             boolean cancel = false;
             View focusView = null;
@@ -264,12 +266,10 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
     }
 
     private void onLoginSuccess(){
-        // TODO: 15/03/2018 start next activity
         launchFeed();
     }
 
     private void onRegistrationSuccess(){
-        // TODO: 23.03.2018 start next activity
         launchFeed();
     }
 
@@ -311,6 +311,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
                 }
             }
 
+            // TODO: return false when testing is done
             return true;
         }
 
@@ -374,7 +375,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
             if (success) {
                 onRegistrationSuccess();
             } else {
-                //todo change
+                // TODO: change
                 editText_password.setError(getString(R.string.error_incorrect_username_or_password));
                 editText_username.setError(getString(R.string.error_incorrect_username_or_password));
                 editText_password.requestFocus();
