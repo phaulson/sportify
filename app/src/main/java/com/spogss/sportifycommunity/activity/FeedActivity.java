@@ -1,6 +1,5 @@
 package com.spogss.sportifycommunity.activity;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -25,10 +24,9 @@ import com.spogss.sportifycommunity.tab.TabFragmentSearch;
 import java.util.ArrayList;
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener, View.OnClickListener {
 
     //UI Controls
-    private SearchView searchView;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FloatingActionButton fab;
@@ -45,13 +43,7 @@ public class FeedActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -65,15 +57,16 @@ public class FeedActivity extends AppCompatActivity
 
         //Custom code
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+
         //tabs
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         setupViewPager(viewPager);
-
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setVisibility(View.GONE);
     }
 
+    //adds the fragments (tabs) to the viewPager
     private void setupViewPager(ViewPager pager) {
         sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         sectionsPageAdapter.addFragment(new TabFragmentSearch(), "Users");
@@ -100,25 +93,10 @@ public class FeedActivity extends AppCompatActivity
         //Custom code
         MenuItem item = menu.findItem(R.id.action_search);
         item.setOnActionExpandListener(this);
-        searchView = (SearchView) item.getActionView();
+        SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(this);
 
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //   return true;
-        //}
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -146,7 +124,18 @@ public class FeedActivity extends AppCompatActivity
         return true;
     }
 
-    //SearchView
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+
+        if(id == R.id.fab) {
+            // TODO: open new Activity (PostActivity)
+            Snackbar.make(view, "The PostActivity will be implemented soon", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+    }
+
+    //SearchView events
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
