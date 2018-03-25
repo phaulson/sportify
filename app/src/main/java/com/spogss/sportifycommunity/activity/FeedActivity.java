@@ -1,5 +1,6 @@
 package com.spogss.sportifycommunity.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;

@@ -276,6 +276,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
     private void launchFeed() {
         Intent intent = new Intent(this, FeedActivity.class);
         startActivity(intent);
+        finish();
     }
 
     /**
