@@ -3,34 +3,37 @@ package com.spogss.sportifycommunity.activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.View;
 
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.tab.SectionsPageAdapter;
+import com.spogss.sportifycommunity.tab.TabFragmentSearch;
 
 import java.util.ArrayList;
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener {
 
-    String[] search = {
-            "nico", "pauli", "nina", "simon", "samuel"
-    };
-    ListView listSearch;
-    SearchView searchView;
+    //UI Controls
+    private SearchView searchView;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private FloatingActionButton fab;
+
+    //Adapter for tabs
+    private SectionsPageAdapter sectionsPageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class FeedActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,8 +64,21 @@ public class FeedActivity extends AppCompatActivity
 
         //Custom code
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+        //tabs
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        setupViewPager(viewPager);
 
-        listSearch = (ListView) findViewById(R.id.listView_search);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setVisibility(View.GONE);
+    }
+
+    private void setupViewPager(ViewPager pager) {
+        sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+        sectionsPageAdapter.addFragment(new TabFragmentSearch(), "Users");
+        sectionsPageAdapter.addFragment(new TabFragmentSearch(), "Pages");
+        sectionsPageAdapter.addFragment(new TabFragmentSearch(), "Plans");
+        pager.setAdapter(sectionsPageAdapter);
     }
 
     @Override
@@ -82,8 +98,8 @@ public class FeedActivity extends AppCompatActivity
 
         //Custom code
         MenuItem item = menu.findItem(R.id.action_search);
+        item.setOnActionExpandListener(this);
         searchView = (SearchView) item.getActionView();
-
         searchView.setOnQueryTextListener(this);
 
         return true;
@@ -134,19 +150,32 @@ public class FeedActivity extends AppCompatActivity
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
-
     @Override
     public boolean onQueryTextChange(String newText) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        listSearch.setAdapter(adapter);
+        // TODO: implement switch over selected tab
+        String[] search = {
+                "nico", "pauli", "nina", "simon", "samuel"
+        };
+        ArrayList<String> list = new ArrayList<String>();
         if(!newText.isEmpty()) {
             for (String s : search) {
-                if (s.toLowerCase().contains(newText.toLowerCase())) {
-                    adapter.add(s);
-                }
+                if (s.toLowerCase().contains(newText.toLowerCase()))
+                    list.add(s);
             }
         }
-        Log.d("adapter", adapter.getCount() + "");
+        ((TabFragmentSearch)sectionsPageAdapter.getItem(viewPager.getCurrentItem())).fillListSearch(this, list);
         return false;
+    }
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem menuItem) {
+        fab.setVisibility(View.GONE);
+        tabLayout.setVisibility(View.VISIBLE);
+        return true;
+    }
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+        fab.setVisibility(View.VISIBLE);
+        tabLayout.setVisibility(View.GONE);
+        return true;
     }
 }
