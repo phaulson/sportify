@@ -18,7 +18,19 @@
     <string name="error_password_match">Passwords don\'t match</string>
 
 
+    <!-- Strings related to search -->
     <string name="action_search">Search...</string>
+
+
+    <!-- Strings related to menu -->
+    <string name="menu_home">Home</string>
+    <string name="menu_plans">Plans</string>
+    <string name="menu_map">Map</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_settings">Settings</string>
+
+
+    <!-- auto-generated Strings -->
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
