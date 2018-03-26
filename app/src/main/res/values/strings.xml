@@ -30,6 +30,13 @@
     <string name="menu_settings">Settings</string>
 
 
+    <!-- Strings related to post -->
+    <string name="image_feed_profile_description">The user\'s profile picture</string>
+    <string name="image_feed_post_description">The image posted by the user</string>
+    <string name="image_feed_heart_description">The heart-image which indicates if a post is liked</string>
+    <string name="image_feed_comment_description">The comment-image which opens the CommentActivity if pressed</string>
+
+
     <!-- auto-generated Strings -->
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>

@@ -1,4 +1,4 @@
-package com.spogss.sportifycommunity.tab;
+package com.spogss.sportifycommunity.search;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

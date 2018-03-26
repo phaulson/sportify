@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/feed_margin"
+    android:paddingBottom="@dimen/feed_margin"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/imageView_feed_profile"
+        android:contentDescription="@string/image_feed_profile_description"
+        android:layout_width="@dimen/image_feed_square_dimen"
+        android:layout_height="@dimen/image_feed_square_dimen"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_marginStart="@dimen/feed_margin"
+        android:layout_marginTop="@dimen/feed_margin" />
+
+    <TextView
+        android:id="@+id/textView_feed_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView_feed_profile"
+        android:layout_marginBottom="@dimen/feed_margin"
+        android:layout_marginStart="@dimen/feed_margin"
+        android:layout_toEndOf="@+id/imageView_feed_profile"
+        android:textSize="@dimen/feed_text_size" />
+
+    <TextView
+        android:id="@+id/textView_feed_timeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/imageView_feed_post"
+        android:layout_alignTop="@+id/textView_feed_username" />
+
+    <ImageView
+        android:id="@+id/imageView_feed_post"
+        android:contentDescription="@string/image_feed_post_description"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignStart="@+id/imageView_feed_profile"
+        android:layout_below="@+id/textView_feed_username"
+        android:layout_marginTop="@dimen/feed_margin"
+        android:layout_marginEnd="@dimen/feed_margin"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/textView_feed_caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/imageView_feed_post"
+        android:layout_below="@+id/imageView_feed_post"
+        android:layout_marginTop="@dimen/feed_margin"
+        android:textSize="@dimen/feed_text_size"/>
+
+    <ImageView
+        android:id="@+id/imageView_feed_heart"
+        android:contentDescription="@string/image_feed_heart_description"
+        android:layout_width="@dimen/image_feed_square_dimen"
+        android:layout_height="@dimen/image_feed_square_dimen"
+        android:layout_alignStart="@+id/textView_feed_caption"
+        android:layout_below="@+id/textView_feed_caption"
+        android:layout_marginTop="10dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
+
+    <ImageView
+        android:id="@+id/imageView_feed_comment"
+        android:contentDescription="@string/image_feed_comment_description"
+        android:layout_width="@dimen/image_feed_square_dimen"
+        android:layout_height="@dimen/image_feed_square_dimen"
+        android:layout_alignStart="@+id/textView_feed_username"
+        android:layout_alignTop="@+id/imageView_feed_heart"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
+
+</RelativeLayout>

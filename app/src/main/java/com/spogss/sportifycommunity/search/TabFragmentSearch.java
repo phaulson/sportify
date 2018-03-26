@@ -1,4 +1,4 @@
-package com.spogss.sportifycommunity.tab;
+package com.spogss.sportifycommunity.search;
 
 import android.app.Activity;
 import android.os.Bundle;

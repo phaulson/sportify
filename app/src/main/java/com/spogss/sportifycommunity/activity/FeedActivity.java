@@ -16,10 +16,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.tab.SectionsPageAdapter;
-import com.spogss.sportifycommunity.tab.TabFragmentSearch;
+import com.spogss.sportifycommunity.feed.FeedListAdapter;
+import com.spogss.sportifycommunity.feed.Post;
+import com.spogss.sportifycommunity.search.SectionsPageAdapter;
+import com.spogss.sportifycommunity.search.TabFragmentSearch;
 
 import java.util.ArrayList;
 
@@ -30,6 +33,7 @@ public class FeedActivity extends AppCompatActivity
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FloatingActionButton fab;
+    ListView listViewFeed;
 
     //Adapter for tabs
     private SectionsPageAdapter sectionsPageAdapter;
@@ -64,6 +68,19 @@ public class FeedActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setVisibility(View.GONE);
+
+        //content feed
+        listViewFeed = (ListView)findViewById(R.id.listView_feed);
+        FeedListAdapter feedListAdapter = new FeedListAdapter(getApplicationContext());
+        feedListAdapter.addPost(new Post("johnnybravo", "5 hours ago", "My name is Johnny Bravo and I am so fucking swole guys.",
+                false, R.drawable.sp_heart_filled, R.drawable.sp_test_image));
+        feedListAdapter.addPost(new Post("paulim", "7 hours ago", "This is my first post lol.",
+                true, R.drawable.ic_action_voice_search, R.drawable.sp_test_image));
+        feedListAdapter.addPost(new Post("simon", "2 days ago", "I am a hamster and I like to run in my Laufrad!!",
+                true, R.drawable.ic_menu_camera, R.drawable.sp_test_image));
+        feedListAdapter.addPost(new Post("webi", "1 week ago", "Latrell Sprewell for MVP.",
+                false, R.drawable.sp_home, R.drawable.sp_test_image));
+        listViewFeed.setAdapter(feedListAdapter);
     }
 
     //adds the fragments (tabs) to the viewPager
@@ -162,12 +179,14 @@ public class FeedActivity extends AppCompatActivity
     @Override
     public boolean onMenuItemActionExpand(MenuItem menuItem) {
         fab.setVisibility(View.GONE);
+        listViewFeed.setVisibility(View.GONE);
         tabLayout.setVisibility(View.VISIBLE);
         return true;
     }
     @Override
     public boolean onMenuItemActionCollapse(MenuItem menuItem) {
         fab.setVisibility(View.VISIBLE);
+        listViewFeed.setVisibility(View.VISIBLE);
         tabLayout.setVisibility(View.GONE);
         return true;
     }

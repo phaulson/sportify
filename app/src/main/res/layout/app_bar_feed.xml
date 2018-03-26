@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.spogss.sportifycommunity.activity.FeedActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -37,9 +37,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <include layout="@layout/content_feed" />
+        <include layout="@layout/content_feed"
+            />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
