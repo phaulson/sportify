@@ -1,18 +1,15 @@
-package com.spogss.sportifycommunity.search;
+package com.spogss.sportifycommunity.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.spogss.sportifycommunity.adapter.SearchListAdapter;
 import com.spogss.sportifycommunity.R;
-
-import java.util.List;
 
 /**
  * Created by Pauli on 25.03.2018.
@@ -29,23 +26,15 @@ public class TabFragmentSearch extends Fragment {
         return view;
     }
 
-    /**
-     * gets the ListView that contains the search results
-     * @return ListView that contains the search results
-     */
     public ListView getListSearch() {
         return listSearch;
     }
 
     /**
-     * creates a new ArrayAdapter<T> with generic typing and
-     * fills the ListView with data specified in the List<T> passed as parameter
-     * @param activity the Activity that contains the ListView
-     * @param list the List<t> that contains the search results
-     * @param <T> the generic type (it cna be any)
+     * sets the Adapter to the ListView
+     * @param adapter the Adapter ro fill the ListView with
      */
-    public <T> void fillListSearch(Activity activity, List<T> list) {
-        ArrayAdapter<T> adapter = new ArrayAdapter<T>(activity, android.R.layout.simple_list_item_1, list);
+    public void fillList(SearchListAdapter adapter) {
         listSearch.setAdapter(adapter);
     }
 }

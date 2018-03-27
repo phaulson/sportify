@@ -20,25 +20,28 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.feed.FeedListAdapter;
-import com.spogss.sportifycommunity.feed.Post;
-import com.spogss.sportifycommunity.search.SectionsPageAdapter;
-import com.spogss.sportifycommunity.search.TabFragmentSearch;
+import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.adapter.FeedListAdapter;
+import com.spogss.sportifycommunity.data.Post;
+import com.spogss.sportifycommunity.adapter.SearchListAdapter;
+import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
+import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 
 import java.util.ArrayList;
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     //UI Controls
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FloatingActionButton fab;
-    ListView listViewFeed;
     SwipeRefreshLayout swipeRefreshLayout;
 
     //Adapter for tabs
     private SectionsPageAdapter sectionsPageAdapter;
+    //List of users, only for testing purposes
+    private ArrayList<User> users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,18 @@ public class FeedActivity extends AppCompatActivity
 
 
         //Custom code
+        users = new ArrayList<User>();
+
+        User johnny = new User("johnnybravo", R.drawable.sp_heart_filled);
+        User pauli = new User("paulim", R.drawable.ic_action_voice_search);
+        User simon = new User("simon", R.drawable.ic_menu_camera);
+        User webi = new User("webi", R.drawable.sp_home);
+
+        users.add(johnny);
+        users.add(pauli);
+        users.add(simon);
+        users.add(webi);
+
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
 
         //tabs
@@ -72,18 +87,19 @@ public class FeedActivity extends AppCompatActivity
         tabLayout.setVisibility(View.GONE);
 
         //content feed
-        listViewFeed = (ListView)findViewById(R.id.listView_feed);
+        ListView listViewFeed = (ListView)findViewById(R.id.listView_feed);
         FeedListAdapter feedListAdapter = new FeedListAdapter(getApplicationContext());
-        feedListAdapter.addPost(new Post("johnnybravo", "5 hours ago", "My name is Johnny Bravo and I am so fucking swole guys.",
-                false, R.drawable.sp_heart_filled, R.drawable.sp_test_image, 10));
-        feedListAdapter.addPost(new Post("paulim", "7 hours ago", "This is my first post lol.",
-                true, R.drawable.ic_action_voice_search, R.drawable.sp_test_image, 5));
-        feedListAdapter.addPost(new Post("simon", "2 days ago", "I am a hamster and I like to run in my Laufrad!!",
-                true, R.drawable.ic_menu_camera, R.drawable.sp_test_image, 7));
-        feedListAdapter.addPost(new Post("paulim", "2 days ago", "What the fuck is going on??",
-                true, R.drawable.ic_action_voice_search, -1, 4));
-        feedListAdapter.addPost(new Post("webi", "1 week ago", "Latrell Sprewell for MVP.",
-                false, R.drawable.sp_home, R.drawable.sp_test_image, 0));
+
+        feedListAdapter.addPost(new Post("5 hours ago", "My name is Johnny Bravo and I am so fucking swole guys.",
+                false, R.drawable.sp_test_image, 10, johnny));
+        feedListAdapter.addPost(new Post("7 hours ago", "This is my first post lol.",
+                true, R.drawable.sp_test_image, 5, pauli));
+        feedListAdapter.addPost(new Post("2 days ago", "I am a hamster and I like to run in my Laufrad!!",
+                true, R.drawable.sp_test_image, 7, simon));
+        feedListAdapter.addPost(new Post("2 days ago", "What the fuck is going on??",
+                true, -1, 4, pauli));
+        feedListAdapter.addPost(new Post("1 week ago", "Latrell Sprewell for MVP.",
+                false, R.drawable.sp_test_image, 0, webi));
         listViewFeed.setAdapter(feedListAdapter);
 
         //swipeRefresh
@@ -117,9 +133,9 @@ public class FeedActivity extends AppCompatActivity
 
         //Custom code
         MenuItem item = menu.findItem(R.id.action_search);
-        item.setOnActionExpandListener(this);
+        item.setOnActionExpandListener(new MenuItemListener());
         SearchView searchView = (SearchView) item.getActionView();
-        searchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextListener(new SearchViewListener());
 
         return true;
     }
@@ -169,44 +185,6 @@ public class FeedActivity extends AppCompatActivity
         }
     }
 
-    //SearchView events
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // TODO: implement switch over selected tab
-        // TODO: replace with connection to webservice and load data from database
-        String[] search = {
-                "nico", "pauli", "nina", "simon", "samuel"
-        };
-        ArrayList<String> list = new ArrayList<String>();
-        if(!newText.isEmpty()) {
-            for (String s : search) {
-                if (s.toLowerCase().contains(newText.toLowerCase()))
-                    list.add(s);
-            }
-        }
-
-        ((TabFragmentSearch)sectionsPageAdapter.getItem(viewPager.getCurrentItem())).fillListSearch(this, list);
-        return false;
-    }
-    @Override
-    public boolean onMenuItemActionExpand(MenuItem menuItem) {
-        fab.setVisibility(View.GONE);
-        listViewFeed.setVisibility(View.GONE);
-        tabLayout.setVisibility(View.VISIBLE);
-        return true;
-    }
-    @Override
-    public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-        fab.setVisibility(View.VISIBLE);
-        listViewFeed.setVisibility(View.VISIBLE);
-        tabLayout.setVisibility(View.GONE);
-        return true;
-    }
-
     //swipeRefresh event
     @Override
     public void onRefresh() {
@@ -214,5 +192,52 @@ public class FeedActivity extends AppCompatActivity
         Snackbar.make(getWindow().getDecorView().getRootView(), "Feed will be refreshed soon", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+
+    /**
+     * the listener that handles the search event
+     */
+    public class SearchViewListener implements SearchView.OnQueryTextListener {
+
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            // TODO: implement switch over selected tab
+            // TODO: replace with connection to webservice and load data from database
+            TabFragmentSearch fragment = ((TabFragmentSearch) sectionsPageAdapter.getItem(viewPager.getCurrentItem()));
+            SearchListAdapter adapter = new SearchListAdapter(FeedActivity.this);
+            if (!newText.equals("")) {
+                for (User u : users) {
+                    if (u.getUsername().toLowerCase().contains(newText.toLowerCase()))
+                        adapter.addUser(u);
+                }
+            }
+            fragment.fillList(adapter);
+            return false;
+        }
+    }
+
+    public class MenuItemListener implements MenuItem.OnActionExpandListener {
+
+        @Override
+        public boolean onMenuItemActionExpand(MenuItem menuItem) {
+            fab.setVisibility(View.GONE);
+            swipeRefreshLayout.setVisibility(View.GONE);
+            tabLayout.setVisibility(View.VISIBLE);
+            return true;
+        }
+
+        @Override
+        public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+            fab.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            tabLayout.setVisibility(View.GONE);
+            return true;
+        }
     }
 }

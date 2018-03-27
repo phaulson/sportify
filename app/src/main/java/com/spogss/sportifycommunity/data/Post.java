@@ -1,4 +1,4 @@
-package com.spogss.sportifycommunity.feed;
+package com.spogss.sportifycommunity.data;
 
 /**
  * Created by Pauli on 26.03.2018.
@@ -7,31 +7,21 @@ package com.spogss.sportifycommunity.feed;
 public class Post {
     private static int nextID = 0;
     private int id;
-    private String username;
     private String timeStamp;
     private String caption;
     private boolean liked;
     private int postPic;
-    private int profilePic;
     private int likes;
+    private User user;
 
-    public Post(String username, String timeStamp, String caption, boolean liked, int profilePic, int postPic, int likes) {
-        this.username = username;
+    public Post(String timeStamp, String caption, boolean liked, int postPic, int likes, User user) {
+        this.user = user;
         this.timeStamp = timeStamp;
         this.caption = caption;
         this.liked = liked;
         this.postPic = postPic;
-        this.profilePic = profilePic;
         this.likes = likes;
         this.id = nextID++;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getTimeStamp() {
@@ -66,13 +56,6 @@ public class Post {
         this.postPic = pic;
     }
 
-    public int getProfilePic() {
-        return profilePic;
-    }
-
-    public void setProfilePic(int profilePic) {
-        this.profilePic = profilePic;
-    }
 
     public int getId() {
         return id;
@@ -88,5 +71,13 @@ public class Post {
 
     public void setLikes(int likes) {
         this.likes = likes;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -69,7 +69,8 @@
             android:layout_alignStart="@+id/imageView_feed_post"
             android:layout_below="@+id/imageView_feed_post"
             android:layout_marginTop="@dimen/feed_margin_medium"
-            android:textSize="@dimen/feed_text_size" />
+            android:textSize="@dimen/feed_text_size"
+            android:textAppearance="@style/TextAppearance.AppCompat"/>
     </RelativeLayout>
 
     <ImageView

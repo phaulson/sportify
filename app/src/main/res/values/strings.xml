@@ -30,11 +30,15 @@
     <string name="menu_settings">Settings</string>
 
 
-    <!-- Strings related to post -->
+    <!-- Strings related to feed -->
     <string name="image_feed_profile_description">The user\'s profile picture</string>
     <string name="image_feed_post_description">The image posted by the user</string>
     <string name="image_feed_heart_description">The heart-image which indicates if a post is liked</string>
     <string name="image_feed_comment_description">The comment-image which opens the CommentActivity if pressed</string>
+
+
+    <!-- Strings related to users -->
+    <string name="image_users_profile_description">The user\'s profile picture</string>
 
 
     <!-- auto-generated Strings -->

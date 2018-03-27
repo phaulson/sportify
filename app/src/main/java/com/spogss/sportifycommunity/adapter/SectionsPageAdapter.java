@@ -1,4 +1,4 @@
-package com.spogss.sportifycommunity.search;
+package com.spogss.sportifycommunity.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

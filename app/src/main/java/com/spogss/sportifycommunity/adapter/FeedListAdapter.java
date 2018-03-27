@@ -1,4 +1,4 @@
-package com.spogss.sportifycommunity.feed;
+package com.spogss.sportifycommunity.adapter;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
@@ -13,8 +13,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.data.Post;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Pauli on 26.03.2018.
@@ -24,7 +26,8 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     private Context context;
 
     // TODO: implement with real posts
-    private ArrayList<Post> posts = new ArrayList<Post>();
+    private HashMap<Integer, Post> posts = new HashMap<Integer, Post>();
+    private ArrayList<Integer> keys = new ArrayList<Integer>();
 
     public FeedListAdapter(Context context) {
         this.context = context;
@@ -37,12 +40,12 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
     @Override
     public Object getItem(int i) {
-        return posts.get(i);
+        return posts.get(keys.get(i));
     }
 
     @Override
     public long getItemId(int i) {
-        return posts.get(i).getId();
+        return posts.get(keys.get(i)).getId();
     }
 
     @Override
@@ -67,15 +70,15 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
 
         // TODO: implement with real posts
-        Post post = posts.get(i);
+        Post post = posts.get(keys.get(i));
         rl.setTag(post.getId());
 
-        username.setText(post.getUsername());
+        username.setText(post.getUser().getUsername());
         timeStamp.setText(post.getTimeStamp());
         caption.setText(post.getCaption());
         likes.setText(post.getLikes() + " like" + (post.getLikes() != 1 ? "s": ""));
 
-        profilePic.setImageResource(post.getProfilePic());
+        profilePic.setImageResource(post.getUser().getProfilePic());
 
         //check if post has pic
         if(post.getPostPic() != -1)
@@ -121,7 +124,8 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
      */
     // TODO: implement with real posts
     public void addPost(Post post) {
-        posts.add(post);
+        posts.put(post.getId(), post);
+        keys.add(post.getId());
     }
 
     @Override
@@ -168,7 +172,7 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         RelativeLayout rl = (RelativeLayout)view.getParent();
         int idRl = Integer.parseInt(rl.getTag().toString());
         Post post = posts.get(idRl);
-        Snackbar.make(view, "The ProfileActivity for '" + post.getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
+        Snackbar.make(view, "The ProfileActivity for '" + post.getUser().getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
         return true;
     }
