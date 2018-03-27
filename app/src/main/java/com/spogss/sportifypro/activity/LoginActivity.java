@@ -3,6 +3,7 @@ package com.spogss.sportifypro.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -21,6 +22,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.spogss.sportifypro.R;
+import com.spogss.sportifypro.data.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -268,7 +270,10 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
     }
 
     private void onRegistrationSuccess(){
-
+        Intent intent_viewProfile = new Intent(getApplicationContext(), ProfileActivity.class);
+        User user = new User(editText_username_r.getText().toString(), editText_password_r.getText().toString());
+        intent_viewProfile.putExtra("profile", user);
+        startActivity(intent_viewProfile);
     }
 
     /**
