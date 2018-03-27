@@ -266,10 +266,14 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
 
     private void onLoginSuccess(){
         // TODO: 15/03/2018 start next activity
-        finish();
+        Intent intent_viewProfile = new Intent(getApplicationContext(), ProfileActivity.class);
+        User user = new User(editText_username.getText().toString(), editText_password.getText().toString());
+        intent_viewProfile.putExtra("profile", user);
+        startActivity(intent_viewProfile);
     }
 
     private void onRegistrationSuccess(){
+        // TODO: 15/03/2018 start next activity
         Intent intent_viewProfile = new Intent(getApplicationContext(), ProfileActivity.class);
         User user = new User(editText_username_r.getText().toString(), editText_password_r.getText().toString());
         intent_viewProfile.putExtra("profile", user);
@@ -296,7 +300,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
 
             try {
                 // Simulate network access.
-                Thread.sleep(2000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 return false;
             }
