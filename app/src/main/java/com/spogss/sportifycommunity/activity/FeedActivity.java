@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TableLayout;
 
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.data.User;
@@ -37,6 +38,7 @@ public class FeedActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private FloatingActionButton fab;
     SwipeRefreshLayout swipeRefreshLayout;
+    SearchView searchView;
 
     //Adapter for tabs
     private SectionsPageAdapter sectionsPageAdapter;
@@ -67,10 +69,10 @@ public class FeedActivity extends AppCompatActivity
         //Custom code
         users = new ArrayList<User>();
 
-        User johnny = new User("johnnybravo", R.drawable.sp_heart_filled);
+        User johnny = new User("johnnybravo", R.drawable.ic_action_navigation_close);
         User pauli = new User("paulim", R.drawable.ic_action_voice_search);
-        User simon = new User("simon", R.drawable.ic_menu_camera);
-        User webi = new User("webi", R.drawable.sp_home);
+        User simon = new User("simon", R.drawable.ic_action_navigation_close);
+        User webi = new User("webi", R.drawable.ic_action_navigation_arrow_back);
 
         users.add(johnny);
         users.add(pauli);
@@ -81,10 +83,11 @@ public class FeedActivity extends AppCompatActivity
 
         //tabs
         viewPager = (ViewPager) findViewById(R.id.viewPager);
-        setupViewPager(viewPager);
+        setupSearchViewPager(viewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setVisibility(View.GONE);
+        tabLayout.addOnTabSelectedListener(new TabLayoutListener());
 
         //content feed
         ListView listViewFeed = (ListView)findViewById(R.id.listView_feed);
@@ -107,8 +110,11 @@ public class FeedActivity extends AppCompatActivity
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    //adds the fragments (tabs) to the viewPager
-    private void setupViewPager(ViewPager pager) {
+    /**
+     * adds the fragments (tabs) to the ViewPager
+     * @param pager the ViewPager to which the fragments are added
+     */
+    private void setupSearchViewPager(ViewPager pager) {
         sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         sectionsPageAdapter.addFragment(new TabFragmentSearch(), "Users");
         sectionsPageAdapter.addFragment(new TabFragmentSearch(), "Pages");
@@ -134,7 +140,7 @@ public class FeedActivity extends AppCompatActivity
         //Custom code
         MenuItem item = menu.findItem(R.id.action_search);
         item.setOnActionExpandListener(new MenuItemListener());
-        SearchView searchView = (SearchView) item.getActionView();
+        searchView  = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchViewListener());
 
         return true;
@@ -194,9 +200,29 @@ public class FeedActivity extends AppCompatActivity
         swipeRefreshLayout.setRefreshing(false);
     }
 
-
     /**
-     * the listener that handles the search event
+     * creates a new SearchListAdapter and fills it with users whose usernames contain the newText
+     * @param newText the text that the user typed in the SearchView
+     */
+    private void search(String newText) {
+        // TODO: implement switch over selected tab
+        // TODO: replace with connection to webservice and load data from database
+        TabFragmentSearch fragment = ((TabFragmentSearch) sectionsPageAdapter.getItem(viewPager.getCurrentItem()));
+        SearchListAdapter adapter = new SearchListAdapter(FeedActivity.this);
+        if (!newText.equals("")) {
+            for (User u : users) {
+                if (u.getUsername().toLowerCase().contains(newText.toLowerCase()))
+                    adapter.addUser(u);
+            }
+        }
+        fragment.fillList(adapter);
+    }
+
+
+
+    //innerclass
+    /**
+     * listener that handles the searchViewTextChange event
      */
     public class SearchViewListener implements SearchView.OnQueryTextListener {
 
@@ -207,21 +233,14 @@ public class FeedActivity extends AppCompatActivity
 
         @Override
         public boolean onQueryTextChange(String newText) {
-            // TODO: implement switch over selected tab
-            // TODO: replace with connection to webservice and load data from database
-            TabFragmentSearch fragment = ((TabFragmentSearch) sectionsPageAdapter.getItem(viewPager.getCurrentItem()));
-            SearchListAdapter adapter = new SearchListAdapter(FeedActivity.this);
-            if (!newText.equals("")) {
-                for (User u : users) {
-                    if (u.getUsername().toLowerCase().contains(newText.toLowerCase()))
-                        adapter.addUser(u);
-                }
-            }
-            fragment.fillList(adapter);
+            search(newText);
             return false;
         }
     }
 
+    /**
+     * listener that handles the searchItemExpand event
+     */
     public class MenuItemListener implements MenuItem.OnActionExpandListener {
 
         @Override
@@ -238,6 +257,27 @@ public class FeedActivity extends AppCompatActivity
             swipeRefreshLayout.setVisibility(View.VISIBLE);
             tabLayout.setVisibility(View.GONE);
             return true;
+        }
+    }
+
+    /**
+     * listener that handles the tabChange event
+     */
+    public class TabLayoutListener implements TabLayout.OnTabSelectedListener {
+
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            search(searchView.getQuery().toString());
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+
         }
     }
 }

@@ -168,12 +168,14 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        // TODO: open the ProfileActivity
-        RelativeLayout rl = (RelativeLayout)view.getParent();
-        int idRl = Integer.parseInt(rl.getTag().toString());
-        Post post = posts.get(idRl);
-        Snackbar.make(view, "The ProfileActivity for '" + post.getUser().getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        if(motionEvent.getAction() == motionEvent.ACTION_UP) {
+            // TODO: open the ProfileActivity
+            RelativeLayout rl = (RelativeLayout) view.getParent();
+            int idRl = Integer.parseInt(rl.getTag().toString());
+            Post post = posts.get(idRl);
+            Snackbar.make(view, "The ProfileActivity for '" + post.getUser().getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
         return true;
     }
 
