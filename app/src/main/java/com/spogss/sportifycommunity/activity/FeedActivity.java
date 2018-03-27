@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -27,13 +28,14 @@ import com.spogss.sportifycommunity.search.TabFragmentSearch;
 import java.util.ArrayList;
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener, MenuItem.OnActionExpandListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     //UI Controls
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FloatingActionButton fab;
     ListView listViewFeed;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     //Adapter for tabs
     private SectionsPageAdapter sectionsPageAdapter;
@@ -73,14 +75,20 @@ public class FeedActivity extends AppCompatActivity
         listViewFeed = (ListView)findViewById(R.id.listView_feed);
         FeedListAdapter feedListAdapter = new FeedListAdapter(getApplicationContext());
         feedListAdapter.addPost(new Post("johnnybravo", "5 hours ago", "My name is Johnny Bravo and I am so fucking swole guys.",
-                false, R.drawable.sp_heart_filled, R.drawable.sp_test_image));
+                false, R.drawable.sp_heart_filled, R.drawable.sp_test_image, 10));
         feedListAdapter.addPost(new Post("paulim", "7 hours ago", "This is my first post lol.",
-                true, R.drawable.ic_action_voice_search, R.drawable.sp_test_image));
+                true, R.drawable.ic_action_voice_search, R.drawable.sp_test_image, 5));
         feedListAdapter.addPost(new Post("simon", "2 days ago", "I am a hamster and I like to run in my Laufrad!!",
-                true, R.drawable.ic_menu_camera, R.drawable.sp_test_image));
+                true, R.drawable.ic_menu_camera, R.drawable.sp_test_image, 7));
+        feedListAdapter.addPost(new Post("paulim", "2 days ago", "What the fuck is going on??",
+                true, R.drawable.ic_action_voice_search, -1, 4));
         feedListAdapter.addPost(new Post("webi", "1 week ago", "Latrell Sprewell for MVP.",
-                false, R.drawable.sp_home, R.drawable.sp_test_image));
+                false, R.drawable.sp_home, R.drawable.sp_test_image, 0));
         listViewFeed.setAdapter(feedListAdapter);
+
+        //swipeRefresh
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeRefresh_feed);
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
     //adds the fragments (tabs) to the viewPager
@@ -125,16 +133,24 @@ public class FeedActivity extends AppCompatActivity
 
         // TODO: implement onMenuItemClick
         if(id == R.id.nav_home) {
-
+            Snackbar.make(getWindow().getDecorView().getRootView(), "The posts will reload soon", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
         else if (id == R.id.nav_plans) {
+            Snackbar.make(getWindow().getDecorView().getRootView(), "The PlansActivity will be implemented soon", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
 
         } else if (id == R.id.nav_map) {
+            Snackbar.make(getWindow().getDecorView().getRootView(), "The MapActivity will be implemented soon", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
 
         } else if (id == R.id.nav_settings) {
+            Snackbar.make(getWindow().getDecorView().getRootView(), "The SettingsActivity will be implemented soon", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
 
         } else if (id == R.id.nav_logout) {
-
+            Snackbar.make(getWindow().getDecorView().getRootView(), "The LogoutActivity will be implemented soon", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -189,5 +205,14 @@ public class FeedActivity extends AppCompatActivity
         listViewFeed.setVisibility(View.VISIBLE);
         tabLayout.setVisibility(View.GONE);
         return true;
+    }
+
+    //swipeRefresh event
+    @Override
+    public void onRefresh() {
+        // TODO: implement real refresh method
+        Snackbar.make(getWindow().getDecorView().getRootView(), "Feed will be refreshed soon", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

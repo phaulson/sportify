@@ -9,9 +9,15 @@
     tools:context="com.spogss.sportifycommunity.activity.FeedActivity"
     tools:showIn="@layout/app_bar_feed">
 
-
-    <ListView
-        android:id="@+id/listView_feed"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh_feed"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/listView_feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="@android:color/transparent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

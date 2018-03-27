@@ -1,81 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relativeLayout_feed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/feed_margin"
-    android:paddingBottom="@dimen/feed_margin"
-    android:orientation="vertical">
+    android:layout_marginBottom="@dimen/feed_margin_large"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/feed_margin_medium">
 
-    <ImageView
-        android:id="@+id/imageView_feed_profile"
-        android:contentDescription="@string/image_feed_profile_description"
-        android:layout_width="@dimen/image_feed_square_dimen"
-        android:layout_height="@dimen/image_feed_square_dimen"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:layout_marginStart="@dimen/feed_margin"
-        android:layout_marginTop="@dimen/feed_margin" />
-
-    <TextView
-        android:id="@+id/textView_feed_username"
+    <RelativeLayout
+        android:id="@+id/relativeLayout_feed_header"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView_feed_profile"
-        android:layout_marginBottom="@dimen/feed_margin"
-        android:layout_marginStart="@dimen/feed_margin"
-        android:layout_toEndOf="@+id/imageView_feed_profile"
-        android:textSize="@dimen/feed_text_size" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textView_feed_timeStamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/imageView_feed_post"
-        android:layout_alignTop="@+id/textView_feed_username" />
+        <ImageView
+            android:id="@+id/imageView_feed_profile"
+            android:layout_width="@dimen/image_feed_square_dimen"
+            android:layout_height="@dimen/image_feed_square_dimen"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/feed_margin_medium"
+            android:layout_marginTop="@dimen/feed_margin_medium"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/image_feed_profile_description"
+            android:scaleType="fitCenter" />
 
-    <ImageView
-        android:id="@+id/imageView_feed_post"
-        android:contentDescription="@string/image_feed_post_description"
+        <TextView
+            android:id="@+id/textView_feed_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/imageView_feed_profile"
+            android:layout_marginStart="@dimen/feed_margin_medium"
+            android:layout_marginTop="@dimen/feed_margin_small"
+            android:layout_toEndOf="@+id/imageView_feed_profile"
+            android:textAppearance="@style/TextAppearance.AppCompat" />
+
+        <TextView
+            android:id="@+id/textView_feed_timeStamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/imageView_feed_profile"
+            android:layout_marginEnd="@dimen/feed_margin_medium"
+            android:layout_marginTop="@dimen/feed_margin_small" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_feed_body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignStart="@+id/imageView_feed_profile"
-        android:layout_below="@+id/textView_feed_username"
-        android:layout_marginTop="@dimen/feed_margin"
-        android:layout_marginEnd="@dimen/feed_margin"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter" />
+        android:layout_below="@+id/relativeLayout_feed_header">
 
-    <TextView
-        android:id="@+id/textView_feed_caption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/imageView_feed_post"
-        android:layout_below="@+id/imageView_feed_post"
-        android:layout_marginTop="@dimen/feed_margin"
-        android:textSize="@dimen/feed_text_size"/>
+        <ImageView
+            android:id="@+id/imageView_feed_post"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/feed_margin_medium"
+            android:layout_marginStart="@dimen/feed_margin_medium"
+            android:layout_marginTop="@dimen/feed_margin_large"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/image_feed_post_description"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/textView_feed_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/imageView_feed_post"
+            android:layout_below="@+id/imageView_feed_post"
+            android:layout_marginTop="@dimen/feed_margin_medium"
+            android:textSize="@dimen/feed_text_size" />
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/imageView_feed_heart"
-        android:contentDescription="@string/image_feed_heart_description"
         android:layout_width="@dimen/image_feed_square_dimen"
         android:layout_height="@dimen/image_feed_square_dimen"
-        android:layout_alignStart="@+id/textView_feed_caption"
-        android:layout_below="@+id/textView_feed_caption"
-        android:layout_marginTop="10dp"
+        android:layout_below="@+id/relativeLayout_feed_body"
+        android:layout_marginEnd="@dimen/feed_margin_small"
+        android:layout_marginStart="@dimen/feed_margin_medium"
+        android:layout_marginTop="@dimen/feed_margin_medium"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/image_feed_heart_description"
         android:scaleType="fitCenter" />
 
     <ImageView
         android:id="@+id/imageView_feed_comment"
-        android:contentDescription="@string/image_feed_comment_description"
         android:layout_width="@dimen/image_feed_square_dimen"
         android:layout_height="@dimen/image_feed_square_dimen"
-        android:layout_alignStart="@+id/textView_feed_username"
         android:layout_alignTop="@+id/imageView_feed_heart"
+        android:layout_toRightOf="@+id/imageView_feed_heart"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/image_feed_comment_description"
         android:scaleType="fitCenter" />
 
+    <TextView
+        android:id="@+id/textView_feed_likes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/feed_margin_medium"
+        android:layout_alignTop="@+id/imageView_feed_heart" />
 </RelativeLayout>

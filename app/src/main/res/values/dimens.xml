@@ -7,7 +7,9 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <!-- dimens related to post -->
-    <dimen name="image_feed_square_dimen">42dp</dimen>
-    <dimen name="feed_margin">10dp</dimen>
+    <dimen name="image_feed_square_dimen">30dp</dimen>
+    <dimen name="feed_margin_large">15dp</dimen>
+    <dimen name="feed_margin_medium">10dp</dimen>
+    <dimen name="feed_margin_small">5dp</dimen>
     <dimen name="feed_text_size">16sp</dimen>
 </resources>

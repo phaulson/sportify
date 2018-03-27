@@ -13,14 +13,16 @@ public class Post {
     private boolean liked;
     private int postPic;
     private int profilePic;
+    private int likes;
 
-    public Post(String username, String timeStamp, String caption, boolean liked, int profilePic, int postPic) {
+    public Post(String username, String timeStamp, String caption, boolean liked, int profilePic, int postPic, int likes) {
         this.username = username;
         this.timeStamp = timeStamp;
         this.caption = caption;
         this.liked = liked;
         this.postPic = postPic;
         this.profilePic = profilePic;
+        this.likes = likes;
         this.id = nextID++;
     }
 
@@ -78,5 +80,13 @@ public class Post {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
     }
 }
