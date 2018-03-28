@@ -13,6 +13,7 @@ import java.util.TreeSet;
  */
 public class ProUser extends User {
     private TreeSet<Location> locations = new TreeSet<Location>();
+    private TreeSet<Plan> plans = new TreeSet<Plan>();
     public ProUser(int idUser, String username, String password, String biographie) {
         super(idUser, username, password, biographie, true);
     }

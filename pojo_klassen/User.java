@@ -17,18 +17,17 @@ public class User {
     private String username;
     private String password;
     private String biographie;
-    private boolean isPro;
-    private TreeSet<Plan> plans = new TreeSet<Plan>();
+    private boolean pro;
     private TreeSet<Plan> subPlans = new TreeSet<Plan>();
     private TreeSet<Integer> followedUser = new TreeSet<Integer>();
     private TreeSet<Post> posts = new TreeSet<Post>();
 
-    public User(int idUser, String username, String password, String biographie, boolean isPro) {
+    public User(int idUser, String username, String password, String biographie, boolean pro) {
         this.idUser = idUser;
         this.username = username;
         this.password = password;
         this.biographie = biographie;
-        this.isPro = isPro;
+        this.pro = pro;
     }
 
     public int getIdUser() {
@@ -63,12 +62,12 @@ public class User {
         this.password = password;
     }
 
-    public boolean isIsPro() {
-        return isPro;
+    public boolean isPro() {
+        return pro;
     }
 
-    public void setIsPro(boolean isPro) {
-        this.isPro = isPro;
+    public void setPro(boolean pro) {
+        this.pro = pro;
     }
     
 }
