@@ -17,8 +17,8 @@ public class Event extends Location{
     private LocalDate startDateTime;
     private LocalDate endDateTime;
 
-    public Event(int idLocation, double lat, double lng, int idPage, String name, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
-        super(idLocation, lat, lng, idPage, name, type);
+    public Event(int idLocation, Coordinates coordinates, int idPage, String name, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
+        super(idLocation, coordinates, idPage, name, type);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;        
     }

@@ -12,16 +12,14 @@ package pkgData;
  */
 public class Location {
     private int idLocation;
-    private double lat;
-    private double lng;
+    private Coordinates coordinates;
     private int idPage;
     private String name;
     private LocationType type;
 
-    public Location(int idLocation, double lat, double lng, int idPage, String name, LocationType type) {
+    public Location(int idLocation, Coordinates coordinates, int idPage, String name, LocationType type) {
         this.idLocation = idLocation;
-        this.lat = lat;
-        this.lng = lng;
+        this.coordinates = coordinates;
         this.idPage = idPage;
         this.name = name;
         this.type = type;
@@ -35,20 +33,12 @@ public class Location {
         this.idLocation = idLocation;
     }
 
-    public double getLat() {
-        return lat;
+    public Coordinates getCoordinates() {
+        return coordinates;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLng() {
-        return lng;
-    }
-
-    public void setLng(double lng) {
-        this.lng = lng;
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
     }
 
     public int getIdPage() {
@@ -75,10 +65,7 @@ public class Location {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return "Location{" + "idLocation=" + idLocation + ", lat=" + lat + ", lng=" + lng + ", idPage=" + idPage + ", name=" + name + ", type=" + type + '}';
-    }
+
 
 
     
