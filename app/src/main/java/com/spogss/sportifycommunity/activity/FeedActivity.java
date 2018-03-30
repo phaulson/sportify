@@ -97,7 +97,7 @@ public class FeedActivity extends AppCompatActivity
                 false, R.drawable.sp_test_image, 10, johnny));
         feedListAdapter.addPost(new Post("7 hours ago", "This is my first post lol.",
                 true, R.drawable.sp_test_image, 5, pauli));
-        feedListAdapter.addPost(new Post("2 days ago", "I am a hamster and I like to run in my Laufrad!!",
+        feedListAdapter.addPost(new Post("2 days ago", "I am a hamster and I like to run in my laufrad!! Being a hamster is very nice after all. You can chill all day long, eat as much hamsterfutter as you want and run in your laufrag from time to time.",
                 true, R.drawable.sp_test_image, 7, simon));
         feedListAdapter.addPost(new Post("2 days ago", "What the fuck is going on??",
                 true, -1, 4, pauli));

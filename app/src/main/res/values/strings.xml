@@ -35,6 +35,8 @@
     <string name="image_feed_post_description">The image posted by the user</string>
     <string name="image_feed_heart_description">The heart-image which indicates if a post is liked</string>
     <string name="image_feed_comment_description">The comment-image which opens the CommentActivity if pressed</string>
+    <string name="textView_feed_caption_expandText">Show more</string>
+    <string name="textView_feed_caption_collapseText">&#160;Show less</string>
 
 
     <!-- Strings related to users -->

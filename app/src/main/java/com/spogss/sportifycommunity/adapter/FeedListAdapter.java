@@ -56,7 +56,6 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         //get UI controls
         RelativeLayout rl = (RelativeLayout)view.findViewById(R.id.relativeLayout_feed);
         RelativeLayout rlHeader = (RelativeLayout)view.findViewById(R.id.relativeLayout_feed_header);
-        RelativeLayout rlBody = (RelativeLayout)view.findViewById(R.id.relativeLayout_feed_body);
 
         TextView username = (TextView)view.findViewById(R.id.textView_feed_username);
         TextView timeStamp = (TextView)view.findViewById(R.id.textView_feed_timeStamp);
@@ -84,9 +83,10 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         if(post.getPostPic() != -1)
             postPic.setImageResource(post.getPostPic());
         else {
-            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) postPic.getLayoutParams();
-            marginParams.topMargin = 0;
-            marginParams.bottomMargin = 0;
+            RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.addRule(RelativeLayout.BELOW, R.id.relativeLayout_feed_header);
+            params.addRule(RelativeLayout.ALIGN_START, R.id.imageView_feed_post);
+            caption.setLayoutParams(params);
         }
 
         //check if post is liked
@@ -103,8 +103,8 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         comment.setOnClickListener(this);
 
         //double tap event for post
-        final GestureDetector detector = new GestureDetector(context, new GestureListener(rlBody));
-        rlBody.setOnTouchListener(new View.OnTouchListener() {
+        final GestureDetector detector = new GestureDetector(context, new GestureListener(postPic));
+        postPic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 detector.onTouchEvent(motionEvent);

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/relativeLayout_feed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -45,39 +46,38 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout_feed_body"
+
+    <ImageView
+        android:id="@+id/imageView_feed_post"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/relativeLayout_feed_header">
+        android:layout_marginEnd="@dimen/feed_margin_medium"
+        android:layout_marginStart="@dimen/feed_margin_medium"
+        android:layout_marginTop="@dimen/feed_margin_large"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/image_feed_post_description"
+        android:scaleType="fitCenter" />
 
-        <ImageView
-            android:id="@+id/imageView_feed_post"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/feed_margin_medium"
-            android:layout_marginStart="@dimen/feed_margin_medium"
-            android:layout_marginTop="@dimen/feed_margin_large"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/image_feed_post_description"
-            android:scaleType="fitCenter" />
-
-        <TextView
-            android:id="@+id/textView_feed_caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/imageView_feed_post"
-            android:layout_below="@+id/imageView_feed_post"
-            android:layout_marginTop="@dimen/feed_margin_medium"
-            android:textSize="@dimen/feed_text_size"
-            android:textAppearance="@style/TextAppearance.AppCompat"/>
-    </RelativeLayout>
+    <com.borjabravo.readmoretextview.ReadMoreTextView
+        android:id="@+id/textView_feed_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/imageView_feed_post"
+        android:layout_below="@+id/imageView_feed_post"
+        android:layout_marginTop="@dimen/feed_margin_medium"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="@dimen/feed_text_size"
+        app:colorClickableText="@android:color/darker_gray"
+        app:trimCollapsedText="@string/textView_feed_caption_expandText"
+        app:trimExpandedText="@string/textView_feed_caption_collapseText"
+        app:trimLength="100"
+        app:trimMode="trimModeLength" />
 
     <ImageView
         android:id="@+id/imageView_feed_heart"
         android:layout_width="@dimen/image_feed_square_dimen"
         android:layout_height="@dimen/image_feed_square_dimen"
-        android:layout_below="@+id/relativeLayout_feed_body"
+        android:layout_below="@+id/textView_feed_caption"
         android:layout_marginEnd="@dimen/feed_margin_small"
         android:layout_marginStart="@dimen/feed_margin_medium"
         android:layout_marginTop="@dimen/feed_margin_medium"
@@ -100,6 +100,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/feed_margin_medium"
-        android:layout_alignTop="@+id/imageView_feed_heart" />
+        android:layout_alignTop="@+id/imageView_feed_heart"
+        android:layout_marginEnd="@dimen/feed_margin_medium" />
 </RelativeLayout>
