@@ -51,6 +51,7 @@
         android:id="@+id/imageView_feed_post"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/relativeLayout_feed_header"
         android:layout_marginEnd="@dimen/feed_margin_medium"
         android:layout_marginStart="@dimen/feed_margin_medium"
         android:layout_marginTop="@dimen/feed_margin_large"

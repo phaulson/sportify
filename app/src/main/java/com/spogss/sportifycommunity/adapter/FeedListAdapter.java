@@ -83,10 +83,9 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         if(post.getPostPic() != -1)
             postPic.setImageResource(post.getPostPic());
         else {
-            RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.addRule(RelativeLayout.BELOW, R.id.relativeLayout_feed_header);
-            params.addRule(RelativeLayout.ALIGN_START, R.id.imageView_feed_post);
-            caption.setLayoutParams(params);
+            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) postPic.getLayoutParams();
+            marginParams.topMargin = 0;
+            marginParams.bottomMargin = 0;
         }
 
         //check if post is liked
