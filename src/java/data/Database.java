@@ -25,7 +25,7 @@ public class Database {
      * @return bei erfolg -> userId sonst -1
      */
     public int login(String username, String password){
-        int retval = -1;
+        int retval = -2;
         
         return retval;
     }
