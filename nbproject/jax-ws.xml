@@ -4,6 +4,9 @@
     <service name="Test">
       <implementation-class>data.Test</implementation-class>
     </service>
+    <service name="manager">
+      <implementation-class>data.manager</implementation-class>
+    </service>
   </services>
   <clients/>
 </jax-ws>
