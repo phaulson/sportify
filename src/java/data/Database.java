@@ -6,6 +6,7 @@
 package data;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.TreeSet;
 
 /**
@@ -136,6 +137,50 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         
         return retval;
     }
-    /////////////////////////////////////////////////////
+    /**
+     * Verknüpft DailyWorkouts mit einem (evtl. neu erstellten) Plan. 
+     * @param planId
+     * @param dailyWorkouts
+     * @return 
+     */
+    public boolean linkDailyWorkouts(int planId, Collection<Integer> dailyWorkouts){
+        return false;
+    }
+    /**
+     * Fügt ein neues DailyWorkout hinzu und gibt dessen ID zurück. (-1 falls nicht erfolgreich) 
+     * @param creatorId
+     * @param name
+     * @return 
+     */
+    public int addDailyWorkout(int creatorId, String name){
+        return 0;
+    }
+    /**
+     * Verknüpft Workouts mit einem (evtl. neu erstellten) Daily Workout.
+     * @param planId
+     * @param workouts
+     * @return 
+     */
+    public boolean linkWorkouts(int planId, Collection<Integer> workouts){
+        return false;
+    }
+    /**
+     * Fügt ein neues workout hinzu und gibt dessen ID zurück. (-1 falls nicht erfolgreich) 
+     * @param creatorId
+     * @param name
+     * @return 
+     */
+    public int addWorkout(int creatorId, String name){
+        return 0;
+    }
+    /**
+     * Verknüpft Exercises mit einem (evtl. neu erstellten) Workout.
+     * @param workoutId
+     * @param exercises
+     * @return 
+     */
+    public boolean linkExercises(int workoutId, Collection<Integer> exercises){
+        return false;
+    }
     
 }
