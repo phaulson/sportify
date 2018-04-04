@@ -1,7 +1,10 @@
 package com.spogss.sportifycommunity.activity;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -14,9 +17,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TableLayout;
 
@@ -28,7 +33,9 @@ import com.spogss.sportifycommunity.adapter.SearchListAdapter;
 import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class FeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -39,11 +46,19 @@ public class FeedActivity extends AppCompatActivity
     private FloatingActionButton fab;
     SwipeRefreshLayout swipeRefreshLayout;
     SearchView searchView;
+    ListView listViewFeed;
+    View footerView;
 
     //Adapter for tabs
     private SectionsPageAdapter sectionsPageAdapter;
+    //Adapter for posts
+    FeedListAdapter feedListAdapter;
     //List of users, only for testing purposes
     private ArrayList<User> users;
+    //for loading
+    final int numberOfPosts = 5;
+    boolean isLoading = false;
+    Handler loadingHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +94,11 @@ public class FeedActivity extends AppCompatActivity
         users.add(simon);
         users.add(webi);
 
-        toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+        feedListAdapter = new FeedListAdapter(getApplicationContext());
+        feedListAdapter.addPosts(getNewData());
 
         //tabs
+        toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         setupSearchViewPager(viewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -90,24 +107,18 @@ public class FeedActivity extends AppCompatActivity
         tabLayout.addOnTabSelectedListener(new TabLayoutListener());
 
         //content feed
-        ListView listViewFeed = (ListView)findViewById(R.id.listView_feed);
-        FeedListAdapter feedListAdapter = new FeedListAdapter(getApplicationContext());
-
-        feedListAdapter.addPost(new Post("5 hours ago", "My name is Johnny Bravo and I am so fucking swole guys.",
-                false, R.drawable.sp_test_image, 10, johnny));
-        feedListAdapter.addPost(new Post("7 hours ago", "This is my first post lol.",
-                true, R.drawable.sp_test_image, 5, pauli));
-        feedListAdapter.addPost(new Post("2 days ago", "I am a hamster and I like to run in my laufrad!! Being a hamster is very nice after all. You can chill all day long, eat as much hamsterfutter as you want and run in your laufrag from time to time.",
-                true, R.drawable.sp_test_image, 7, simon));
-        feedListAdapter.addPost(new Post("2 days ago", "What the fuck is going on??",
-                true, -1, 4, pauli));
-        feedListAdapter.addPost(new Post("1 week ago", "Latrell Sprewell for MVP.",
-                false, R.drawable.sp_test_image, 0, webi));
+        listViewFeed = (ListView)findViewById(R.id.listView_feed);
         listViewFeed.setAdapter(feedListAdapter);
+        listViewFeed.setOnScrollListener(new ScrollListener());
 
         //swipeRefresh
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeRefresh_feed);
         swipeRefreshLayout.setOnRefreshListener(this);
+
+        //loading
+        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        footerView = layoutInflater.inflate(R.layout.list_footer_feed, null);
+        loadingHandler = new LoadingHandler();
     }
 
     /**
@@ -219,10 +230,31 @@ public class FeedActivity extends AppCompatActivity
     }
 
 
+    /**
+     * get the new Posts
+     * @return an ArrayList of Posts
+     */
+    private ArrayList<Post> getNewData() {
+        // TODO: load posts from database
+        ArrayList<Post> posts = new ArrayList<Post>();
+        posts.add(new Post("5 hours ago", "My name is Johnny Bravo and I am so fucking swole guys.",
+                false, R.drawable.sp_test_image, 10, users.get(0)));
+        posts.add(new Post("7 hours ago", "This is my first post lol.",
+                true, R.drawable.sp_test_image, 5, users.get(1)));
+        posts.add(new Post("2 days ago", "I am a hamster and I like to run in my laufrad!! Being a hamster is very nice after all. You can chill all day long, eat as much hamsterfutter as you want and run in your laufrag from time to time.",
+                true, R.drawable.sp_test_image, 7, users.get(2)));
+        posts.add(new Post("2 days ago", "What the fuck is going on??",
+                true, -1, 4, users.get(1)));
+        posts.add(new Post("1 week ago", "Latrell Sprewell for MVP.",
+                false, R.drawable.sp_test_image, 0, users.get(3)));
+        return posts;
+    }
+
+
 
     //innerclass
     /**
-     * listener that handles the searchViewTextChange event
+     * Listener that handles the searchViewTextChange event
      */
     public class SearchViewListener implements SearchView.OnQueryTextListener {
 
@@ -239,7 +271,7 @@ public class FeedActivity extends AppCompatActivity
     }
 
     /**
-     * listener that handles the searchItemExpand event
+     * Listener that handles the searchItemExpand event
      */
     public class MenuItemListener implements MenuItem.OnActionExpandListener {
 
@@ -261,7 +293,7 @@ public class FeedActivity extends AppCompatActivity
     }
 
     /**
-     * listener that handles the tabChange event
+     * Listener that handles the tabChange event
      */
     public class TabLayoutListener implements TabLayout.OnTabSelectedListener {
 
@@ -278,6 +310,68 @@ public class FeedActivity extends AppCompatActivity
         @Override
         public void onTabReselected(TabLayout.Tab tab) {
 
+        }
+    }
+
+    /**
+     * Listener that handles the ListViewScroll event
+     */
+    public class ScrollListener implements AbsListView.OnScrollListener {
+
+        @Override
+        public void onScrollStateChanged(AbsListView absListView, int i) {
+
+        }
+
+        @Override
+        public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+            if(absListView.getLastVisiblePosition() == i2 -1 && listViewFeed.getCount() >= numberOfPosts && !isLoading) {
+                isLoading = true;
+                Thread thread = new ThreadLoadMorePosts();
+                thread.start();
+            }
+        }
+    }
+
+    /**
+     * Handler that handles the loading Threads
+     */
+    public class LoadingHandler extends Handler {
+        @Override
+        public void dispatchMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    //add footer when loading started
+                    listViewFeed.addFooterView(footerView);
+                    break;
+                case 1:
+                    //add new posts and remove footer
+                    feedListAdapter.addPosts(getNewData());
+                    listViewFeed.removeFooterView(footerView);
+                    isLoading = false;
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Thread that handles the loading event
+     */
+    public class ThreadLoadMorePosts extends Thread {
+        @Override
+        public void run() {
+            //message for footer view
+            loadingHandler.sendEmptyMessage(0);
+
+            //simulate database call
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //send new Data
+            loadingHandler.sendMessage(loadingHandler.obtainMessage(1, getNewData()));
         }
     }
 }

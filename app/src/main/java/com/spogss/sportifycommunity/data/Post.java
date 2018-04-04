@@ -80,4 +80,9 @@ public class Post {
     public void setUser(User user) {
         this.user = user;
     }
+
+
+    public static int getNextID() {
+        return nextID;
+    }
 }

@@ -16,6 +16,7 @@ import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.data.Post;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -125,6 +126,19 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     public void addPost(Post post) {
         posts.put(post.getId(), post);
         keys.add(post.getId());
+        this.notifyDataSetChanged();
+    }
+
+    /**
+     * adds a new Collection of Posts to the Adapter
+     * @param p the Posts that should be added
+     */
+    public void addPosts(Collection<Post> p) {
+        for(Post post : p) {
+            posts.put(post.getId(), post);
+            keys.add(post.getId());
+        }
+        this.notifyDataSetChanged();
     }
 
     @Override
