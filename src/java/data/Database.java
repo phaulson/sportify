@@ -183,4 +183,5 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         return false;
     }
     
+    
 }

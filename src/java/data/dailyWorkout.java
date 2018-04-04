@@ -15,6 +15,7 @@ import java.util.TreeSet;
  * @author schueler
  */
 public class dailyWorkout {
+    private String penis = "penis";
     private int idDailyWorkout;
     private int idCreator;
     private int day;
