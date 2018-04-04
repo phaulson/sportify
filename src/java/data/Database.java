@@ -70,7 +70,7 @@ public class Database {
      * @param idPlan
      * @return 
      */
-    public TreeSet<dailyWorkout> getDailyWorkouts(int idPlan){
+    public TreeSet<DailyWorkout> getDailyWorkouts(int idPlan){
         return null;
     }
     /**

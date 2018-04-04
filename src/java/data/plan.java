@@ -15,7 +15,7 @@ public class plan {
     private int idPlan;
     private String name;
     private int idCreator;
-    private TreeSet<dailyWorkout> dailyWorkouts = new TreeSet<dailyWorkout>();
+    private TreeSet<DailyWorkout> dailyWorkouts = new TreeSet<DailyWorkout>();
 
     public plan(int idPlan, String name, int idCreator) {
         this.idPlan = idPlan;
