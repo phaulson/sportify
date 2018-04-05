@@ -1,6 +1,8 @@
 package com.spogss.sportifycommunity.activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -94,9 +96,6 @@ public class FeedActivity extends AppCompatActivity
         users.add(simon);
         users.add(webi);
 
-        feedListAdapter = new FeedListAdapter(getApplicationContext());
-        feedListAdapter.addPosts(getNewData());
-
         //tabs
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -107,6 +106,9 @@ public class FeedActivity extends AppCompatActivity
         tabLayout.addOnTabSelectedListener(new TabLayoutListener());
 
         //content feed
+        feedListAdapter = new FeedListAdapter(getApplicationContext());
+        feedListAdapter.addPosts(getNewData());
+
         listViewFeed = (ListView)findViewById(R.id.listView_feed);
         listViewFeed.setAdapter(feedListAdapter);
         listViewFeed.setOnScrollListener(new ScrollListener());
@@ -182,13 +184,33 @@ public class FeedActivity extends AppCompatActivity
                     .setAction("Action", null).show();
 
         } else if (id == R.id.nav_logout) {
-            Snackbar.make(getWindow().getDecorView().getRootView(), "The LogoutActivity will be implemented soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            deleteLoginCredentials();
+            logout();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    /**
+     * sets the locally saved login credentials to null
+     */
+    private void deleteLoginCredentials() {
+        SharedPreferences sp = getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("username", null);
+        editor.putString("password", null);
+        editor.commit();
+    }
+
+    /**
+     * launches the LoginActivity and closes the FeedActivity
+     */
+    private void logout() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override

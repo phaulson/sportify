@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import java.util.Arrays;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements OnClickListener{
+public class LoginActivity extends AppCompatActivity implements OnClickListener {
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -55,10 +56,13 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        initialize();
+        if (getUserIDFromSavedCredentials() > -1)
+            launchFeed();
+        else
+            initialize();
     }
 
-    private void initialize(){
+    private void initialize() {
         setTitle(R.string.app_name); // Sportify pro
 
         editText_username = (EditText) findViewById(R.id.editText_username);
@@ -93,6 +97,33 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         tabHost_host.addTab(spec);
     }
 
+    /**
+     * checks if the user is already logged in
+     *
+     * @return the userID of the logged in user
+     */
+    private int getUserIDFromSavedCredentials() {
+        SharedPreferences sp1 = this.getSharedPreferences("Login", MODE_PRIVATE);
+        String username = sp1.getString("username", null);
+        String password = sp1.getString("password", null);
+
+        // TODO: retrieve login credentials from database and compare with saved credentials
+        return (username == null || password == null) ? -1 : 0;
+    }
+
+    /**
+     * saves the login credentials locally
+     *
+     * @param username that should be saved
+     * @param password that should be saved
+     */
+    private void saveLoginCredentials(String username, String password) {
+        SharedPreferences sp = getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("username", username);
+        editor.putString("password", password);
+        editor.commit();
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -112,46 +143,40 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         String username = editText_username.getText().toString();
         String password = editText_password.getText().toString();
 
-        // TODO: remove when testing is done
-        showProgress(true);
-        authTask = new UserLoginTask(username, password);
-        authTask.execute((Void) null);
 
-        // TODO: remove 'if' when testing is done
-        if(false) {
-            boolean cancel = false;
-            View focusView = null;
+        boolean cancel = false;
+        View focusView = null;
 
-            // Check for a valid password, if the user entered one.
-            if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-                editText_password.setError(getString(R.string.error_invalid_password));
-                focusView = editText_password;
-                cancel = true;
-            }
-
-            // Check for a valid email username.
-            if (TextUtils.isEmpty(username)) {
-                editText_username.setError(getString(R.string.error_field_required));
-                focusView = editText_username;
-                cancel = true;
-            } else if (!isUsernameValid(username)) {
-                editText_username.setError(getString(R.string.error_invalid_username));
-                focusView = editText_username;
-                cancel = true;
-            }
-
-            if (cancel) {
-                // There was an error; don't attempt login and focus the first
-                // form field with an error.
-                focusView.requestFocus();
-            } else {
-                // Show a progress spinner, and kick off a background task to
-                // perform the user login attempt.
-                showProgress(true);
-                authTask = new UserLoginTask(username, password);
-                authTask.execute((Void) null);
-            }
+        // Check for a valid password, if the user entered one.
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            editText_password.setError(getString(R.string.error_invalid_password));
+            focusView = editText_password;
+            cancel = true;
         }
+
+        // Check for a valid email username.
+        if (TextUtils.isEmpty(username)) {
+            editText_username.setError(getString(R.string.error_field_required));
+            focusView = editText_username;
+            cancel = true;
+        } else if (!isUsernameValid(username)) {
+            editText_username.setError(getString(R.string.error_invalid_username));
+            focusView = editText_username;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            showProgress(true);
+            authTask = new UserLoginTask(username, password);
+            authTask.execute((Void) null);
+        }
+
     }
 
     private void attemptRegistration() {
@@ -172,7 +197,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         boolean cancel = false;
         View focusView = null;
 
-        if(!password.equals(pw_conf)){
+        if (!password.equals(pw_conf)) {
             editText_password_r_2.setError(getString(R.string.error_password_match));
             focusView = editText_password_r_2;
             cancel = true;
@@ -265,11 +290,13 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         }
     }
 
-    private void onLoginSuccess(){
+    private void onLoginSuccess(String username, String password) {
+        saveLoginCredentials(username, password);
         launchFeed();
     }
 
-    private void onRegistrationSuccess(){
+    private void onRegistrationSuccess(String username, String password) {
+        saveLoginCredentials(username, password);
         launchFeed();
     }
 
@@ -312,8 +339,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
                 }
             }
 
-            // TODO: return false when testing is done
-            return true;
+            return false;
         }
 
         @Override
@@ -322,7 +348,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
             showProgress(false);
 
             if (success) {
-                onLoginSuccess();
+                onLoginSuccess(mEmail, mPassword);
             } else {
                 editText_password.setError(getString(R.string.error_incorrect_username_or_password));
                 editText_username.setError(getString(R.string.error_incorrect_username_or_password));
@@ -374,7 +400,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
             showProgress(false);
 
             if (success) {
-                onRegistrationSuccess();
+                onRegistrationSuccess(mEmail, mPassword);
             } else {
                 // TODO: change
                 editText_password.setError(getString(R.string.error_incorrect_username_or_password));
