@@ -14,10 +14,14 @@ import java.util.TreeSet;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebService;
 /**
  *
  * @author Martin
  */
+@WebService(serviceName="Manager")
 public class Manager {
     Manager db = new Manager();
     private static String connString;
@@ -55,12 +59,14 @@ public class Manager {
             return null;
         }
     }
-    public int login(String username, String password)throws SQLException{
+    @WebMethod(operationName="login")
+    public int login(@WebParam(name="username")String username, @WebParam(name="password")String password)throws SQLException{
         
         PreparedStatement selectUserId = null;
-        String select ="select idUser from sp_user where username like '"+username+"' and password like '"+password+"'"; 
+        String selectString ="select idUser from sp_user where username like '"+username+"' and password like '"+password+"'"; 
         conn.setAutoCommit(false);
-        selectUserId = conn.prepareStatement(select);
+        selectUserId = conn.prepareStatement(selectString);
+        
         return 0;
     }
     /**
