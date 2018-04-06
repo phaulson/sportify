@@ -5,39 +5,38 @@
  */
 package data;
 
+import java.io.Serializable;
 import java.util.TreeSet;
 
 /**
  *
  * @author Martin
  */
-public class Workout {
-    private int idWorkout;
-    private int idCreator;
+public class Workout implements Serializable{
+    private int id;
+    private int creatorId;
     private String name;
-    private TreeSet<Exercise> exercises = new TreeSet<Exercise>();
-    //collection exercises
 
-    public Workout(int idWorkout, int idCreator, String name) {
-        this.idWorkout = idWorkout;
-        this.idCreator = idCreator;
+    public Workout(int id, int creatorId, String name) {
+        this.id = id;
+        this.creatorId = creatorId;
         this.name = name;
     }
 
-    public int getIdWorkout() {
-        return idWorkout;
+    public int getId() {
+        return id;
     }
 
-    public void setIdWorkout(int idWorkout) {
-        this.idWorkout = idWorkout;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getIdCreator() {
-        return idCreator;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public void setIdCreator(int idCreator) {
-        this.idCreator = idCreator;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getName() {
@@ -47,6 +46,32 @@ public class Workout {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Workout other = (Workout) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+   
 
 }

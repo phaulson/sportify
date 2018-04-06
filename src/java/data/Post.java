@@ -5,6 +5,7 @@
  */
 package data;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.TreeSet;
 
@@ -12,43 +13,41 @@ import java.util.TreeSet;
  *
  * @author Martin
  */
-public class Post {
-    private int idPost;
+public class Post implements Serializable{
+    private int id;
     private String caption;
-    private int idCreator;
+    private int creatorId;
     private LocalDate timestamp;
-    private TreeSet<Comment> comments = new TreeSet<Comment>();
-    private TreeSet<Integer> likes = new TreeSet<Integer>();
 
-    public Post(int idPost, String caption, int likes, LocalDate creationDate) {
-        this.idPost = idPost;
+    public Post(int postId, String caption, int creatorId, LocalDate timestamp) {
+        this.id = postId;
         this.caption = caption;
-        this.idCreator = likes;
-        this.timestamp = creationDate;
+        this.creatorId = creatorId;
+        this.timestamp = timestamp;
     }
 
-    public int getIdPost() {
-        return idPost;
+    public int getPostId() {
+        return id;
     }
 
-    public void setIdPost(int idPost) {
-        this.idPost = idPost;
+    public void setPostId(int postId) {
+        this.id = postId;
     }
 
     public String getCaption() {
         return caption;
     }
 
-    public void setCaption(String Caption) {
-        this.caption = Caption;
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
-    public int getIdCreator() {
-        return idCreator;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public void setIdCreator(int idCreator) {
-        this.idCreator = idCreator;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     public LocalDate getTimestamp() {
@@ -57,6 +56,31 @@ public class Post {
 
     public void setTimestamp(LocalDate timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Post other = (Post) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
     }
     
 }

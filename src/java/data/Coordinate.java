@@ -33,5 +33,34 @@ public class Coordinate {
     public void setLng(double lng) {
         this.lng = lng;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (int) (Double.doubleToLongBits(this.lat) ^ (Double.doubleToLongBits(this.lat) >>> 32));
+        hash = 59 * hash + (int) (Double.doubleToLongBits(this.lng) ^ (Double.doubleToLongBits(this.lng) >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Coordinate other = (Coordinate) obj;
+        if (Double.doubleToLongBits(this.lat) != Double.doubleToLongBits(other.lat)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.lng) != Double.doubleToLongBits(other.lng)) {
+            return false;
+        }
+        return true;
+    }
     
 }

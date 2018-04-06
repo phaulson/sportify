@@ -5,30 +5,30 @@
  */
 package data;
 
+import java.io.Serializable;
 import java.util.TreeSet;
 
 /**
  *
  * @author Martin
  */
-public class Plan {
-    private int idPlan;
+public class Plan implements Serializable{
+    private int id;
     private String name;
-    private int idCreator;
-    private TreeSet<DailyWorkout> dailyWorkouts = new TreeSet<DailyWorkout>();
+    private int creatorId;
 
-    public Plan(int idPlan, String name, int idCreator) {
-        this.idPlan = idPlan;
+    public Plan(int id, String name, int creatorId) {
+        this.id = id;
         this.name = name;
-        this.idCreator = idCreator;
+        this.creatorId = creatorId;
     }
 
-    public int getIdPlan() {
-        return idPlan;
+    public int getId() {
+        return id;
     }
 
-    public void setIdPlan(int idPlan) {
-        this.idPlan = idPlan;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -39,13 +39,41 @@ public class Plan {
         this.name = name;
     }
 
-    public int getIdCreator() {
-        return idCreator;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public void setIdCreator(int idCreator) {
-        this.idCreator = idCreator;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Plan other = (Plan) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+
+    
 
 
 }

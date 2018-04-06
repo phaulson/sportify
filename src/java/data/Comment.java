@@ -1,6 +1,7 @@
 package data;
 
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /*
@@ -13,43 +14,43 @@ import java.time.LocalDate;
  *
  * @author schueler
  */
-public class Comment {
-    private int idComment;
-    private int idPost;
-    private int idCreator;
+public class Comment implements Serializable{
+    private int id;
+    private int postId;
+    private int creatorId;
     private String text;
     private LocalDate timestamp;
 
-    public Comment(int idComment, int idPost, int idCreator, String text, LocalDate timestamp) {
-        this.idComment = idComment;
-        this.idPost = idPost;
-        this.idCreator = idCreator;
+    public Comment(int id, int postId, int creatorId, String text, LocalDate timestamp) {
+        this.id = id;
+        this.postId = postId;
+        this.creatorId = creatorId;
         this.text = text;
         this.timestamp = timestamp;
     }
 
-    public int getIdComment() {
-        return idComment;
+    public int getId() {
+        return id;
     }
 
-    public void setIdComment(int idComment) {
-        this.idComment = idComment;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getIdPost() {
-        return idPost;
+    public int getPostId() {
+        return postId;
     }
 
-    public void setIdPost(int idPost) {
-        this.idPost = idPost;
+    public void setPostId(int postId) {
+        this.postId = postId;
     }
 
-    public int getIdCreator() {
-        return idCreator;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public void setIdCreator(int idCreator) {
-        this.idCreator = idCreator;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getText() {
@@ -69,8 +70,30 @@ public class Comment {
     }
 
     @Override
-    public String toString() {
-        return "Comment{" + "idComment=" + idComment + ", idPost=" + idPost + ", idCreator=" + idCreator + ", text=" + text + ", timestamp=" + timestamp + '}';
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + this.id;
+        return hash;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Comment other = (Comment) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+    
     
 }

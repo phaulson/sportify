@@ -1,5 +1,6 @@
 package data;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /*
@@ -12,12 +13,12 @@ import java.time.LocalDate;
  *
  * @author schueler
  */
-public class Event extends Location{
+public class Event extends Location implements Serializable{
     private LocalDate startDateTime;
     private LocalDate endDateTime;
 
-    public Event(int idLocation, double lat, double lng, int idPage, String name, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
-        super(idLocation, lat, lng, idPage, name, type);
+    public Event(int idLocation, Coordinate c, int idPage, String name, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
+        super(idLocation, c, idPage, name, type);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;        
     }

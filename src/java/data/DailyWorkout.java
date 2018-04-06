@@ -2,6 +2,7 @@
 
 package data;
 
+import java.io.Serializable;
 import java.util.TreeSet;
 
 /*
@@ -14,43 +15,25 @@ import java.util.TreeSet;
  *
  * @author schueler
  */
-public class DailyWorkout {
-    private String penis = "penis";
-    private int idDailyWorkout;
-    private int idCreator;
-    private int day;
+public class DailyWorkout implements Serializable{
+    private int id;
+    private int creatorId;
     private int name;
-    private TreeSet<Workout> workouts = new TreeSet<Workout>();
 
-    public DailyWorkout(int idDailyWorkout, int idCreator, int day, int name) {
-        this.idDailyWorkout = idDailyWorkout;
-        this.idCreator = idCreator;
-        this.day = day;
-        this.name = name;
+    public int getId() {
+        return id;
     }
 
-    public int getIdDailyWorkout() {
-        return idDailyWorkout;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setIdDailyWorkout(int idDailyWorkout) {
-        this.idDailyWorkout = idDailyWorkout;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public int getIdCreator() {
-        return idCreator;
-    }
-
-    public void setIdCreator(int idCreator) {
-        this.idCreator = idCreator;
-    }
-
-    public int getDay() {
-        return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     public int getName() {
@@ -61,10 +44,35 @@ public class DailyWorkout {
         this.name = name;
     }
 
+    public DailyWorkout(int id, int creatorId, int name) {
+        this.id = id;
+        this.creatorId = creatorId;
+        this.name = name;
+    }
+    
     @Override
-    public String toString() {
-        return "DailyWorkout{" + "idDailyWorkout=" + idDailyWorkout + ", idCreator=" + idCreator + ", day=" + day + ", name=" + name + '}';
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + this.id;
+        return hash;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DailyWorkout other = (DailyWorkout) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
 
 }

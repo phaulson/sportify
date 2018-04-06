@@ -5,29 +5,31 @@
  */
 package data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Martin
  */
-public class Exercise {
-    private int idExercise;
+public class Exercise implements Serializable{
+    private int id;
     private String description;
-    private int idCreator;
+    private int creatorId;
     private String name;
 
-    public Exercise(int idExercise, String description, int idCreator, String name) {
-        this.idExercise = idExercise;
+    public Exercise(int id, String description, int creatorId, String name) {
+        this.id = id;
         this.description = description;
-        this.idCreator = idCreator;
+        this.creatorId = creatorId;
         this.name = name;
     }
 
-    public int getIdExercise() {
-        return idExercise;
+    public int getId() {
+        return id;
     }
 
-    public void setIdExercise(int idExercise) {
-        this.idExercise = idExercise;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDescription() {
@@ -38,12 +40,12 @@ public class Exercise {
         this.description = description;
     }
 
-    public int getIdCreator() {
-        return idCreator;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public void setIdCreator(int idCreator) {
-        this.idCreator = idCreator;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     public String getName() {
@@ -55,7 +57,29 @@ public class Exercise {
     }
 
     @Override
-    public String toString() {
-        return "Exercise{" + "idExercise=" + idExercise + ", description=" + description + ", idCreator=" + idCreator + ", name=" + name + '}';
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + this.id;
+        return hash;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Exercise other = (Exercise) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+    
 }

@@ -5,37 +5,32 @@
  */
 package data;
 
+import java.io.Serializable;
 import java.util.TreeSet;
 
 /**
  *
  * @author Martin
  */
-public class User {
-    private int idUser;
+public class User implements Serializable{
+    private int id;
     private String username;
     private String password;
-    private String biographie;
-    private boolean isPro;
-    private TreeSet<Plan> plans = new TreeSet<Plan>();
-    private TreeSet<Plan> subPlans = new TreeSet<Plan>();
-    private TreeSet<Integer> followedUser = new TreeSet<Integer>();
-    private TreeSet<Post> posts = new TreeSet<Post>();
+    private String description;
 
-    public User(int idUser, String username, String password, String biographie, boolean isPro) {
-        this.idUser = idUser;
+    public User(int id, String username, String password, String description) {
+        this.id = id;
         this.username = username;
         this.password = password;
-        this.biographie = biographie;
-        this.isPro = isPro;
+        this.description = description;
     }
 
-    public int getIdUser() {
-        return idUser;
+    public int getId() {
+        return id;
     }
 
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
+    public void setIdUser(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -46,14 +41,6 @@ public class User {
         this.username = username;
     }
 
-    public String getBiographie() {
-        return biographie;
-    }
-
-    public void setBiographie(String biographie) {
-        this.biographie = biographie;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -62,12 +49,39 @@ public class User {
         this.password = password;
     }
 
-    public boolean isIsPro() {
-        return isPro;
+    public String getDescription() {
+        return description;
     }
 
-    public void setIsPro(boolean isPro) {
-        this.isPro = isPro;
+    public void setDescription(String description) {
+        this.description = description;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 59 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
+
     
 }

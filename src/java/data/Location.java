@@ -5,57 +5,50 @@
  */
 package data;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Martin
  */
-public class Location {
-    private int idLocation;
-    private double lat;
-    private double lng;
-    private int idPage;
+public class Location implements Serializable{
+    private int id;
+    private Coordinate coordinates;
+    private int pageId;
     private String name;
     private LocationType type;
 
-    public Location(int idLocation, double lat, double lng, int idPage, String name, LocationType type) {
-        this.idLocation = idLocation;
-        this.lat = lat;
-        this.lng = lng;
-        this.idPage = idPage;
+    public Location(int id, Coordinate coords, int pageId, String name, LocationType type) {
+        this.id = id;
+        this.coordinates = coords;
+        this.pageId = pageId;
         this.name = name;
         this.type = type;
     }
 
-    public int getIdLocation() {
-        return idLocation;
+    public int getId() {
+        return id;
     }
 
-    public void setIdLocation(int idLocation) {
-        this.idLocation = idLocation;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public double getLat() {
-        return lat;
+    public Coordinate getCoordinates() {
+        return coordinates;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    public void setCoordinates(Coordinate coordinates) {
+        this.coordinates = coordinates;
     }
 
-    public double getLng() {
-        return lng;
+    
+    public int getPageId() {
+        return pageId;
     }
 
-    public void setLng(double lng) {
-        this.lng = lng;
-    }
-
-    public int getIdPage() {
-        return idPage;
-    }
-
-    public void setIdPage(int idPage) {
-        this.idPage = idPage;
+    public void setPageId(int pageId) {
+        this.pageId = pageId;
     }
 
     public String getName() {
@@ -75,10 +68,29 @@ public class Location {
     }
 
     @Override
-    public String toString() {
-        return "Location{" + "idLocation=" + idLocation + ", lat=" + lat + ", lng=" + lng + ", idPage=" + idPage + ", name=" + name + ", type=" + type + '}';
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + this.id;
+        return hash;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Location other = (Location) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
 
     
 }

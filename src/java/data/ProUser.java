@@ -5,16 +5,15 @@
  */
 package data;
 
+import java.io.Serializable;
 import java.util.TreeSet;
 
 /**
  *
  * @author Martin
  */
-public class ProUser extends User {
-    private TreeSet<Location> locations = new TreeSet<Location>();
+public class ProUser extends User implements Serializable{
     public ProUser(int idUser, String username, String password, String biographie) {
-        super(idUser, username, password, biographie, true);
+        super(idUser, username, password, biographie);
     }
-    
 }
