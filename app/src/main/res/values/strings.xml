@@ -10,6 +10,7 @@
     <string name="action_show_more">Show more</string>
     <string name="action_show_less">Show less</string>
     <string name="retype_password">Confirm password</string>
+    <string name="new_password">New password</string>
 
     <string name="error_invalid_username">This username is invalid</string>
     <string name="error_invalid_password">This password is not allowed</string>

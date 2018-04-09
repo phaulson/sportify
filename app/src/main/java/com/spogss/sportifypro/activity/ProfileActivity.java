@@ -1,5 +1,6 @@
 package com.spogss.sportifypro.activity;
 
+import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +24,7 @@ import com.spogss.sportifypro.gmodel.ListMenuModelAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView textView_description;
     private ListView listView_menu;
@@ -31,6 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private Database database;
     private User displayedUser;
+
 
     private enum UserCorrelation {
         NOT_FOLLOWING,
@@ -57,6 +59,7 @@ public class ProfileActivity extends AppCompatActivity {
         textView_description = (TextView) findViewById(R.id.textView_description);
         listView_menu = (ListView) findViewById(R.id.listView_profileMenu);
         fab_editOrFollow = (FloatingActionButton) findViewById(R.id.fab_editProfile);
+        fab_editOrFollow.setOnClickListener(this);
     }
 
     private void setUser(User u){
@@ -149,6 +152,32 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.fab_editProfile:
+                switch(correlationState){
+                    case NOT_FOLLOWING:
+                        // TODO: 09.04.2018 follow user 
+                        break;
+                    case FOLLOWING:
+                        // TODO: 09.04.2018 unfollow user 
+                        break;
+                    case OWN:
+                        editProfile();
+                        break;
+                }
+                break;
+        }
+    }
+    
+    private void editProfile(){
+        Intent intent_editProfile = new Intent(getApplicationContext(), EditProfileActivity.class);
+        intent_editProfile.putExtra("profile", displayedUser);
+        startActivity(intent_editProfile);
+    }
+
     public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null)
@@ -169,4 +198,6 @@ public class ProfileActivity extends AppCompatActivity {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
     }
+    
+    
 }
