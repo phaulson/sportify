@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ActionMenuView;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -95,6 +96,8 @@ public class ProfileActivity extends AppCompatActivity {
         listView_menu.setAdapter(adapter); // if extending Activity
         //ListMenuModelAdapter(adapter); // if extending ListActivity
         //setListViewHeightBasedOnChildren(listView_menu); // try
+
+        //listView_menu.setOnItemSelectedListener(this);
     }
 
     private ArrayList<ListMenuModel> generateMenuEntries(){
