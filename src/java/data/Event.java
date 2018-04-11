@@ -17,8 +17,8 @@ public class Event extends Location implements Serializable{
     private LocalDate startDateTime;
     private LocalDate endDateTime;
 
-    public Event(int idLocation, Coordinate c, int idPage, String name, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
-        super(idLocation, c, idPage, name, type);
+    public Event(int idLocation,  int idPage, String name,Coordinate c, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
+        super(idLocation,idPage,name, c,  type);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;        
     }

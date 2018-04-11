@@ -6,6 +6,7 @@
 package data;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -13,26 +14,21 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.Statement;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebService;
+import java.util.ArrayList;
 /**
  *
  * @author Martin
  */
-@WebService(serviceName="Manager")
 public class Manager {
     Manager db = new Manager();
     private static String connString;
     private static final String USER = "d4a13";
-    private static final String PASSWORD = "d4a";
-    
+    private static final String PASSWORD = "d4a";   
     Connection conn;
     public Manager newInstance(){       
         return db;
     }
-    private Manager(){
+    public Manager(){
         try{
        conn = establishConnection();
         }
@@ -48,93 +44,176 @@ public class Manager {
      * @throws java.sql.SQLException
      */
     private Connection establishConnection()throws Exception{
-        if(conn!=null){
+        if(conn==null){
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-            Connection connection = DriverManager.getConnection(connString, USER, PASSWORD);
+            conn = DriverManager.getConnection(connString, USER, PASSWORD);
             conn.setAutoCommit(false);
             conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            return connection;
+            return conn;
         }
         else{
-            return null;
+            return conn;
         }
     }
-    @WebMethod(operationName="login")
-    public int login(@WebParam(name="username")String username, @WebParam(name="password")String password)throws SQLException{
-        
-        PreparedStatement selectUserId = null;
-        String selectString ="select idUser from sp_user where username like '"+username+"' and password like '"+password+"'"; 
-        conn.setAutoCommit(false);
+    public int login(String username, String password)throws SQLException{
+        int UserId = -1;
+        PreparedStatement selectUserId;
+        String selectString ="select idUser from sp_user where username like ? and password like ?"; 
         selectUserId = conn.prepareStatement(selectString);
-        
-        return 0;
+        selectUserId.setString(0, username);
+        selectUserId.setString(1,password);
+        ResultSet result = selectUserId.executeQuery();
+        while(result.next()){
+            UserId = result.getInt(1);
+        }
+        return UserId;
     }
     /**
      * Überprüft ob der Username schon vorhanden ist und gibt die interne UserID zurück, wenn erfolgreich, sonst –1. Wenn erfolgreich wird der neue User hinzugefügt. 
      * @param username
      * @param password
+     * @param isPro
+     * @return 
+     * @throws java.sql.SQLException 
      */
-    public int register(String username, String password){
-        int retval = -1;
-        
-        return retval;
+    public int register(String username, String password, boolean isPro) throws SQLException{
+        int UserId = -1;
+        PreparedStatement insertNewUser = conn.prepareStatement("insert into sp_user values(seq_user.nextval, ?, ?, ?, ?)");
+        insertNewUser.setString(0,username);
+        insertNewUser.setString(1,password);
+        insertNewUser.setString(2,"");
+        insertNewUser.setBoolean(3,isPro);
+        insertNewUser.executeQuery();
+        PreparedStatement selectNewUserId = conn.prepareStatement("select idUser from sp_user where username like ?");
+        selectNewUserId.setString(0, username);
+        ResultSet result = selectNewUserId.executeQuery();
+        while(result.next()){
+            UserId = result.getInt(1);
+        }
+        return UserId;
     }
     /**
      * Liefert das Profil zur UserID. 
      * @param idUser
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public User getProfile(int idUser){
-        return null;
+    public User getProfile(int idUser) throws SQLException{
+        PreparedStatement selectProfile = conn.prepareStatement("select * from sp_user where idUser = ?");
+        selectProfile.setInt(0, idUser);
+        ResultSet result = selectProfile.executeQuery();
+        User user;
+        if(result.getBoolean(5))
+             user = new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
+        else
+            user = new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));       
+        return user;
     }
     /**
      * Ändert die Biographie eines Users zur UserID. 
      * @param idUser
      * @param newDescription
      * @return bei erfolg true, sonst false
+     * @throws java.sql.SQLException
      */
-    public boolean changeDescription(int idUser, String newDescription){
-        return false;
+    public boolean changeDescription(int idUser, String newDescription) throws SQLException{
+        try{
+        PreparedStatement changeDescription = conn.prepareStatement("update sp_user set biographie = ? where idUser = ?");
+        changeDescription.setString(0, newDescription);
+        changeDescription.setInt(1, idUser);
+        }
+        catch(SQLException ex){
+            return false;
+        }
+        return true;
+        
     }
     /**
      * Liefert alle von einem Pro-User erstellte Trainingspläne.
      * @param idUser
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public TreeSet<Plan> getPlans(int idUser){
-        return null;
+    public Collection<Plan> getPlans(int idUser) throws SQLException{
+        PreparedStatement getPlans = conn.prepareStatement("select idPlan, name from sp_plan inner join sp_user on sp_plan.idcreator= sp_user.iduser where idUser = ?");
+        getPlans.setInt(0, idUser);
+        ResultSet result = getPlans.executeQuery();
+        Collection<Plan> plans = new ArrayList<>();
+        while(result.next()){
+            plans.add(new Plan(result.getInt(1), result.getString(2), idUser));
+        }
+        return plans;
     }
     /**
      * Liefert alle DailyWorkouts eines Trainingsplans. 
      * @param idPlan
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public TreeSet<DailyWorkout> getDailyWorkouts(int idPlan){
-        return null;
+    public Collection<DailyWorkout> getDailyWorkouts(int idPlan) throws SQLException{
+        PreparedStatement getDailyWorkouts = conn.prepareStatement("select sp_dailyworkout.idDailyworkout, sp_dailyworkout.idCreator, sp_dailyworkout.name from sp_dailyworkout inner join sp_containsPD on sp_containsPD.iddailyworkout = sp_dailyworkout.idDailyworkout inner join sp_plan on sp_plan.idplan = sp_containsPD.idplan where sp_plan.idplan = ?");
+        getDailyWorkouts.setInt(0, idPlan);
+        ResultSet result = getDailyWorkouts.executeQuery();
+        Collection<DailyWorkout> dailyworkouts = new ArrayList<>();
+        while(result.next()){
+            dailyworkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2), result.getString(3)));
+        }
+        return dailyworkouts;
     }
     /**
      * Liefert alle Workouts eines DailyWorkouts
      * @param idDailyWorkout
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public TreeSet<Workout> getWorkouts(int idDailyWorkout){
-        return null;
+    public Collection<Workout> getWorkouts(int idDailyWorkout) throws SQLException{
+        PreparedStatement getWorkouts = conn.prepareStatement("select sp_workout.idworkout, sp_workout.idCreator, sp_workout.name from sp_workout inner join sp_containsDW on sp_containsDW.idworkout = sp_workout.idworkout inner join sp_dailyworkout on sp_dailyworkout.iddailyworkout = sp_containsDW.iddailyworkout where sp_dailyworkout.iddailyworkout = ?");
+        getWorkouts.setInt(0, idDailyWorkout);
+        ResultSet result = getWorkouts.executeQuery();
+        Collection<Workout> workouts = new ArrayList<>();
+        while(result.next()){
+            workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
+        }
+        return workouts;
     }
     /**
      * iefert alle Exercises eines Workouts.
      * @param idWorkout
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public TreeSet<Exercise> getExercises(int idWorkout){
-        return null;
+    public Collection<Exercise> getExercises(int idWorkout) throws SQLException{
+        PreparedStatement getExercises = conn.prepareStatement("select sp_exercise.idexercise,sp_exercise.description , sp_exercise.idCreator, sp_exercise.name  from sp_exercise inner join sp_containsWE on sp_containsWE.idexercise = sp_exercise.idexercise inner join sp_workout on sp_workout.idworkout = sp_containsWE.idworkout where sp_workout.idworkout = ?");
+        getExercises.setInt(0, idWorkout);
+        ResultSet result = getExercises.executeQuery();
+        Collection<Exercise> exercises = new ArrayList();
+        while(result.next()){
+            exercises.add(new Exercise(result.getInt(1), result.getString(2), result.getInt(3), result.getString(4)));
+        }
+        return exercises;
     }
     /**
      * Liefert alle von einem Pro-User erstellte Locations (und somit auch Events).
      * @param idUser
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public TreeSet<Location> getLocations(int idUser){
-        return null;
+    public Collection<Location> getLocations(int idUser) throws SQLException{
+        PreparedStatement getLocations = conn.prepareStatement("select * from sp_location where idUser = ?");
+        getLocations.setInt(0, idUser);
+        ResultSet result = getLocations.executeQuery();
+        Collection<Location> locations = new ArrayList();
+        while(result.next()){
+            Date starttime = result.getDate(7);
+            Date endtime = result.getDate(8);
+            if(starttime == null && endtime ==null){
+                locations.add(new Location(result.getInt(1), result.getInt(2), result.getString(3), new Coordinate(result.getInt(4), result.getInt(5)), LocationType.valueOf(result.getString(6))));
+            }
+            else{
+                locations.add(new Event(result.getInt(1), result.getInt(2), result.getString(3), new Coordinate(result.getInt(4), result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime.toLocalDate(), endtime.toLocalDate()));
+            }
+        }
+        return locations;
     }
     /**
      * Gibt die nächsten n (numberOfPosts) Posts zurück, die vom angegebenen User erstellt wurden. Die Posts werden ausgehend von lastPostId zurückgegeben. Wenn lastPostId nicht angegeben wird, werden die neuesten n Posts zurückgegeben. 
@@ -143,11 +222,34 @@ public class Manager {
      * @param numberOfPosts
      * @return 
      */
-    public TreeSet<Post> getPostsByCreator(int idCreator, int lastPostId, int numberOfPosts){
-        return null;
-    }
-    public TreeSet<Post> getPostsByCreator(int idCreator, int numberOfPosts){
-        return getPostsByCreator(idCreator, 0, numberOfPosts);
+    public Collection<Post> getPostsByCreator(int idCreator, int lastPostId, int numberOfPosts) throws SQLException, Exception{
+        if(lastPostId == 0){
+        PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and rownum <= ?");
+        getPostsByCreator.setInt(0, idCreator);
+        getPostsByCreator.setInt(1, numberOfPosts);
+        ResultSet result = getPostsByCreator.executeQuery();
+        Collection<Post> posts = new ArrayList();
+        while(result.next()){
+            
+        }
+        return posts;
+        }
+        else if(lastPostId>0){
+            PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and idPost < ? and rownum <= ?");
+            getPostsByCreator.setInt(0, idCreator);
+            getPostsByCreator.setInt(1, lastPostId);
+            getPostsByCreator.setInt(2, numberOfPosts);
+            ResultSet result = getPostsByCreator.executeQuery();
+            Collection<Post> posts = new ArrayList();
+            while(result.next()){
+                
+            }
+            return posts;
+        }
+        else{
+            throw new Exception("Invalid LastPostId");
+        }
+        
     }
     /**
      * Fügt eine neue Location hinzu und gibt deren ID zurück. (-1 falls nicht erfolgreich) 

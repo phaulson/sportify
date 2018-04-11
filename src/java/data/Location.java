@@ -13,12 +13,12 @@ import java.io.Serializable;
  */
 public class Location implements Serializable{
     private int id;
-    private Coordinate coordinates;
     private int pageId;
     private String name;
+    private Coordinate coordinates;  
     private LocationType type;
 
-    public Location(int id, Coordinate coords, int pageId, String name, LocationType type) {
+    public Location(int id, int pageId,  String name, Coordinate coords, LocationType type) {
         this.id = id;
         this.coordinates = coords;
         this.pageId = pageId;

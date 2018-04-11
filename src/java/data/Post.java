@@ -19,7 +19,7 @@ public class Post implements Serializable{
     private int creatorId;
     private LocalDate timestamp;
 
-    public Post(int postId, String caption, int creatorId, LocalDate timestamp) {
+    public Post(int postId, int creatorId, String caption,LocalDate timestamp) {
         this.id = postId;
         this.caption = caption;
         this.creatorId = creatorId;

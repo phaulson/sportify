@@ -18,7 +18,7 @@ import java.util.TreeSet;
 public class DailyWorkout implements Serializable{
     private int id;
     private int creatorId;
-    private int name;
+    private String name;
 
     public int getId() {
         return id;
@@ -36,15 +36,15 @@ public class DailyWorkout implements Serializable{
         this.creatorId = creatorId;
     }
 
-    public int getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public DailyWorkout(int id, int creatorId, int name) {
+    public DailyWorkout(int id, int creatorId, String name) {
         this.id = id;
         this.creatorId = creatorId;
         this.name = name;
