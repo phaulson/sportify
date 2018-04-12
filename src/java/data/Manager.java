@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.ZoneId;
 import java.util.ArrayList;
 /**
  *
@@ -121,6 +123,7 @@ public class Manager {
         PreparedStatement changeDescription = conn.prepareStatement("update sp_user set biographie = ? where idUser = ?");
         changeDescription.setString(0, newDescription);
         changeDescription.setInt(1, idUser);
+        changeDescription.executeQuery();
         }
         catch(SQLException ex){
             return false;
@@ -218,9 +221,10 @@ public class Manager {
     /**
      * Gibt die nächsten n (numberOfPosts) Posts zurück, die vom angegebenen User erstellt wurden. Die Posts werden ausgehend von lastPostId zurückgegeben. Wenn lastPostId nicht angegeben wird, werden die neuesten n Posts zurückgegeben. 
      * @param idCreator
-     * @param [optional] lastPostId
+     * @param lastPostId
      * @param numberOfPosts
      * @return 
+     * @throws java.sql.SQLException 
      */
     public Collection<Post> getPostsByCreator(int idCreator, int lastPostId, int numberOfPosts) throws SQLException, Exception{
         if(lastPostId == 0){
@@ -230,7 +234,7 @@ public class Manager {
         ResultSet result = getPostsByCreator.executeQuery();
         Collection<Post> posts = new ArrayList();
         while(result.next()){
-            
+              posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getDate(4).toLocalDate()));
         }
         return posts;
         }
@@ -242,7 +246,7 @@ public class Manager {
             ResultSet result = getPostsByCreator.executeQuery();
             Collection<Post> posts = new ArrayList();
             while(result.next()){
-                
+                posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getDate(4).toLocalDate()));
             }
             return posts;
         }
@@ -262,10 +266,20 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param endDate
      * @return 
      */
-    public int addLocation(int idUser, Coordinate coordinates, String name, LocationType type, LocalDate startDate, LocalDate endDate){
-        int retval = -1;
+    public int addLocation(int idUser, Coordinate coordinates, String name, LocationType type, LocalDate startDate, LocalDate endDate) throws SQLException{
+        PreparedStatement addLocation = conn.prepareStatement("insert into sp_location values(seq_location.nextval, ?, ?, ?, ?, ?, ?, ?)");
+        addLocation.setInt(0, idUser);
+        addLocation.setString(1, name);
+        addLocation.setDouble(2,coordinates.getLat());
+        addLocation.setDouble(3,coordinates.getLng());
+        addLocation.setString(4, type.toString());
+        addLocation.setTimestamp(5, Timestamp.valueOf(startDate.atStartOfDay()));
+        addLocation.setTimestamp(6, Timestamp.valueOf(endDate.atStartOfDay()));
+        addLocation.executeQuery();
+        PreparedStatement getLocationId = conn.prepareStatement("select seq_location.currval from dual");
+        ResultSet result = getLocationId.executeQuery();   
+        return result.getInt(1);
         
-        return retval;
     }
     /**
      * Erstellt einen neuen Trainingsplan und gibt dessen ID zurück. (-1 falls nicht erfolgreich).  
@@ -273,28 +287,45 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param name
      * @return 
      */
-    public int addPlan(int idCreator, String name){
-        int retval = -1;
-        
-        return retval;
+    public int addPlan(int idCreator, String name) throws SQLException{
+        PreparedStatement addPlan = conn.prepareStatement("insert into plan values(seq_plan.nextval, ?, ?)");
+        addPlan.setInt(0, idCreator);
+        addPlan.setString(1, name);
+        PreparedStatement getPlanId = conn.prepareStatement("select seq_plan.currval from dual");
+        ResultSet result = getPlanId.executeQuery();
+        return result.getInt(1);
     }
     /**
      * Verknüpft DailyWorkouts mit einem (evtl. neu erstellten) Plan. 
      * @param planId
      * @param dailyWorkouts
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public boolean linkDailyWorkouts(int planId, Collection<Integer> dailyWorkouts){
-        return false;
+    public boolean linkDailyWorkouts(int planId, Collection<Integer> dailyWorkouts) throws SQLException{
+        for(int workoutId : dailyWorkouts){
+        PreparedStatement linkDailyWorkouts = conn.prepareStatement("insert into sp_containsPD values(?, ?)");
+        linkDailyWorkouts.setInt(0, planId);
+        linkDailyWorkouts.setInt(1,workoutId);
+        linkDailyWorkouts.executeQuery();
+        }
+        return true;
     }
     /**
      * Fügt ein neues DailyWorkout hinzu und gibt dessen ID zurück. (-1 falls nicht erfolgreich) 
      * @param creatorId
      * @param name
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public int addDailyWorkout(int creatorId, String name){
-        return 0;
+    public int addDailyWorkout(int creatorId, String name) throws SQLException{
+        PreparedStatement addDailyWorkout = conn.prepareStatement("insert into dailyworkout values(seq_dailyworkout.nextval, ?, ?)");
+        addDailyWorkout.setInt(0, creatorId);
+        addDailyWorkout.setString(1, name);
+        addDailyWorkout.executeQuery();
+        PreparedStatement getWorkoutId = conn.prepareStatement("select seq_dailyworkout.currval from dual");
+        ResultSet result = getWorkoutId.executeQuery();
+        return result.getInt(1);
     }
     /**
      * Verknüpft Workouts mit einem (evtl. neu erstellten) Daily Workout.
@@ -302,8 +333,14 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param workouts
      * @return 
      */
-    public boolean linkWorkouts(int planId, Collection<Integer> workouts){
-        return false;
+    public boolean linkWorkouts(int dailyWorkoutId, Collection<Integer> workouts) throws SQLException{
+        for(int workoutId : workouts){
+       PreparedStatement linkWorkouts = conn.prepareStatement("insert into sp_containsDW values(?, ?)");
+            linkWorkouts.setInt(0, dailyWorkoutId);
+            linkWorkouts.setInt(1, workoutId);
+            linkWorkouts.executeQuery();
+        }
+        return true;
     }
     /**
      * Fügt ein neues workout hinzu und gibt dessen ID zurück. (-1 falls nicht erfolgreich) 
@@ -311,8 +348,14 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param name
      * @return 
      */
-    public int addWorkout(int creatorId, String name){
-        return 0;
+    public int addWorkout(int creatorId, String name) throws SQLException{
+        PreparedStatement addWorkout = conn.prepareStatement("insert into workout values(seq_workout.nextval, {creatorID}, '{name}')");
+        addWorkout.setInt(0, creatorId);
+        addWorkout.setString(1, name);
+        addWorkout.executeQuery();
+        PreparedStatement getWorkoutId = conn.prepareStatement("select seq_workout.currval from dual");
+        ResultSet result = getWorkoutId.executeQuery();
+        return result.getInt(1);
     }
     /**
      * Verknüpft Exercises mit einem (evtl. neu erstellten) Workout.
@@ -320,9 +363,96 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param exercises
      * @return 
      */
-    public boolean linkExercises(int workoutId, Collection<Integer> exercises){
-        return false;
+    public boolean linkExercises(int workoutId, Collection<Integer> exercises) throws SQLException{
+        PreparedStatement linkExercises = conn.prepareStatement("insert into sp_containsDE values(?, ?)");
+        for(int exerciseId : exercises){
+            linkExercises.setInt(0, workoutId);
+            linkExercises.setInt(1, exerciseId);
+            linkExercises.executeQuery();
+        }
+        return true;
+        
     }
     
+    /**
+     * adds a new Exercise nd returns its id
+     * @param name
+     * @param description
+     * @param creatorId
+     * @return exerciseID if successful, else -1
+     * @throws java.sql.SQLException
+     */
+    public int addExercise(String name, String description, int creatorId) throws SQLException {
+        PreparedStatement addExercise = conn.prepareStatement("insert into sp_exercise values(seq_exercise.nextval, ?, ?, ?)");
+        addExercise.setInt(0, creatorId);
+        addExercise.setString(1, name);
+        addExercise.setString(2, description);
+        addExercise.executeQuery();
+        PreparedStatement getExerciseId = conn.prepareStatement("select seq_exercise.currval from dual");
+        ResultSet result = getExerciseId.executeQuery();
+        return result.getInt(1);
+    }
+   /**
+     * get all DailyWorkouts with that creatorID and that contain that name
+     * @param creatorID
+     * @param name
+     * @return a collection of DailyWorkouts
+     */
+    public Collection<DailyWorkout> searchDailyWorkouts(int creatorID, String name) throws SQLException, Exception {
+        PreparedStatement searchDailyWorkouts;
+        Collection<DailyWorkout> dailyWorkouts = new ArrayList<>();
+        if(creatorID<0 && name == null) {
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout");
+            ResultSet result = searchDailyWorkouts.executeQuery();
+            while(result.next()){
+                dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
+            }
+        }
+        else if(creatorID>=0 && name == null){
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ?");
+            searchDailyWorkouts.setInt(0, creatorID);
+            ResultSet result = searchDailyWorkouts.executeQuery();
+            while(result.next()){
+                dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
+            }
+        }
+        else if(creatorID<0 && name != null){
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where name like %?%");
+            searchDailyWorkouts.setString(0, name);
+            ResultSet result = searchDailyWorkouts.executeQuery();
+            while(result.next()){
+                dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
+            }
+        }
+        else if(creatorID>= 0 && name != null){
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and name like %?%");
+            searchDailyWorkouts.setInt(0, creatorID);
+            searchDailyWorkouts.setString(1, name);
+            ResultSet result = searchDailyWorkouts.executeQuery();
+            while(result.next()){
+                dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
+            }
+        }
+        else{
+            throw new Exception("Error checkin parameters");
+        }
+        return dailyWorkouts;
+         }
+    
+    /**
+     * get all Workouts
+     * @return a collection of Workouts
+     */
+    public Collection<Workout> searchWorkouts(int creatorID, String name) throws SQLException {
+        PreparedStatement searchWorkouts;
+        Collection<Workout> workouts = new ArrayList<>();
+        if(creatorID<0 && name == null){
+            searchWorkouts = conn.prepareStatement("select * from sp_workout");
+            ResultSet result = searchWorkouts.executeQuery();
+            
+        }
+        return null;
+    }
+
     
 }
