@@ -6,47 +6,30 @@
 package com.spogss.sportifycommunity.data;
 
 import java.io.Serializable;
-import java.util.TreeSet;
 
 /**
  *
  * @author Martin
  */
-public class User implements Serializable{
+public class Exercise implements Serializable{
     private int id;
-    private String username;
-    private String password;
     private String description;
+    private int creatorId;
+    private String name;
 
-    public User(int id, String username, String password, String description) {
+    public Exercise(int id, String description, int creatorId, String name) {
         this.id = id;
-        this.username = username;
-        this.password = password;
         this.description = description;
+        this.creatorId = creatorId;
+        this.name = name;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setIdUser(int id) {
+    public void setId(int id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getDescription() {
@@ -57,9 +40,25 @@ public class User implements Serializable{
         this.description = description;
     }
 
+    public int getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 3;
+        int hash = 7;
         hash = 59 * hash + this.id;
         return hash;
     }
@@ -75,13 +74,12 @@ public class User implements Serializable{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final User other = (User) obj;
+        final Exercise other = (Exercise) obj;
         if (this.id != other.id) {
             return false;
         }
         return true;
     }
-
 
     
 }

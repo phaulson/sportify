@@ -6,40 +6,29 @@
 package com.spogss.sportifycommunity.data;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.TreeSet;
 
 /**
  *
  * @author Martin
  */
-public class Post implements Serializable{
+public class Workout implements Serializable{
     private int id;
-    private String caption;
     private int creatorId;
-    private LocalDate timestamp;
+    private String name;
 
-    public Post(int postId, String caption, int creatorId, LocalDate timestamp) {
-        this.id = postId;
-        this.caption = caption;
+    public Workout(int id, int creatorId, String name) {
+        this.id = id;
         this.creatorId = creatorId;
-        this.timestamp = timestamp;
+        this.name = name;
     }
 
-    public int getPostId() {
+    public int getId() {
         return id;
     }
 
-    public void setPostId(int postId) {
-        this.id = postId;
-    }
-
-    public String getCaption() {
-        return caption;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getCreatorId() {
@@ -50,18 +39,18 @@ public class Post implements Serializable{
         this.creatorId = creatorId;
     }
 
-    public LocalDate getTimestamp() {
-        return timestamp;
+    public String getName() {
+        return name;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 59 * hash + this.id;
+        int hash = 7;
+        hash = 67 * hash + this.id;
         return hash;
     }
 
@@ -76,11 +65,13 @@ public class Post implements Serializable{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Post other = (Post) obj;
+        final Workout other = (Workout) obj;
         if (this.id != other.id) {
             return false;
         }
         return true;
     }
-    
+
+   
+
 }

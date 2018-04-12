@@ -12,55 +12,45 @@ import java.util.TreeSet;
  *
  * @author Martin
  */
-public class User implements Serializable{
+public class Plan implements Serializable{
     private int id;
-    private String username;
-    private String password;
-    private String description;
+    private String name;
+    private int creatorId;
 
-    public User(int id, String username, String password, String description) {
+    public Plan(int id, String name, int creatorId) {
         this.id = id;
-        this.username = username;
-        this.password = password;
-        this.description = description;
+        this.name = name;
+        this.creatorId = creatorId;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setIdUser(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 59 * hash + this.id;
+        hash = 37 * hash + this.id;
         return hash;
     }
 
@@ -75,7 +65,7 @@ public class User implements Serializable{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final User other = (User) obj;
+        final Plan other = (Plan) obj;
         if (this.id != other.id) {
             return false;
         }
@@ -84,4 +74,6 @@ public class User implements Serializable{
 
 
     
+
+
 }

@@ -25,19 +25,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
-import android.widget.TableLayout;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.tempData.User;
 import com.spogss.sportifycommunity.adapter.FeedListAdapter;
-import com.spogss.sportifycommunity.data.Post;
+import com.spogss.sportifycommunity.tempData.Post;
 import com.spogss.sportifycommunity.adapter.SearchListAdapter;
 import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class FeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -165,7 +162,6 @@ public class FeedActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-
         // TODO: implement onMenuItemClick
         if(id == R.id.nav_home) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "The posts will reload soon", Snackbar.LENGTH_LONG)
@@ -184,9 +180,9 @@ public class FeedActivity extends AppCompatActivity
                     .setAction("Action", null).show();
 
         } else if (id == R.id.nav_logout) {
-            deleteLoginCredentials();
             logout();
         }
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -208,6 +204,8 @@ public class FeedActivity extends AppCompatActivity
      * launches the LoginActivity and closes the FeedActivity
      */
     private void logout() {
+        deleteLoginCredentials();
+
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();

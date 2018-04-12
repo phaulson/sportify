@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Post;
+import com.spogss.sportifycommunity.tempData.Post;
 
 import java.util.ArrayList;
 import java.util.Collection;

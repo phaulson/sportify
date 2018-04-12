@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.tempData.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;

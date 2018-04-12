@@ -1,45 +1,48 @@
+package com.spogss.sportifycommunity.data;
+
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.spogss.sportifycommunity.data;
-
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.TreeSet;
 
 /**
  *
- * @author Martin
+ * @author schueler
  */
-public class Post implements Serializable{
+public class Comment implements Serializable{
     private int id;
-    private String caption;
+    private int postId;
     private int creatorId;
+    private String text;
     private LocalDate timestamp;
 
-    public Post(int postId, String caption, int creatorId, LocalDate timestamp) {
-        this.id = postId;
-        this.caption = caption;
+    public Comment(int id, int postId, int creatorId, String text, LocalDate timestamp) {
+        this.id = id;
+        this.postId = postId;
         this.creatorId = creatorId;
+        this.text = text;
         this.timestamp = timestamp;
     }
 
-    public int getPostId() {
+    public int getId() {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getPostId() {
+        return postId;
+    }
+
     public void setPostId(int postId) {
-        this.id = postId;
-    }
-
-    public String getCaption() {
-        return caption;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
+        this.postId = postId;
     }
 
     public int getCreatorId() {
@@ -48,6 +51,14 @@ public class Post implements Serializable{
 
     public void setCreatorId(int creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public LocalDate getTimestamp() {
@@ -60,8 +71,8 @@ public class Post implements Serializable{
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 59 * hash + this.id;
+        int hash = 3;
+        hash = 97 * hash + this.id;
         return hash;
     }
 
@@ -76,11 +87,13 @@ public class Post implements Serializable{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Post other = (Post) obj;
+        final Comment other = (Comment) obj;
         if (this.id != other.id) {
             return false;
         }
         return true;
     }
+
+    
     
 }
