@@ -744,15 +744,27 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * the Post is liked by the User
      * @param userId
      * @param postId
+     * @param likes
      * @return true if successful, false if failed
      * @throws java.sql.SQLException
      */
-    public boolean addLike(int userId, int postId) throws SQLException {
-        PreparedStatement addLike = conn.prepareStatement("insert into sp_like values(?, ?)");
-        addLike.setInt(1, postId);
-        addLike.setInt(2, userId);
-        addLike.executeQuery();
+    public boolean setLike(int userId, int postId, boolean likes) throws SQLException, Exception {
+        PreparedStatement setLike;
+        if(likes){
+        setLike = conn.prepareStatement("insert into sp_like values(?, ?)");
+        setLike.setInt(1, postId);
+        setLike.setInt(2, userId);
+        setLike.executeQuery();
         return true;
+        }
+        if(!likes){
+            setLike = conn.prepareStatement("delete from sp_like where idpost = ? and iduser = ?");
+            setLike.setInt(1, postId);
+            setLike.setInt(2, userId);
+            setLike.executeQuery();
+            return false;
+        }
+        throw new Exception("If that happens everythings going down");
     }
     
     /**
