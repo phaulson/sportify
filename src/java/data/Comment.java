@@ -21,7 +21,7 @@ public class Comment implements Serializable{
     private String text;
     private LocalDate timestamp;
 
-    public Comment(int id, int postId, int creatorId, String text, LocalDate timestamp) {
+    public Comment(int id, int creatorId, int postId, String text, LocalDate timestamp) {
         this.id = id;
         this.postId = postId;
         this.creatorId = creatorId;

@@ -22,12 +22,12 @@ import java.util.ArrayList;
  * @author Martin
  */
 public class Manager {
-    Manager db = new Manager();
-    private static String connString;
+    static Manager db = new Manager();
+    private static final String CONNSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
     private static final String USER = "d4a13";
     private static final String PASSWORD = "d4a";   
     Connection conn;
-    public Manager newInstance(){       
+    public static Manager newInstance(){       
         return db;
     }
     public Manager(){
@@ -35,7 +35,7 @@ public class Manager {
        conn = establishConnection();
         }
         catch(Exception e){
-            
+            System.out.println("Error while establishing connection!\n"+e.getMessage());
         }
     }
     /**
@@ -48,7 +48,7 @@ public class Manager {
     private Connection establishConnection()throws Exception{
         if(conn==null){
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-            conn = DriverManager.getConnection(connString, USER, PASSWORD);
+            conn = DriverManager.getConnection(CONNSTRING, USER, PASSWORD);
             conn.setAutoCommit(false);
             conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             return conn;
@@ -265,6 +265,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param startDate
      * @param endDate
      * @return 
+     * @throws java.sql.SQLException 
      */
     public int addLocation(int idUser, Coordinate coordinates, String name, LocationType type, LocalDate startDate, LocalDate endDate) throws SQLException{
         PreparedStatement addLocation = conn.prepareStatement("insert into sp_location values(seq_location.nextval, ?, ?, ?, ?, ?, ?, ?)");
@@ -286,6 +287,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param idCreator
      * @param name
      * @return 
+     * @throws java.sql.SQLException 
      */
     public int addPlan(int idCreator, String name) throws SQLException{
         PreparedStatement addPlan = conn.prepareStatement("insert into plan values(seq_plan.nextval, ?, ?)");
@@ -329,9 +331,10 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     }
     /**
      * Verknüpft Workouts mit einem (evtl. neu erstellten) Daily Workout.
-     * @param planId
+     * @param dailyWorkoutId
      * @param workouts
      * @return 
+     * @throws java.sql.SQLException 
      */
     public boolean linkWorkouts(int dailyWorkoutId, Collection<Integer> workouts) throws SQLException{
         for(int workoutId : workouts){
@@ -347,6 +350,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param creatorId
      * @param name
      * @return 
+     * @throws java.sql.SQLException 
      */
     public int addWorkout(int creatorId, String name) throws SQLException{
         PreparedStatement addWorkout = conn.prepareStatement("insert into workout values(seq_workout.nextval, {creatorID}, '{name}')");
@@ -362,6 +366,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param workoutId
      * @param exercises
      * @return 
+     * @throws java.sql.SQLException 
      */
     public boolean linkExercises(int workoutId, Collection<Integer> exercises) throws SQLException{
         PreparedStatement linkExercises = conn.prepareStatement("insert into sp_containsDE values(?, ?)");
@@ -397,6 +402,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @param creatorID
      * @param name
      * @return a collection of DailyWorkouts
+     * @throws java.sql.SQLException
      */
     public Collection<DailyWorkout> searchDailyWorkouts(int creatorID, String name) throws SQLException, Exception {
         PreparedStatement searchDailyWorkouts;
@@ -441,7 +447,11 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     
     /**
      * get all Workouts
+     * @param creatorID
+     * @param name
      * @return a collection of Workouts
+     * @throws java.sql.SQLException
+     * @throws java.lang.Exception
      */
     public Collection<Workout> searchWorkouts(int creatorID, String name) throws SQLException, Exception {
         PreparedStatement searchWorkouts;
@@ -590,7 +600,6 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * gets all Users that contain that name and their pro-attribute is equivalent to the pro-parameter
      * @param name
      * @param isPro
-     * @param pro
      * @return a collection of Users
      * @throws java.sql.SQLException
      */
@@ -622,7 +631,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @return a collection of Plans
      * @throws java.sql.SQLException
      */
-    public Collection<Plan> searchPlans(int creatorID, String name) throws SQLException {
+    public Collection<Plan> searchPlans(int creatorID, String name) throws SQLException, Exception {
         PreparedStatement searchPlans;
         Collection<Plan> plans = new ArrayList<>();
         ResultSet result;
@@ -633,7 +642,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
             }
         }
-        else if(creatorID>=0 && name != null){
+        else if(creatorID>=0 && name == null){
             searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ?");
             searchPlans.setInt(0, creatorID);
             result = searchPlans.executeQuery();
@@ -641,7 +650,220 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
             }
         }
-        return null;
+        else if(creatorID<0 && name!=null){
+            searchPlans = conn.prepareStatement("select * from sp_plan where name like %?%");
+            searchPlans.setString(0, name);
+            result = searchPlans.executeQuery();
+            while(result.next()){
+                plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
+            }
+        }
+        else if(creatorID>=0 && name != null){
+            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and name like %?%");
+            searchPlans.setInt(0, creatorID);
+            searchPlans.setString(1, name);
+            result = searchPlans.executeQuery();
+            while(result.next()){
+                plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
+            }
+        }
+        else{
+            throw new Exception("Unknown Error");
+        }
+        return plans;
     }
+       /**
+     * gets the number of likes of a post
+     * @param postId
+     * @return number of likes if successful, else -1
+     * @throws java.sql.SQLException
+     */
+    public int getNumberOfLikes(int postId) throws SQLException {
+        PreparedStatement getNumberOfLikes = conn.prepareStatement("select count(*) as numberOfLikes from sp_like where idpost = ?");
+        getNumberOfLikes.setInt(0, postId);      
+        return getNumberOfLikes.executeQuery().getInt(1);
+    }
+       /**
+     * returns if the specified User liked the specified Post
+     * @param userId
+     * @param postId
+     * @return true if the Post is liked by that User, else if not
+     * @throws java.sql.SQLException
+     */
+    public boolean isLiked(int userId, int postId) throws SQLException {
+        PreparedStatement isLiked = conn.prepareStatement("select case when ((select count(*) from sp_like where idPost = ? and idUser = ?) = 1) then 'true' else 'false' end as isLiked from dual");
+        isLiked.setInt(0, postId);
+        isLiked.setInt(1, userId);
+        return isLiked.executeQuery().getBoolean(1);
+    }
+    
+
+    /**
+     * gets the next n number of Comments of a Post
+     * @param postID
+     * @param lastCommentID
+     * @param numberOfComments
+     * @return a collection of Comments
+     * @throws java.sql.SQLException
+     */
+    public Collection<Comment> getComments(int postID, int lastCommentID, int numberOfComments) throws SQLException, Exception {
+        PreparedStatement getComments;
+        Collection<Comment> comments = new ArrayList<>();
+        if(lastCommentID<0){
+            getComments = conn.prepareStatement("select * from sp_revComment where idpost = ? and rownum <= ?");
+            getComments.setInt(0, postID);
+            getComments.setInt(1, numberOfComments);
+            ResultSet result = getComments.executeQuery();
+            while(result.next()){
+                comments.add(new Comment(result.getInt(1), result.getInt(2), result.getInt(3), result.getString(4), result.getTimestamp(5).toLocalDateTime().toLocalDate()));
+            }
+        }
+        else if(lastCommentID>=0){
+            getComments = conn.prepareStatement("select * from sp_revComment where idpost = ? and idComment < ? and rownum <= ?");
+            getComments.setInt(0, postID);
+            getComments.setInt(1, lastCommentID);
+            getComments.setInt(2, numberOfComments);
+            ResultSet result = getComments.executeQuery();
+            while(result.next()){
+               comments.add(new Comment(result.getInt(1), result.getInt(2), result.getInt(3), result.getString(4), result.getTimestamp(5).toLocalDateTime().toLocalDate()));
+            }
+        }
+        else{
+            throw new Exception("Unknown Error");
+        }
+        return comments;
+    }
+       /**
+     * the Post is liked by the User
+     * @param userId
+     * @param postId
+     * @return true if successful, false if failed
+     * @throws java.sql.SQLException
+     */
+    public boolean addLike(int userId, int postId) throws SQLException {
+        PreparedStatement addLike = conn.prepareStatement("insert into sp_like values(?, ?)");
+        addLike.setInt(0, postId);
+        addLike.setInt(1, userId);
+        addLike.executeQuery();
+        return true;
+    }
+    
+    /**
+     * the Post is commented by the User
+     * @param userId
+     * @param postId
+     * @param text
+     * @return true if successful, false if failed
+     * @throws java.sql.SQLException
+     */
+    public boolean addComment(int userId, int postId, String text) throws SQLException {
+        PreparedStatement addComment = conn.prepareStatement("insert into sp_comment values(seq_comment.nextVal, ?, ?, ?, systimestamp)");
+        addComment.setInt(0, userId);
+        addComment.setInt(1, postId);
+        addComment.setString(2, text);
+        addComment.executeQuery();
+        return true;
+    }
+    
+
+    /**
+     * the User follows or unfollows the other User, depends on the follow-parameter
+     * @param followerId
+     * @param followsId
+     * @param follow
+     * @return the follow-state after change
+     * @throws java.sql.SQLException
+     */
+    public boolean setUserFollow(int followerId, int followsId, boolean follow) throws SQLException {
+        PreparedStatement followUser;
+        if(follow){
+            followUser = conn.prepareStatement("insert into sp_follow values(?, ?)");
+            followUser.setInt(0, followerId);
+            followUser.setInt(1, followsId);
+            followUser.executeQuery();
+        }
+        else if(!follow){
+            followUser = conn.prepareStatement("delete from sp_follow where followerID = ? and followsID = ?");
+            followUser.setInt(0, followerId);
+            followUser.setInt(1, followsId);
+            followUser.executeQuery();
+        }
+        return true;
+    }
+    /**
+     * 
+     * @param coordinates
+     * @param radius
+     * @param types
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public Collection<Location> getNearbyLocations(Coordinate coordinates, double radius, ArrayList<LocationType> types) throws SQLException, Exception{
+        Collection<Location> locations = new ArrayList<>();
+        String query = "select * from sp_location where type in ("; 
+        for(LocationType t : types){
+            query+= "?,";
+        }      
+        query = query.substring(0, query.length() -1) +")";
+        PreparedStatement getNearbyLocations = conn.prepareStatement(query);
+        for(int idx = 0; idx <types.size(); idx++){
+            getNearbyLocations.setString(idx+1, types.get(idx).toString());       
+        }
+        ResultSet result = getNearbyLocations.executeQuery();
+        while(result.next()){
+            LocalDate starttime = result.getTimestamp(7).toLocalDateTime().toLocalDate();
+            LocalDate endtime = result.getTimestamp(8).toLocalDateTime().toLocalDate();
+            if(starttime == null && endtime == null){
+              locations.add(new Location(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6))));  
+            }
+            else if(starttime != null && endtime != null){
+              locations.add(new Event(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime, endtime));  
+            }
+            else{
+                throw new Exception("Unknwon Error");
+            }
+        }
+        return locations;
+    }
+    /**
+     * 
+     * @param userID
+     * @param planID
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public boolean isPlanSubscribed(int userID, int planID) throws SQLException{
+        PreparedStatement isPlanSubscribed = conn.prepareStatement("select case when ((select count(*) from sp_subscription where idPlan = ? and idUser = ?) = 1) then 'true' else 'false' end as isSubscribed from dual");
+        isPlanSubscribed.setInt(0, planID);
+        isPlanSubscribed.setInt(1, userID);
+        return Boolean.valueOf(isPlanSubscribed.executeQuery().getString(1));
+    }
+    /**
+     * 
+     * @param userID
+     * @param planID
+     * @param subscribe
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    public boolean setPlanSubscription(int userID, int planID, boolean subscribe) throws SQLException, Exception{
+        PreparedStatement subscribePlan;
+        if(subscribe){
+            subscribePlan = conn.prepareStatement("insert into sp_subschription(?, ?)");
+            subscribePlan.setInt(0, planID);
+            subscribePlan.setInt(1, userID);
+            subscribePlan.executeQuery();
+            return true;
+        }
+        if(!subscribe){
+            subscribePlan = conn.prepareStatement("delete from sp_subschription where idPlan = ? and idUser = ?");
+            subscribePlan.setInt(0, planID);
+             subscribePlan.setInt(1, userID);
+            subscribePlan.executeQuery();
+            return false;
+        }
+        throw new Exception("Unknown Error");
+    }
+    
     
 }
