@@ -56,17 +56,14 @@ public class Manager {
         }
     }
     public int login(String username, String password)throws SQLException{
-        int UserId = -1;
         PreparedStatement selectUserId;
         String selectString ="select idUser from sp_user where username like ? and password like ?"; 
         selectUserId = conn.prepareStatement(selectString);
-        selectUserId.setString(0, username);
-        selectUserId.setString(1,password);
+        selectUserId.setString(1, username);
+        selectUserId.setString(2,password);
         ResultSet result = selectUserId.executeQuery();
-        while(result.next()){
-            UserId = result.getInt(1);
-        }
-        return UserId;
+        result.next();
+        return result.getInt(1);
     }
     /**
      * Überprüft ob der Username schon vorhanden ist und gibt die interne UserID zurück, wenn erfolgreich, sonst –1. Wenn erfolgreich wird der neue User hinzugefügt. 
@@ -79,10 +76,10 @@ public class Manager {
     public int register(String username, String password, boolean isPro) throws SQLException{
         int UserId = -1;
         PreparedStatement insertNewUser = conn.prepareStatement("insert into sp_user values(seq_user.nextval, ?, ?, ?, ?)");
-        insertNewUser.setString(0,username);
-        insertNewUser.setString(1,password);
-        insertNewUser.setString(2,"");
-        insertNewUser.setBoolean(3,isPro);
+        insertNewUser.setString(1,username);
+        insertNewUser.setString(2,password);
+        insertNewUser.setString(3,"");
+        insertNewUser.setBoolean(4,isPro);
         insertNewUser.executeQuery();
         PreparedStatement selectNewUserId = conn.prepareStatement("select idUser from sp_user where username like ?");
         selectNewUserId.setString(0, username);
@@ -100,9 +97,10 @@ public class Manager {
      */
     public User getProfile(int idUser) throws SQLException{
         PreparedStatement selectProfile = conn.prepareStatement("select * from sp_user where idUser = ?");
-        selectProfile.setInt(0, idUser);
+        selectProfile.setInt(1, idUser);
         ResultSet result = selectProfile.executeQuery();
         User user;
+        result.next();
         if(result.getBoolean(5))
              user = new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
         else
@@ -119,8 +117,8 @@ public class Manager {
     public boolean changeDescription(int idUser, String newDescription) throws SQLException{
         try{
         PreparedStatement changeDescription = conn.prepareStatement("update sp_user set biographie = ? where idUser = ?");
-        changeDescription.setString(0, newDescription);
-        changeDescription.setInt(1, idUser);
+        changeDescription.setString(1, newDescription);
+        changeDescription.setInt(2, idUser);
         changeDescription.executeQuery();
         }
         catch(SQLException ex){
@@ -137,7 +135,7 @@ public class Manager {
      */
     public Collection<Plan> getPlans(int idUser) throws SQLException{
         PreparedStatement getPlans = conn.prepareStatement("select idPlan, name from sp_plan inner join sp_user on sp_plan.idcreator= sp_user.iduser where idUser = ?");
-        getPlans.setInt(0, idUser);
+        getPlans.setInt(1, idUser);
         ResultSet result = getPlans.executeQuery();
         Collection<Plan> plans = new ArrayList<>();
         while(result.next()){
@@ -153,7 +151,7 @@ public class Manager {
      */
     public Collection<DailyWorkout> getDailyWorkouts(int idPlan) throws SQLException{
         PreparedStatement getDailyWorkouts = conn.prepareStatement("select sp_dailyworkout.idDailyworkout, sp_dailyworkout.idCreator, sp_dailyworkout.name from sp_dailyworkout inner join sp_containsPD on sp_containsPD.iddailyworkout = sp_dailyworkout.idDailyworkout inner join sp_plan on sp_plan.idplan = sp_containsPD.idplan where sp_plan.idplan = ?");
-        getDailyWorkouts.setInt(0, idPlan);
+        getDailyWorkouts.setInt(1, idPlan);
         ResultSet result = getDailyWorkouts.executeQuery();
         Collection<DailyWorkout> dailyworkouts = new ArrayList<>();
         while(result.next()){
@@ -169,7 +167,7 @@ public class Manager {
      */
     public Collection<Workout> getWorkouts(int idDailyWorkout) throws SQLException{
         PreparedStatement getWorkouts = conn.prepareStatement("select sp_workout.idworkout, sp_workout.idCreator, sp_workout.name from sp_workout inner join sp_containsDW on sp_containsDW.idworkout = sp_workout.idworkout inner join sp_dailyworkout on sp_dailyworkout.iddailyworkout = sp_containsDW.iddailyworkout where sp_dailyworkout.iddailyworkout = ?");
-        getWorkouts.setInt(0, idDailyWorkout);
+        getWorkouts.setInt(1, idDailyWorkout);
         ResultSet result = getWorkouts.executeQuery();
         Collection<Workout> workouts = new ArrayList<>();
         while(result.next()){
@@ -185,7 +183,7 @@ public class Manager {
      */
     public Collection<Exercise> getExercises(int idWorkout) throws SQLException{
         PreparedStatement getExercises = conn.prepareStatement("select sp_exercise.idexercise,sp_exercise.description , sp_exercise.idCreator, sp_exercise.name  from sp_exercise inner join sp_containsWE on sp_containsWE.idexercise = sp_exercise.idexercise inner join sp_workout on sp_workout.idworkout = sp_containsWE.idworkout where sp_workout.idworkout = ?");
-        getExercises.setInt(0, idWorkout);
+        getExercises.setInt(1, idWorkout);
         ResultSet result = getExercises.executeQuery();
         Collection<Exercise> exercises = new ArrayList();
         while(result.next()){
@@ -201,7 +199,7 @@ public class Manager {
      */
     public Collection<Location> getLocations(int idUser) throws SQLException{
         PreparedStatement getLocations = conn.prepareStatement("select * from sp_location where idUser = ?");
-        getLocations.setInt(0, idUser);
+        getLocations.setInt(1, idUser);
         ResultSet result = getLocations.executeQuery();
         Collection<Location> locations = new ArrayList();
         while(result.next()){
@@ -210,7 +208,7 @@ public class Manager {
             if(starttime == null && endtime ==null){
                 locations.add(new Location(result.getInt(1), result.getInt(2), result.getString(3), new Coordinate(result.getInt(4), result.getInt(5)), LocationType.valueOf(result.getString(6))));
             }
-            else{
+            else if(starttime != null && endtime != null){
                 locations.add(new Event(result.getInt(1), result.getInt(2), result.getString(3), new Coordinate(result.getInt(4), result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime.toLocalDate(), endtime.toLocalDate()));
             }
         }
@@ -227,8 +225,8 @@ public class Manager {
     public Collection<Post> getPostsByCreator(int idCreator, int lastPostId, int numberOfPosts) throws SQLException, Exception{
         if(lastPostId == 0){
         PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and rownum <= ?");
-        getPostsByCreator.setInt(0, idCreator);
-        getPostsByCreator.setInt(1, numberOfPosts);
+        getPostsByCreator.setInt(1, idCreator);
+        getPostsByCreator.setInt(2, numberOfPosts);
         ResultSet result = getPostsByCreator.executeQuery();
         Collection<Post> posts = new ArrayList();
         while(result.next()){
@@ -238,9 +236,9 @@ public class Manager {
         }
         else if(lastPostId>0){
             PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and idPost < ? and rownum <= ?");
-            getPostsByCreator.setInt(0, idCreator);
-            getPostsByCreator.setInt(1, lastPostId);
-            getPostsByCreator.setInt(2, numberOfPosts);
+            getPostsByCreator.setInt(1, idCreator);
+            getPostsByCreator.setInt(2, lastPostId);
+            getPostsByCreator.setInt(3, numberOfPosts);
             ResultSet result = getPostsByCreator.executeQuery();
             Collection<Post> posts = new ArrayList();
             while(result.next()){
@@ -267,16 +265,17 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public int addLocation(int idUser, Coordinate coordinates, String name, LocationType type, LocalDate startDate, LocalDate endDate) throws SQLException{
         PreparedStatement addLocation = conn.prepareStatement("insert into sp_location values(seq_location.nextval, ?, ?, ?, ?, ?, ?, ?)");
-        addLocation.setInt(0, idUser);
-        addLocation.setString(1, name);
-        addLocation.setDouble(2,coordinates.getLat());
-        addLocation.setDouble(3,coordinates.getLng());
-        addLocation.setString(4, type.toString());
-        addLocation.setTimestamp(5, Timestamp.valueOf(startDate.atStartOfDay()));
-        addLocation.setTimestamp(6, Timestamp.valueOf(endDate.atStartOfDay()));
+        addLocation.setInt(1, idUser);
+        addLocation.setString(2, name);
+        addLocation.setDouble(3,coordinates.getLat());
+        addLocation.setDouble(4,coordinates.getLng());
+        addLocation.setString(5, type.toString());
+        addLocation.setTimestamp(6, Timestamp.valueOf(startDate.atStartOfDay()));
+        addLocation.setTimestamp(7, Timestamp.valueOf(endDate.atStartOfDay()));
         addLocation.executeQuery();
         PreparedStatement getLocationId = conn.prepareStatement("select seq_location.currval from dual");
-        ResultSet result = getLocationId.executeQuery();   
+        ResultSet result = getLocationId.executeQuery(); 
+        result.next();
         return result.getInt(1);
         
     }
@@ -289,10 +288,11 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public int addPlan(int idCreator, String name) throws SQLException{
         PreparedStatement addPlan = conn.prepareStatement("insert into plan values(seq_plan.nextval, ?, ?)");
-        addPlan.setInt(0, idCreator);
-        addPlan.setString(1, name);
+        addPlan.setInt(1, idCreator);
+        addPlan.setString(2, name);
         PreparedStatement getPlanId = conn.prepareStatement("select seq_plan.currval from dual");
         ResultSet result = getPlanId.executeQuery();
+        result.next();
         return result.getInt(1);
     }
     /**
@@ -305,8 +305,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     public boolean linkDailyWorkouts(int planId, Collection<Integer> dailyWorkouts) throws SQLException{
         for(int workoutId : dailyWorkouts){
         PreparedStatement linkDailyWorkouts = conn.prepareStatement("insert into sp_containsPD values(?, ?)");
-        linkDailyWorkouts.setInt(0, planId);
-        linkDailyWorkouts.setInt(1,workoutId);
+        linkDailyWorkouts.setInt(1, planId);
+        linkDailyWorkouts.setInt(2,workoutId);
         linkDailyWorkouts.executeQuery();
         }
         return true;
@@ -320,11 +320,12 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public int addDailyWorkout(int creatorId, String name) throws SQLException{
         PreparedStatement addDailyWorkout = conn.prepareStatement("insert into dailyworkout values(seq_dailyworkout.nextval, ?, ?)");
-        addDailyWorkout.setInt(0, creatorId);
-        addDailyWorkout.setString(1, name);
+        addDailyWorkout.setInt(1, creatorId);
+        addDailyWorkout.setString(2, name);
         addDailyWorkout.executeQuery();
         PreparedStatement getWorkoutId = conn.prepareStatement("select seq_dailyworkout.currval from dual");
         ResultSet result = getWorkoutId.executeQuery();
+        result.next();
         return result.getInt(1);
     }
     /**
@@ -337,8 +338,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     public boolean linkWorkouts(int dailyWorkoutId, Collection<Integer> workouts) throws SQLException{
         for(int workoutId : workouts){
        PreparedStatement linkWorkouts = conn.prepareStatement("insert into sp_containsDW values(?, ?)");
-            linkWorkouts.setInt(0, dailyWorkoutId);
-            linkWorkouts.setInt(1, workoutId);
+            linkWorkouts.setInt(1, dailyWorkoutId);
+            linkWorkouts.setInt(2, workoutId);
             linkWorkouts.executeQuery();
         }
         return true;
@@ -352,11 +353,12 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public int addWorkout(int creatorId, String name) throws SQLException{
         PreparedStatement addWorkout = conn.prepareStatement("insert into workout values(seq_workout.nextval, {creatorID}, '{name}')");
-        addWorkout.setInt(0, creatorId);
-        addWorkout.setString(1, name);
+        addWorkout.setInt(1, creatorId);
+        addWorkout.setString(2, name);
         addWorkout.executeQuery();
         PreparedStatement getWorkoutId = conn.prepareStatement("select seq_workout.currval from dual");
         ResultSet result = getWorkoutId.executeQuery();
+        result.next();
         return result.getInt(1);
     }
     /**
@@ -369,8 +371,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     public boolean linkExercises(int workoutId, Collection<Integer> exercises) throws SQLException{
         PreparedStatement linkExercises = conn.prepareStatement("insert into sp_containsDE values(?, ?)");
         for(int exerciseId : exercises){
-            linkExercises.setInt(0, workoutId);
-            linkExercises.setInt(1, exerciseId);
+            linkExercises.setInt(1, workoutId);
+            linkExercises.setInt(2, exerciseId);
             linkExercises.executeQuery();
         }
         return true;
@@ -387,12 +389,13 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public int addExercise(String name, String description, int creatorId) throws SQLException {
         PreparedStatement addExercise = conn.prepareStatement("insert into sp_exercise values(seq_exercise.nextval, ?, ?, ?)");
-        addExercise.setInt(0, creatorId);
-        addExercise.setString(1, name);
-        addExercise.setString(2, description);
+        addExercise.setInt(1, creatorId);
+        addExercise.setString(2, name);
+        addExercise.setString(3, description);
         addExercise.executeQuery();
         PreparedStatement getExerciseId = conn.prepareStatement("select seq_exercise.currval from dual");
         ResultSet result = getExerciseId.executeQuery();
+        result.next();
         return result.getInt(1);
     }
    /**
@@ -414,7 +417,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID>=0 && name == null){
             searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ?");
-            searchDailyWorkouts.setInt(0, creatorID);
+            searchDailyWorkouts.setInt(1, creatorID);
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
@@ -422,7 +425,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID<0 && name != null){
             searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where name like %?%");
-            searchDailyWorkouts.setString(0, name);
+            searchDailyWorkouts.setString(1, name);
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
@@ -430,8 +433,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID>= 0 && name != null){
             searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and name like %?%");
-            searchDailyWorkouts.setInt(0, creatorID);
-            searchDailyWorkouts.setString(1, name);
+            searchDailyWorkouts.setInt(1, creatorID);
+            searchDailyWorkouts.setString(2, name);
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
@@ -463,7 +466,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID>=0 && name == null){
         searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ?");
-        searchWorkouts.setInt(0, creatorID);
+        searchWorkouts.setInt(1, creatorID);
         ResultSet result = searchWorkouts.executeQuery();
         while(result.next()){
             workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -472,7 +475,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID<0 && name != null){
                 searchWorkouts = conn.prepareStatement("select * from sp_workout where name like %?%");
-                searchWorkouts.setString(0, name);
+                searchWorkouts.setString(1, name);
                 ResultSet result = searchWorkouts.executeQuery();
                 while(result.next()){
                     workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -480,8 +483,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         else if(creatorID>=0 && name != null){
             searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and name like %?%");
-            searchWorkouts.setInt(0, creatorID);
-            searchWorkouts.setString(1, name);
+            searchWorkouts.setInt(1, creatorID);
+            searchWorkouts.setString(2, name);
             ResultSet result = searchWorkouts.executeQuery();
             while(result.next()){
                 workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -511,7 +514,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID>=0 && name == null){
             searchExercises = conn.prepareStatement("select * from sp_exercise where idCreator = ?");
-            searchExercises.setInt(0, creatorID);
+            searchExercises.setInt(1, creatorID);
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));            
@@ -519,7 +522,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID<0 && name != null){
             searchExercises = conn.prepareStatement("select * from sp_exercise where name like %?%");
-            searchExercises.setString(0, name);
+            searchExercises.setString(1, name);
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
@@ -527,8 +530,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID>=0&&name == null){
             searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and name like %?%");
-            searchExercises.setInt(0, creatorID);
-            searchExercises.setString(1, name);
+            searchExercises.setInt(1, creatorID);
+            searchExercises.setString(2, name);
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
@@ -550,11 +553,13 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public int addPost(int creatorId, String caption) throws SQLException {
         PreparedStatement addPost = conn.prepareStatement("insert into sp_post values(seq_post.nextval, ?, ?, systimestamp)");
-        addPost.setInt(0, creatorId);
-        addPost.setString(1, caption);
+        addPost.setInt(1, creatorId);
+        addPost.setString(2, caption);
         addPost.executeQuery();
         PreparedStatement getPostId = conn.prepareStatement("select seq_post.currval from dual");
-        return getPostId.executeQuery().getInt(1);     
+        ResultSet result = getPostId.executeQuery();
+        result.next();
+        return result.getInt(1);     
     }
     
     /**
@@ -570,8 +575,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         Collection<Post> posts = new ArrayList<>();       
         if(lastPostId<0){
         PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and rownum <= ?");
-        getPosts.setInt(0, userId);
-        getPosts.setInt(1, numberOfPosts);
+        getPosts.setInt(1, userId);
+        getPosts.setInt(2, numberOfPosts);
         ResultSet result = getPosts.executeQuery();
         while(result.next()){
             posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
@@ -579,9 +584,9 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(lastPostId>=0){
             PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost < ? and rownum <= ?");
-            getPosts.setInt(0, userId);
-            getPosts.setInt(1,lastPostId);
-            getPosts.setInt(2, numberOfPosts);
+            getPosts.setInt(1, userId);
+            getPosts.setInt(2,lastPostId);
+            getPosts.setInt(3, numberOfPosts);
             ResultSet result = getPosts.executeQuery();
             while(result.next()){
                 posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
@@ -605,8 +610,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         int ISPRO = isPro ? 1 : 0;
         Collection<User> users = new ArrayList<>();
         PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and username like %?%");
-        searchUsers.setInt(0, ISPRO);
-        searchUsers.setString(1, name);
+        searchUsers.setInt(1, ISPRO);
+        searchUsers.setString(2, name);
         ResultSet result = searchUsers.executeQuery();
         if(isPro){
         while(result.next()){
@@ -642,7 +647,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID>=0 && name == null){
             searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ?");
-            searchPlans.setInt(0, creatorID);
+            searchPlans.setInt(1, creatorID);
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -650,7 +655,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID<0 && name!=null){
             searchPlans = conn.prepareStatement("select * from sp_plan where name like %?%");
-            searchPlans.setString(0, name);
+            searchPlans.setString(1, name);
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -658,8 +663,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(creatorID>=0 && name != null){
             searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and name like %?%");
-            searchPlans.setInt(0, creatorID);
-            searchPlans.setString(1, name);
+            searchPlans.setInt(1, creatorID);
+            searchPlans.setString(2, name);
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -678,8 +683,10 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public int getNumberOfLikes(int postId) throws SQLException {
         PreparedStatement getNumberOfLikes = conn.prepareStatement("select count(*) as numberOfLikes from sp_like where idpost = ?");
-        getNumberOfLikes.setInt(0, postId);      
-        return getNumberOfLikes.executeQuery().getInt(1);
+        getNumberOfLikes.setInt(1, postId);   
+        ResultSet result = getNumberOfLikes.executeQuery();
+        result.next();
+        return result.getInt(1);
     }
        /**
      * returns if the specified User liked the specified Post
@@ -690,9 +697,11 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public boolean isLiked(int userId, int postId) throws SQLException {
         PreparedStatement isLiked = conn.prepareStatement("select case when ((select count(*) from sp_like where idPost = ? and idUser = ?) = 1) then 'true' else 'false' end as isLiked from dual");
-        isLiked.setInt(0, postId);
-        isLiked.setInt(1, userId);
-        return Boolean.valueOf(isLiked.executeQuery().getString(1));
+        isLiked.setInt(1, postId);
+        isLiked.setInt(2, userId);
+        ResultSet result = isLiked.executeQuery();
+        result.next();
+        return Boolean.valueOf(result.getString(1));
     }
     
 
@@ -709,8 +718,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         Collection<Comment> comments = new ArrayList<>();
         if(lastCommentID<0){
             getComments = conn.prepareStatement("select * from sp_revComment where idpost = ? and rownum <= ?");
-            getComments.setInt(0, postID);
-            getComments.setInt(1, numberOfComments);
+            getComments.setInt(1, postID);
+            getComments.setInt(2, numberOfComments);
             ResultSet result = getComments.executeQuery();
             while(result.next()){
                 comments.add(new Comment(result.getInt(1), result.getInt(2), result.getInt(3), result.getString(4), result.getTimestamp(5).toLocalDateTime().toLocalDate()));
@@ -718,9 +727,9 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         else if(lastCommentID>=0){
             getComments = conn.prepareStatement("select * from sp_revComment where idpost = ? and idComment < ? and rownum <= ?");
-            getComments.setInt(0, postID);
-            getComments.setInt(1, lastCommentID);
-            getComments.setInt(2, numberOfComments);
+            getComments.setInt(1, postID);
+            getComments.setInt(2, lastCommentID);
+            getComments.setInt(3, numberOfComments);
             ResultSet result = getComments.executeQuery();
             while(result.next()){
                comments.add(new Comment(result.getInt(1), result.getInt(2), result.getInt(3), result.getString(4), result.getTimestamp(5).toLocalDateTime().toLocalDate()));
@@ -740,8 +749,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public boolean addLike(int userId, int postId) throws SQLException {
         PreparedStatement addLike = conn.prepareStatement("insert into sp_like values(?, ?)");
-        addLike.setInt(0, postId);
-        addLike.setInt(1, userId);
+        addLike.setInt(1, postId);
+        addLike.setInt(2, userId);
         addLike.executeQuery();
         return true;
     }
@@ -756,9 +765,9 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public boolean addComment(int userId, int postId, String text) throws SQLException {
         PreparedStatement addComment = conn.prepareStatement("insert into sp_comment values(seq_comment.nextVal, ?, ?, ?, systimestamp)");
-        addComment.setInt(0, userId);
-        addComment.setInt(1, postId);
-        addComment.setString(2, text);
+        addComment.setInt(1, userId);
+        addComment.setInt(2, postId);
+        addComment.setString(3, text);
         addComment.executeQuery();
         return true;
     }
@@ -776,14 +785,14 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         PreparedStatement followUser;
         if(follow){
             followUser = conn.prepareStatement("insert into sp_follow values(?, ?)");
-            followUser.setInt(0, followerId);
-            followUser.setInt(1, followsId);
+            followUser.setInt(1, followerId);
+            followUser.setInt(2, followsId);
             followUser.executeQuery();
         }
         else if(!follow){
             followUser = conn.prepareStatement("delete from sp_follow where followerID = ? and followsID = ?");
-            followUser.setInt(0, followerId);
-            followUser.setInt(1, followsId);
+            followUser.setInt(1, followerId);
+            followUser.setInt(2, followsId);
             followUser.executeQuery();
         }
         return true;
@@ -832,9 +841,11 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public boolean isPlanSubscribed(int userID, int planID) throws SQLException{
         PreparedStatement isPlanSubscribed = conn.prepareStatement("select case when ((select count(*) from sp_subscription where idPlan = ? and idUser = ?) = 1) then 'true' else 'false' end as isSubscribed from dual");
-        isPlanSubscribed.setInt(0, planID);
-        isPlanSubscribed.setInt(1, userID);
-        return Boolean.valueOf(isPlanSubscribed.executeQuery().getString(1));
+        isPlanSubscribed.setInt(1, planID);
+        isPlanSubscribed.setInt(2, userID);
+        ResultSet result = isPlanSubscribed.executeQuery();
+        result.next();
+        return Boolean.valueOf(result.getString(1));
     }
     /**
      * 
@@ -848,15 +859,15 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         PreparedStatement subscribePlan;
         if(subscribe){
             subscribePlan = conn.prepareStatement("insert into sp_subschription(?, ?)");
-            subscribePlan.setInt(0, planID);
-            subscribePlan.setInt(1, userID);
+            subscribePlan.setInt(1, planID);
+            subscribePlan.setInt(2, userID);
             subscribePlan.executeQuery();
             return true;
         }
         if(!subscribe){
             subscribePlan = conn.prepareStatement("delete from sp_subschription where idPlan = ? and idUser = ?");
-            subscribePlan.setInt(0, planID);
-             subscribePlan.setInt(1, userID);
+            subscribePlan.setInt(1, planID);
+             subscribePlan.setInt(2, userID);
             subscribePlan.executeQuery();
             return false;
         }
@@ -870,8 +881,9 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public Exercise getExercise(int exerciseID) throws SQLException{
         PreparedStatement getExercise = conn.prepareStatement("select * from sp_exercise where idExercise = ?");
-        getExercise.setInt(0, exerciseID);
+        getExercise.setInt(1, exerciseID);
         ResultSet result = getExercise.executeQuery();
+        result.next();
         return new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4));
     }
     
@@ -884,7 +896,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     public Collection<User> getFollowedUsers(int userID) throws SQLException{
         Collection<User> users = new ArrayList<>();
         PreparedStatement getFollowedUsers = conn.prepareStatement("select * from sp_user where idUser in (select idOl from sp_follow where idFollower = ?)");
-        getFollowedUsers.setInt(0, userID);
+        getFollowedUsers.setInt(1, userID);
         ResultSet result = getFollowedUsers.executeQuery();
         while(result.next()){
             if(Boolean.valueOf(result.getString(5)))
@@ -903,7 +915,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     public Collection<User> getFollowers(int userID) throws SQLException{
         Collection<User> users = new ArrayList<>();
         PreparedStatement getFollowers = conn.prepareStatement("select * from sp_user where idUser in (select idfollower from sp_follow where idol = ?)");
-        getFollowers.setInt(0, userID);
+        getFollowers.setInt(1, userID);
         ResultSet result = getFollowers.executeQuery();
         while(result.next()){
              if(Boolean.valueOf(result.getString(5)))
@@ -923,8 +935,10 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public boolean isFollowing(int followerID, int followsID) throws SQLException{
         PreparedStatement isFollowing = conn.prepareStatement("select case when ((select count(*) from sp_follow where idFollower = ? and idOl = ?) = 1) then 'true' else 'false' end as isFollowing from dual");
-        isFollowing.setInt(0, followerID);
-        isFollowing.setInt(1, followsID);
-        return Boolean.valueOf(isFollowing.executeQuery().getString(1));
+        isFollowing.setInt(1, followerID);
+        isFollowing.setInt(2, followsID);
+        ResultSet result = isFollowing.executeQuery();
+        result.next();
+        return Boolean.valueOf(result.getString(1));
     }
 }
