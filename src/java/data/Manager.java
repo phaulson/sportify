@@ -143,7 +143,7 @@ public class Manager {
         ResultSet result = getPlans.executeQuery();
         Collection<Plan> plans = new ArrayList<>();
         while(result.next()){
-            plans.add(new Plan(result.getInt(1), result.getString(2), idUser));
+            plans.add(new Plan(result.getInt(1), idUser, result.getString(2)));
         }
         return plans;
     }
@@ -191,7 +191,7 @@ public class Manager {
         ResultSet result = getExercises.executeQuery();
         Collection<Exercise> exercises = new ArrayList();
         while(result.next()){
-            exercises.add(new Exercise(result.getInt(1), result.getString(2), result.getInt(3), result.getString(4)));
+            exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));
         }
         return exercises;
     }
@@ -443,16 +443,205 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * get all Workouts
      * @return a collection of Workouts
      */
-    public Collection<Workout> searchWorkouts(int creatorID, String name) throws SQLException {
+    public Collection<Workout> searchWorkouts(int creatorID, String name) throws SQLException, Exception {
         PreparedStatement searchWorkouts;
         Collection<Workout> workouts = new ArrayList<>();
         if(creatorID<0 && name == null){
             searchWorkouts = conn.prepareStatement("select * from sp_workout");
             ResultSet result = searchWorkouts.executeQuery();
-            
+            while(result.next()){
+                workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
+            }
+        }
+        else if(creatorID>=0 && name == null){
+        searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ?");
+        searchWorkouts.setInt(0, creatorID);
+        ResultSet result = searchWorkouts.executeQuery();
+        while(result.next()){
+            workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
+        }
+        
+        }
+        else if(creatorID<0 && name != null){
+                searchWorkouts = conn.prepareStatement("select * from sp_workout where name like %?%");
+                searchWorkouts.setString(0, name);
+                ResultSet result = searchWorkouts.executeQuery();
+                while(result.next()){
+                    workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
+                }
+            }
+        else if(creatorID>=0 && name != null){
+            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and name like %?%");
+            searchWorkouts.setInt(0, creatorID);
+            searchWorkouts.setString(1, name);
+            ResultSet result = searchWorkouts.executeQuery();
+            while(result.next()){
+                workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
+            }
+        }
+        else{
+            throw new Exception("Unknown Error");
+        }
+        return workouts;
+    }
+        /**
+     * get all Exercises
+     * @param creatorID
+     * @param name
+     * @return a collection of Exercises
+     * @throws java.sql.SQLException
+     */
+    public Collection<Exercise> searchExercises(int creatorID, String name) throws SQLException, Exception {
+        PreparedStatement searchExercises;
+        Collection<Exercise> exercises = new ArrayList<>();
+        if(creatorID<0 && name == null){
+            searchExercises = conn.prepareStatement("select * from sp_exercise");
+            ResultSet result = searchExercises.executeQuery();
+            while(result.next()){
+                exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));
+            }
+        }
+        else if(creatorID>=0 && name == null){
+            searchExercises = conn.prepareStatement("select * from sp_exercise where idCreator = ?");
+            searchExercises.setInt(0, creatorID);
+            ResultSet result = searchExercises.executeQuery();
+            while(result.next()){
+                exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));            
+            }
+        }
+        else if(creatorID<0 && name != null){
+            searchExercises = conn.prepareStatement("select * from sp_exercise where name like %?%");
+            searchExercises.setString(0, name);
+            ResultSet result = searchExercises.executeQuery();
+            while(result.next()){
+                exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
+            }
+        }
+        else if(creatorID>=0&&name == null){
+            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and name like %?%");
+            searchExercises.setInt(0, creatorID);
+            searchExercises.setString(1, name);
+            ResultSet result = searchExercises.executeQuery();
+            while(result.next()){
+                exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
+            }
+        }
+        else{
+            throw new Exception("Unknonw Error");
+        }
+        return exercises;
+    }
+    
+    
+    /**
+     * add a new Post and return its ID
+     * @param creatorId
+     * @param caption
+     * @return postID if successful, else -1
+     * @throws java.sql.SQLException
+     */
+    public int addPost(int creatorId, String caption) throws SQLException {
+        PreparedStatement addPost = conn.prepareStatement("insert into sp_post values(seq_post.nextval, ?, ?, systimestamp)");
+        addPost.setInt(0, creatorId);
+        addPost.setString(1, caption);
+        addPost.executeQuery();
+        PreparedStatement getPostId = conn.prepareStatement("select seq_post.currval from dual");
+        return getPostId.executeQuery().getInt(1);     
+    }
+    
+    /**
+     * gets the next n number of Posts that creators are subscribed by the specified user
+     * @param userId
+     * @param lastPostId
+     * @param numberOfPosts
+     * @return a collection of Posts
+     * @throws java.sql.SQLException
+     * @throws java.lang.Exception
+     */
+    public Collection<Post> getPosts(int userId, int lastPostId, int numberOfPosts) throws SQLException, Exception {
+        Collection<Post> posts = new ArrayList<>();       
+        if(lastPostId<0){
+        PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and rownum <= ?");
+        getPosts.setInt(0, userId);
+        getPosts.setInt(1, numberOfPosts);
+        ResultSet result = getPosts.executeQuery();
+        while(result.next()){
+            posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
+        }
+        }
+        else if(lastPostId>=0){
+            PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost < ? and rownum <= ?");
+            getPosts.setInt(0, userId);
+            getPosts.setInt(1,lastPostId);
+            getPosts.setInt(2, numberOfPosts);
+            ResultSet result = getPosts.executeQuery();
+            while(result.next()){
+                posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
+            }
+        }
+        else{
+            throw new Exception("Unknown Error");
+        }
+        
+        return posts;
+    }
+    
+    /**
+     * gets all Users that contain that name and their pro-attribute is equivalent to the pro-parameter
+     * @param name
+     * @param isPro
+     * @param pro
+     * @return a collection of Users
+     * @throws java.sql.SQLException
+     */
+    public Collection<User> searchUsers(String name, boolean isPro) throws SQLException {
+        int ISPRO = isPro ? 1 : 0;
+        Collection<User> users = new ArrayList<>();
+        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and username like %?%");
+        searchUsers.setInt(0, ISPRO);
+        searchUsers.setString(1, name);
+        ResultSet result = searchUsers.executeQuery();
+        if(isPro){
+        while(result.next()){
+            users.add(new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+        }
+        }
+        else{
+             while(result.next()){
+                users.add(new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+        }
+        }
+        return users;
+    }
+    
+
+    /**
+     * get all Plans
+     * @param creatorID
+     * @param name
+     * @return a collection of Plans
+     * @throws java.sql.SQLException
+     */
+    public Collection<Plan> searchPlans(int creatorID, String name) throws SQLException {
+        PreparedStatement searchPlans;
+        Collection<Plan> plans = new ArrayList<>();
+        ResultSet result;
+        if(creatorID<0 && name == null){
+            searchPlans = conn.prepareStatement("select * from sp_plan");
+            result = searchPlans.executeQuery();
+            while(result.next()){
+                plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
+            }
+        }
+        else if(creatorID>=0 && name != null){
+            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ?");
+            searchPlans.setInt(0, creatorID);
+            result = searchPlans.executeQuery();
+            while(result.next()){
+                plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
+            }
         }
         return null;
     }
-
     
 }

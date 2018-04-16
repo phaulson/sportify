@@ -17,7 +17,7 @@ public class Exercise implements Serializable{
     private int creatorId;
     private String name;
 
-    public Exercise(int id, String description, int creatorId, String name) {
+    public Exercise(int id, int creatorId, String name, String description) {
         this.id = id;
         this.description = description;
         this.creatorId = creatorId;

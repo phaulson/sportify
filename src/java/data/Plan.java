@@ -17,7 +17,7 @@ public class Plan implements Serializable{
     private String name;
     private int creatorId;
 
-    public Plan(int id, String name, int creatorId) {
+    public Plan(int id, int creatorId, String name) {
         this.id = id;
         this.name = name;
         this.creatorId = creatorId;
