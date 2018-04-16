@@ -1,25 +1,37 @@
 package com.spogss.sportifycommunity.data;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Created by Pauli on 09.04.2018.
  */
 
 public class SportifyClient {
-    private static SportifyClient client = new SportifyClient();
+    private static SportifyClient client;
     private int currentUserID;
     private int numberOfPosts;
+    private Manager manager = null;
 
     /**
      * singleton for SportifyClient
      * @return the static SportifyClient
      */
     public static SportifyClient newInstance(){
+        if(client == null)
+            client = new SportifyClient();
         return client;
     }
     private SportifyClient(){
+        //TODO: proper exception handling
+        try {
+            this.manager = Manager.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public int getCurrentUserID() {
@@ -45,17 +57,26 @@ public class SportifyClient {
      * @return userId if successful, else -1
      */
     public int login(String username, String password) {
-        return 0;
+        try {
+            return manager.login(username, password);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
      * if the username is not in use, a new User is added to the database
      * @param username
      * @param password
+     * @param isPro
      * @return userID if successful, else -1
      */
-    public int register(String username, String password){
-        return 0;
+    public int register(String username, String password, boolean isPro){
+        try {
+            return manager.register(username, password, isPro);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -64,7 +85,11 @@ public class SportifyClient {
      * @return the User
      */
     public User getProfile(int idUser){
-        return null;
+        try {
+            return manager.getProfile(idUser);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -74,7 +99,11 @@ public class SportifyClient {
      * @return true if successful, false if failed
      */
     public boolean changeDescription(int idUser, String newDescription){
-        return false;
+        try {
+            return manager.changeDescription(idUser, newDescription);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -83,7 +112,11 @@ public class SportifyClient {
      * @return a collection of Plans
      */
     public Collection<Plan> getPlans(int idUser){
-        return null;
+        try {
+            return manager.getPlans(idUser);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -92,7 +125,11 @@ public class SportifyClient {
      * @return a collection of DailyWorkouts
      */
     public Collection<DailyWorkout> getDailyWorkouts(int idPlan){
-        return null;
+        try {
+            return manager.getDailyWorkouts(idPlan);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -101,7 +138,11 @@ public class SportifyClient {
      * @return a collection of Workouts
      */
     public Collection<Workout> getWorkouts(int idDailyWorkout){
-        return null;
+        try {
+            return manager.getWorkouts(idDailyWorkout);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -110,7 +151,11 @@ public class SportifyClient {
      * @return a collection of Exercises
      */
     public Collection<Exercise> getExercises(int idWorkout){
-        return null;
+        try {
+            return manager.getExercises(idWorkout);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -119,7 +164,11 @@ public class SportifyClient {
      * @return a collection of Locations
      */
     public Collection<Location> getLocations(int idUser){
-        return null;
+        try {
+            return manager.getLocations(idUser);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -129,7 +178,11 @@ public class SportifyClient {
      * @return a collection of Posts
      */
     public Collection<Post> getPostsByCreator(int idCreator, int lastPostId){
-        return null;
+        try {
+            return manager.getPostsByCreator(idCreator, lastPostId, numberOfPosts);
+        } catch (Exception e) {
+            return null;
+        }
     }
     /**
      * gets the next n posts created by the User specified with the creatorID
@@ -137,7 +190,7 @@ public class SportifyClient {
      * @return a collection of Posts
      */
     public Collection<Post> getPostsByCreator(int idCreator){
-        return getPostsByCreator(idCreator, 0);
+        return getPostsByCreator(idCreator, -1);
     }
 
     /**
@@ -151,8 +204,12 @@ public class SportifyClient {
      * @param endDate
      * @return locationID if successful, else -1
      */
-    public int addLocation(int idUser, Coordinate coordinates, String name, LocationType type, LocalDate startDate, LocalDate endDate){
-        return 0;
+    public int addLocation(int idUser, Coordinate coordinates, String name, LocationType type, Date startDate, Date endDate){
+        try {
+            return manager.addLocation(idUser, coordinates, name, type, startDate, endDate);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -162,7 +219,11 @@ public class SportifyClient {
      * @return planID if successful, else -1
      */
     public int addPlan(int idCreator, String name){
-        return 0;
+        try {
+            return manager.addPlan(idCreator, name);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -172,7 +233,11 @@ public class SportifyClient {
      * @return true if successful, false if failed
      */
     public boolean linkDailyWorkouts(int planId, Collection<Integer> dailyWorkouts){
-        return false;
+        try {
+            return manager.linkDailyWorkouts(planId, dailyWorkouts);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -182,7 +247,11 @@ public class SportifyClient {
      * @return dailyWorkoutID if successful, else -1
      */
     public int addDailyWorkout(int creatorId, String name){
-        return 0;
+        try {
+            return manager.addDailyWorkout(creatorId, name);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -192,7 +261,11 @@ public class SportifyClient {
      * @return true if successful, false when failed
      */
     public boolean linkWorkouts(int planId, Collection<Integer> workouts){
-        return false;
+        try {
+            return manager.linkWorkouts(planId, workouts);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -202,7 +275,11 @@ public class SportifyClient {
      * @return workoutID if successful, else -1
      */
     public int addWorkout(int creatorId, String name){
-        return 0;
+        try {
+            return manager.addWorkout(creatorId, name);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -212,7 +289,11 @@ public class SportifyClient {
      * @return true if successful, false if failed
      */
     public boolean linkExercises(int workoutId, Collection<Integer> exercises){
-        return false;
+        try {
+            return manager.linkExercises(workoutId, exercises);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -223,7 +304,11 @@ public class SportifyClient {
      * @return exerciseID if successful, else -1
      */
     public int addExerise(String name, String description, int creatorId) {
-        return 0;
+        try {
+            return manager.addExercise(name, description, creatorId);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
 
@@ -232,7 +317,7 @@ public class SportifyClient {
      * @return a collection of DailyWorkouts
      */
     public Collection<DailyWorkout> searchDailyWorkouts() {
-        return null;
+        return searchDailyWorkouts(-1, null);
     }
     /**
      * get all DailyWorkouts with this creatorID
@@ -240,7 +325,7 @@ public class SportifyClient {
      * @return a collection of DailyWorkouts
      */
     public Collection<DailyWorkout> searchDailyWorkouts(int creatorID) {
-        return null;
+        return searchDailyWorkouts(creatorID, null);
     }
     /**
      * get all DailyWorkouts that contain that name
@@ -248,7 +333,7 @@ public class SportifyClient {
      * @return a collection of DailyWorkouts
      */
     public Collection<DailyWorkout> searchDailyWorkouts(String name) {
-        return null;
+        return searchDailyWorkouts(-1, name);
     }
     /**
      * get all DailyWorkouts with that creatorID and that contain that name
@@ -257,7 +342,11 @@ public class SportifyClient {
      * @return a collection of DailyWorkouts
      */
     public Collection<DailyWorkout> searchDailyWorkouts(int creatorID, String name) {
-        return null;
+        try {
+            return manager.searchDailyWorkouts(creatorID, name);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -265,7 +354,7 @@ public class SportifyClient {
      * @return a collection of Workouts
      */
     public Collection<Workout> searchWorkouts() {
-        return null;
+        return searchWorkouts(-1, null);
     }
     /**
      * get all Workouts with this creatorID
@@ -273,7 +362,7 @@ public class SportifyClient {
      * @return a collection of Workouts
      */
     public Collection<Workout> searchWorkouts(int creatorID) {
-        return null;
+        return searchWorkouts(creatorID, null);
     }
     /**
      * get all Workouts that contain that name
@@ -281,7 +370,7 @@ public class SportifyClient {
      * @return a collection of Workouts
      */
     public Collection<Workout> searchWorkouts(String name) {
-        return null;
+        return searchWorkouts(-1, name);
     }
     /**
      * get all Workouts with that creatorID and that contain that name
@@ -290,7 +379,11 @@ public class SportifyClient {
      * @return a collection of Workouts
      */
     public Collection<Workout> searchWorkouts(int creatorID, String name) {
-        return null;
+        try {
+            return manager.searchWorkouts(creatorID, name);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -298,7 +391,7 @@ public class SportifyClient {
      * @return a collection of Exercises
      */
     public Collection<Exercise> searchExercises() {
-        return null;
+        return searchExercises(-1, null);
     }
     /**
      * get all Exercises with this creatorID
@@ -306,15 +399,14 @@ public class SportifyClient {
      * @return a collection of Exercises
      */
     public Collection<Exercise> searchExercises(int creatorID) {
-        return null;
-    }
+        return searchExercises(creatorID, null);    }
     /**
      * get all Exercises that contain that name
      * @param name
      * @return a collection of Exercises
      */
     public Collection<Exercise> searchExercises(String name) {
-        return null;
+        return searchExercises(-1, name);
     }
     /**
      * get all Exercises with that creatorID and that contain that name
@@ -323,7 +415,11 @@ public class SportifyClient {
      * @return a collection of Exercises
      */
     public Collection<Exercise> searchExercises(int creatorId, String name) {
-        return null;
+        try {
+            return manager.searchExercises(creatorId, name);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -333,7 +429,11 @@ public class SportifyClient {
      * @return postID if successful, else -1
      */
     public int addPost(int creatorId, String caption) {
-        return 0;
+        try {
+            return manager.addPost(creatorId, caption);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -342,7 +442,7 @@ public class SportifyClient {
      * @return a collection of Posts
      */
     public Collection<Post> getPosts(int userId) {
-        return null;
+        return getPosts(userId, -1);
     }
     /**
      * gets the next n number of Posts that creators are subscribed by the specified user, starting with a specified postID
@@ -351,6 +451,11 @@ public class SportifyClient {
      * @return a collection of Posts
      */
     public Collection<Post> getPosts(int userId, int lastPostId) {
+        try {
+            return manager.getPosts(userId, lastPostId, numberOfPosts);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -361,7 +466,11 @@ public class SportifyClient {
      * @return a collection of Users
      */
     public Collection<User> searchUsers(String name, boolean pro) {
-        return null;
+        try {
+            return manager.searchUsers(name, pro);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -369,7 +478,7 @@ public class SportifyClient {
      * @return a collection of Plans
      */
     public Collection<Plan> searchPlans() {
-        return null;
+        return searchPlans(-1, null);
     }
     /**
      * get all Plans with this creatorID
@@ -377,7 +486,7 @@ public class SportifyClient {
      * @return a collection of Plans
      */
     public Collection<Plan> searchPlans(int creatorID) {
-        return null;
+        return searchPlans(creatorID, null);
     }
     /**
      * get all Plans that contain that name
@@ -385,7 +494,7 @@ public class SportifyClient {
      * @return a collection of Plans
      */
     public Collection<Plan> searchPlans(String name) {
-        return null;
+        return searchPlans(-1, name);
     }
     /**
      * get all Plans with that creatorID and that contain that name
@@ -394,7 +503,11 @@ public class SportifyClient {
      * @return a collection of Plans
      */
     public Collection<Plan> searchPlans(int creatorID, String name) {
-        return null;
+        try {
+            return manager.searchPlans(creatorID, name);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -403,7 +516,11 @@ public class SportifyClient {
      * @return number of likes if successful, else -1
      */
     public int getNumberOfLikes(int postId) {
-        return 0;
+        try {
+            return manager.getNumberOfLikes(postId);
+        } catch (SQLException e) {
+            return -1;
+        }
     }
 
     /**
@@ -413,7 +530,11 @@ public class SportifyClient {
      * @return true if the Post is liked by that User, else if not
      */
     public boolean isLiked(int userId, int postId) {
-        return false;
+        try {
+            return manager.isLiked(userId, postId);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -422,7 +543,7 @@ public class SportifyClient {
      * @return a collection of Comments
      */
     public Collection<Comment> getComments(int postID) {
-        return getComments(postID, 0);
+        return getComments(postID, -1);
     }
 
     /**
@@ -432,7 +553,11 @@ public class SportifyClient {
      * @return a collection of Comments
      */
     public Collection<Comment> getComments(int postID, int lastCommentId) {
-        return null;
+        try {
+            return manager.getComments(postID, lastCommentId, numberOfPosts);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -441,8 +566,12 @@ public class SportifyClient {
      * @param postId
      * @return true if successful, false if failed
      */
-    public boolean like(int userId, int postId) {
-        return false;
+    public boolean setLike(int userId, int postId, boolean likes) {
+        try {
+            return manager.setLike(userId, postId, likes);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -453,7 +582,11 @@ public class SportifyClient {
      * @return true if successful, false if failed
      */
     public boolean addComment(int userId, int postId, String text) {
-        return false;
+        try {
+            return manager.addComment(userId, postId, text);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -464,7 +597,11 @@ public class SportifyClient {
      * @return the follow-state after change
      */
     public boolean setUserFollow(int followerId, int followsId, boolean follow) {
-        return false;
+        try {
+            return manager.setUserFollow(followerId, followsId, follow);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -475,7 +612,11 @@ public class SportifyClient {
      * @return a collection of Locations
      */
     public Collection<Location> getNearbyLocations(Coordinate coordinate, double radius, Collection<LocationType> types) {
-        return null;
+        try {
+            return manager.getNearbyLocations(coordinate, radius, (ArrayList<LocationType>) types);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -484,7 +625,11 @@ public class SportifyClient {
      * @return a collection Plans
      */
     public Collection<Plan> getSubscribedPlans(int userId) {
-        return null;
+        try {
+            return manager.getSubscribedPlans(userId);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -494,7 +639,11 @@ public class SportifyClient {
      * @return true if the plan is subscribed, false if not
      */
     public boolean isPlanSubscribed(int userId, int planId) {
-        return false;
+        try {
+            return manager.isPlanSubscribed(userId, planId);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -505,7 +654,11 @@ public class SportifyClient {
      * @return the subscription-state after change
      */
     public boolean setPlanSubscription(int planId, int userId, boolean subscribe) {
-        return false;
+        try {
+            return manager.setPlanSubscription(userId, planId, subscribe);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -514,7 +667,11 @@ public class SportifyClient {
      * @return if found -> exercise else null
      */
     public Exercise getExercise(int idExercise){
-        return null;
+        try {
+            return manager.getExercise(idExercise);
+        } catch (SQLException e) {
+            return null;
+        }
     }
     /**
      * gets all User that the user with the id idUser follows
@@ -522,7 +679,11 @@ public class SportifyClient {
      * @return a collection of users
      */
     public Collection<User> getUsersIFollow(int idUser){
-        return null;
+        try {
+            return manager.getFollowedUsers(idUser);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -531,7 +692,11 @@ public class SportifyClient {
      * @return a collection of user
      */
     public Collection<User> getUsersThatFollowMe(int idUser){
-        return null;
+        try {
+            return manager.getFollowers(idUser);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     /**
@@ -541,6 +706,10 @@ public class SportifyClient {
      * @return true if user follows the other user and false if not
      */
     public boolean isFollowing(int idFollower, int idFollows){
-        return false;
+        try {
+            return manager.isFollowing(idFollower, idFollows);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 }

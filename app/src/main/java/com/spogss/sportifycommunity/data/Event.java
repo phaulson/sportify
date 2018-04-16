@@ -2,6 +2,7 @@ package com.spogss.sportifycommunity.data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -14,28 +15,28 @@ import java.time.LocalDate;
  * @author schueler
  */
 public class Event extends Location implements Serializable{
-    private LocalDate startDateTime;
-    private LocalDate endDateTime;
+    private Date startDateTime;
+    private Date endDateTime;
 
-    public Event(int idLocation, Coordinate c, int idPage, String name, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
-        super(idLocation, c, idPage, name, type);
+    public Event(int idLocation,  int idPage, String name,Coordinate c, LocationType type, Date startDateTime, Date endDateTime) {
+        super(idLocation,idPage,name, c,  type);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;        
     }
 
-    public LocalDate getStartDateTime() {
+    public Date getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(LocalDate startDateTime) {
+    public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public LocalDate getEndDateTime() {
+    public Date getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(LocalDate endDateTime) {
+    public void setEndDateTime(Date endDateTime) {
         this.endDateTime = endDateTime;
     }
     

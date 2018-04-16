@@ -31,4 +31,6 @@ dependencies {
     compile 'com.miguelcatalan:materialsearchview:1.4.0'
     //expandable textView
     compile 'com.borjabravo:readmoretextview:2.0.1'
+    //ojdbc
+    compile files('libs/ojdbc14.jar')
 }

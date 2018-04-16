@@ -1,8 +1,12 @@
 package com.spogss.sportifycommunity.data;
 
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,9 +23,9 @@ public class Comment implements Serializable{
     private int postId;
     private int creatorId;
     private String text;
-    private LocalDate timestamp;
+    private Date timestamp;
 
-    public Comment(int id, int postId, int creatorId, String text, LocalDate timestamp) {
+    public Comment(int id, int postId, int creatorId, String text, Date timestamp) {
         this.id = id;
         this.postId = postId;
         this.creatorId = creatorId;
@@ -61,11 +65,11 @@ public class Comment implements Serializable{
         this.text = text;
     }
 
-    public LocalDate getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

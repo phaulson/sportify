@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.tempData.User;
+import com.spogss.sportifycommunity.data.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class SearchListAdapter extends BaseAdapter implements View.OnTouchListen
         User user = users.get(keys.get(i));
         rl.setTag(user.getId());
         username.setText(user.getUsername());
-        profilePic.setImageResource(user.getProfilePic());
+        //profilePic.setImageResource(user.getProfilePic());
 
         //add eventListeners
         rl.setOnTouchListener(this);

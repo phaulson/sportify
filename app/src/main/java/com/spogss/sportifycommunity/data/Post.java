@@ -7,6 +7,7 @@ package com.spogss.sportifycommunity.data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.TreeSet;
 
 /**
@@ -17,20 +18,20 @@ public class Post implements Serializable{
     private int id;
     private String caption;
     private int creatorId;
-    private LocalDate timestamp;
+    private Date timestamp;
 
-    public Post(int postId, String caption, int creatorId, LocalDate timestamp) {
+    public Post(int postId, int creatorId, String caption, Date timestamp) {
         this.id = postId;
         this.caption = caption;
         this.creatorId = creatorId;
         this.timestamp = timestamp;
     }
 
-    public int getPostId() {
+    public int getId() {
         return id;
     }
 
-    public void setPostId(int postId) {
+    public void setId(int postId) {
         this.id = postId;
     }
 
@@ -50,11 +51,11 @@ public class Post implements Serializable{
         this.creatorId = creatorId;
     }
 
-    public LocalDate getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

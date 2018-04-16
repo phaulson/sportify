@@ -1,6 +1,7 @@
 package com.spogss.sportifycommunity.adapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -13,7 +14,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.tempData.Post;
+import com.spogss.sportifycommunity.data.Post;
+import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +28,7 @@ import java.util.HashMap;
 
 public class FeedListAdapter extends BaseAdapter implements View.OnClickListener, View.OnTouchListener {
     private Context context;
+    private SportifyClient client;
 
     // TODO: implement with real posts
     private HashMap<Integer, Post> posts = new HashMap<Integer, Post>();
@@ -32,6 +36,7 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
     public FeedListAdapter(Context context) {
         this.context = context;
+        this.client = SportifyClient.newInstance();
     }
 
     @Override
@@ -73,27 +78,26 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         Post post = posts.get(keys.get(i));
         rl.setTag(post.getId());
 
-        username.setText(post.getUser().getUsername());
-        timeStamp.setText(post.getTimeStamp());
+        new ProfileTask(post, username).execute((Void) null);
+        timeStamp.setText(post.getTimestamp().toString());
         caption.setText(post.getCaption());
-        likes.setText(post.getLikes() + " like" + (post.getLikes() != 1 ? "s": ""));
 
-        profilePic.setImageResource(post.getUser().getProfilePic());
+        new NumberOfLikesTask(post, likes).execute((Void) null);
+
+        //TODO: implement with pics
+        //profilePic.setImageResource(post.getUser().getProfilePic());
 
         //check if post has pic
-        if(post.getPostPic() != -1)
-            postPic.setImageResource(post.getPostPic());
-        else {
+        //if(post.getPostPic() != -1)
+        //    postPic.setImageResource(post.getPostPic());
+        //else {
             ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) postPic.getLayoutParams();
             marginParams.topMargin = 0;
             marginParams.bottomMargin = 0;
-        }
+        //}
 
         //check if post is liked
-        if(post.isLiked())
-            heart.setImageResource(R.drawable.sp_heart_filled);
-        else
-            heart.setImageResource(R.drawable.sp_heart_blank);
+        new IsLikedTask(post, heart, false);
 
         comment.setImageResource(R.drawable.sp_comment);
 
@@ -138,7 +142,6 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
             posts.put(post.getId(), post);
             keys.add(post.getId());
         }
-        this.notifyDataSetChanged();
     }
 
     @Override
@@ -164,19 +167,11 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         int idRl = Integer.parseInt(rl.getTag().toString());
         Post post = posts.get(idRl);
 
-        if(post.isLiked()) {
-            post.setLiked(false);
-            post.setLikes(post.getLikes() - 1);
-            ImageView heart = (ImageView) rl.findViewById(R.id.imageView_feed_heart);
-            heart.setImageResource(R.drawable.sp_heart_blank);
-        } else {
-            post.setLiked(true);
-            post.setLikes(post.getLikes() + 1);
-            ImageView heart = (ImageView) rl.findViewById(R.id.imageView_feed_heart);
-            heart.setImageResource(R.drawable.sp_heart_filled);
-        }
+        ImageView heart = (ImageView) rl.findViewById(R.id.imageView_feed_heart);
+        new IsLikedTask(post, heart, true);
+
         TextView likes = (TextView) rl.findViewById(R.id.textView_feed_likes);
-        likes.setText(post.getLikes() + " like" + (post.getLikes() != 1 ? "s": ""));
+        new NumberOfLikesTask(post, likes);
     }
 
     @Override
@@ -186,7 +181,7 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
             RelativeLayout rl = (RelativeLayout) view.getParent();
             int idRl = Integer.parseInt(rl.getTag().toString());
             Post post = posts.get(idRl);
-            Snackbar.make(view, "The ProfileActivity for '" + post.getUser().getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
+            Snackbar.make(view, "The ProfileActivity will be implemented soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
         return true;
@@ -213,6 +208,106 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         public boolean onDoubleTap(MotionEvent e) {
             like(view);
             return true;
+        }
+    }
+
+
+    //AsyncTasks
+    private class ProfileTask extends AsyncTask<Void, Void, User> {
+        private Post post;
+        private TextView username;
+
+        public ProfileTask(Post post, TextView username) {
+            this.post = post;
+            this.username = username;
+        }
+        @Override
+        protected User doInBackground(Void... params) {
+            // TODO: call webservice for loading of profile
+            return client.getProfile(post.getCreatorId());
+        }
+
+        @Override
+        protected void onPostExecute(final User user) {
+            username.setText(user.getUsername());
+        }
+    }
+
+    private class NumberOfLikesTask extends AsyncTask<Void, Void, Integer> {
+        private Post post;
+        private TextView likes;
+
+        public NumberOfLikesTask(Post post, TextView likes) {
+            this.post = post;
+            this.likes = likes;
+        }
+        @Override
+        protected Integer doInBackground(Void... params) {
+            // TODO: call webservice for number of likes
+            return client.getNumberOfLikes(post.getId());
+        }
+
+        @Override
+        protected void onPostExecute(final Integer numberOfLikes) {
+            likes.setText(numberOfLikes + " like" + (numberOfLikes != 1 ? "s": ""));
+        }
+    }
+
+    private class IsLikedTask extends AsyncTask<Void, Void, Boolean> {
+        private Post post;
+        private ImageView heart;
+        private boolean like;
+
+        public IsLikedTask(Post post, ImageView heart, boolean like) {
+            this.post = post;
+            this.heart = heart;
+            this.like = like;
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: call webservice for number of likes
+            return client.isLiked(client.getCurrentUserID(), post.getId());
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean isLiked) {
+            if(like) {
+                if (isLiked)
+                    new SetLikeTask(post, heart, false);
+                else
+                    new SetLikeTask(post, heart, true);
+            }
+            else {
+                if (isLiked)
+                    heart.setImageResource(R.drawable.sp_heart_filled);
+                else
+                    heart.setImageResource(R.drawable.sp_heart_blank);
+            }
+        }
+    }
+
+    private class SetLikeTask extends AsyncTask<Void, Void, Boolean> {
+        private Post post;
+        private ImageView heart;
+        private boolean like;
+
+        public SetLikeTask(Post post, ImageView heart, boolean like) {
+            this.post = post;
+            this.heart = heart;
+            this.like = like;
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: call webservice for set Likes
+            return client.setLike(client.getCurrentUserID(), post.getId(), like);
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean liked) {
+            if(liked)
+                heart.setImageResource(R.drawable.sp_heart_filled);
+            else
+                heart.setImageResource(R.drawable.sp_heart_blank);
         }
     }
 }
