@@ -863,6 +863,19 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     }
     /**
      * 
+     */
+    public Collection<Plan> getSubscribedPlans(int userId) throws SQLException{
+        Collection<Plan> plans = new ArrayList<>();
+        PreparedStatement getSubscribedPlans = conn.prepareStatement("select * from sp_plan where idPlan in (select idPlan from sp_subscription where idUser = ?)");
+        getSubscribedPlans.setInt(1, userId);
+        ResultSet result = getSubscribedPlans.executeQuery();
+        while(result.next()){
+            plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
+        }
+        return plans;
+    }
+    /**
+     * 
      * @param userID
      * @param planID
      * @param subscribe
