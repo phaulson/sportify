@@ -2,6 +2,7 @@ package data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,10 +14,15 @@ import java.time.LocalDate;
  *
  * @author schueler
  */
+@XmlRootElement
 public class Event extends Location implements Serializable{
     private LocalDate startDateTime;
     private LocalDate endDateTime;
 
+    public Event(){
+        super();
+    }
+    
     public Event(int idLocation,  int idPage, String name,Coordinate c, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
         super(idLocation,idPage,name, c,  type);
         this.startDateTime = startDateTime;

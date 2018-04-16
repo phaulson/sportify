@@ -15,16 +15,19 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class Manager {
     static Manager db = new Manager();
     private static final String CONNSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
     private static final String USER = "d4a13";
     private static final String PASSWORD = "d4a";   
     Connection conn;
+    
     public static Manager newInstance(){       
         return db;
     }

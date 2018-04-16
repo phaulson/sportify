@@ -7,18 +7,23 @@ package data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.TreeSet;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class Post implements Serializable{
     private int id;
     private String caption;
     private int creatorId;
     private LocalDate timestamp;
 
+    public Post(){
+        
+    }
+    
     public Post(int postId, int creatorId, String caption, LocalDate timestamp) {
         this.id = postId;
         this.caption = caption;
@@ -77,10 +82,7 @@ public class Post implements Serializable{
             return false;
         }
         final Post other = (Post) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
     
 }

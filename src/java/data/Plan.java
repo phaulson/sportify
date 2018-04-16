@@ -6,17 +6,21 @@
 package data;
 
 import java.io.Serializable;
-import java.util.TreeSet;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class Plan implements Serializable{
     private int id;
     private String name;
     private int creatorId;
-
+    
+    public Plan(){
+        
+    }
     public Plan(int id, int creatorId, String name) {
         this.id = id;
         this.name = name;
@@ -66,10 +70,7 @@ public class Plan implements Serializable{
             return false;
         }
         final Plan other = (Plan) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
 

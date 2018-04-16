@@ -6,18 +6,23 @@
 package data;
 
 import java.io.Serializable;
-import java.util.TreeSet;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class User implements Serializable{
     private int id;
     private String username;
     private String password;
     private String description;
 
+    public User(){
+        
+    }
+    
     public User(int id, String username, String password, String description) {
         this.id = id;
         this.username = username;
@@ -76,10 +81,7 @@ public class User implements Serializable{
             return false;
         }
         final User other = (User) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
 

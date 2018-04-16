@@ -6,17 +6,22 @@
 package data;
 
 import java.io.Serializable;
-import java.util.TreeSet;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class Workout implements Serializable{
     private int id;
     private int creatorId;
     private String name;
 
+    public Workout(){
+        
+    }
+    
     public Workout(int id, int creatorId, String name) {
         this.id = id;
         this.creatorId = creatorId;
@@ -66,10 +71,7 @@ public class Workout implements Serializable{
             return false;
         }
         final Workout other = (Workout) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
    

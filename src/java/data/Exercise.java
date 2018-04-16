@@ -6,17 +6,23 @@
 package data;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class Exercise implements Serializable{
     private int id;
     private String description;
     private int creatorId;
     private String name;
-
+    
+    public Exercise(){
+        
+    }
+    
     public Exercise(int id, int creatorId, String name, String description) {
         this.id = id;
         this.description = description;
@@ -75,10 +81,7 @@ public class Exercise implements Serializable{
             return false;
         }
         final Exercise other = (Exercise) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
     

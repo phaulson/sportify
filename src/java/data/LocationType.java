@@ -5,10 +5,13 @@
  */
 package data;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public enum LocationType {
     EVENT,
     PUBLIC_PLACE,

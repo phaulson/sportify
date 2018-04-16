@@ -3,6 +3,7 @@ package data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -14,13 +15,17 @@ import java.time.LocalDate;
  *
  * @author schueler
  */
+@XmlRootElement
 public class Comment implements Serializable{
     private int id;
     private int postId;
     private int creatorId;
     private String text;
     private LocalDate timestamp;
-
+    
+    public Comment(){
+        
+    }
     public Comment(int id, int creatorId, int postId, String text, LocalDate timestamp) {
         this.id = id;
         this.postId = postId;
@@ -88,10 +93,7 @@ public class Comment implements Serializable{
             return false;
         }
         final Comment other = (Comment) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
     

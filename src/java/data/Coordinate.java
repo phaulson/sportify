@@ -5,14 +5,21 @@
  */
 package data;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class Coordinate {
     private double lat;
     private double lng;
 
+    public Coordinate(){
+        
+    }
+    
     public Coordinate(double lat, double lng) {
         this.lat = lat;
         this.lng = lng;
@@ -57,10 +64,7 @@ public class Coordinate {
         if (Double.doubleToLongBits(this.lat) != Double.doubleToLongBits(other.lat)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.lng) != Double.doubleToLongBits(other.lng)) {
-            return false;
-        }
-        return true;
+        return Double.doubleToLongBits(this.lng) == Double.doubleToLongBits(other.lng);
     }
     
 }

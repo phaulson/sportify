@@ -6,14 +6,19 @@
 package data;
 
 import java.io.Serializable;
-import java.util.TreeSet;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class ProUser extends User implements Serializable{
+    
     public ProUser(int idUser, String username, String password, String biographie) {
         super(idUser, username, password, biographie);
+    }
+    public ProUser(){
+        super();
     }
 }

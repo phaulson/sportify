@@ -6,11 +6,13 @@
 package data;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Martin
  */
+@XmlRootElement
 public class Location implements Serializable{
     private int id;
     private int pageId;
@@ -18,6 +20,9 @@ public class Location implements Serializable{
     private Coordinate coordinates;  
     private LocationType type;
 
+    public Location(){
+        
+    }
     public Location(int id, int pageId,  String name, Coordinate coords, LocationType type) {
         this.id = id;
         this.coordinates = coords;
@@ -86,10 +91,7 @@ public class Location implements Serializable{
             return false;
         }
         final Location other = (Location) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
     
