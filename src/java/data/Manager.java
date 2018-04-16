@@ -15,12 +15,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author Martin
  */
-@XmlRootElement
 public class Manager {
     static Manager db = new Manager();
     private static final String CONNSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
@@ -39,13 +37,7 @@ public class Manager {
             System.out.println("Error while establishing connection!\n"+e.getMessage());
         }
     }
-    /**
-     * überprüft ob login erfolgreich war
-     * @param username
-     * @param password
-     * @return bei erfolg -> userId sonst -1
-     * @throws java.sql.SQLException
-     */
+   
     private Connection establishConnection()throws Exception{
         if(conn==null){
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
@@ -58,6 +50,13 @@ public class Manager {
             return conn;
         }
     }
+     /**
+     * überprüft ob login erfolgreich war
+     * @param username
+     * @param password
+     * @return bei erfolg -> userId sonst -1
+     * @throws java.sql.SQLException
+     */
     public int login(String username, String password)throws SQLException{
         PreparedStatement selectUserId;
         String selectString ="select idUser from sp_user where username like ? and password like ?"; 
@@ -427,17 +426,17 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID<0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where name like %?%");
-            searchDailyWorkouts.setString(1, name);
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where name like ?");
+            searchDailyWorkouts.setString(1, "%"+name+"%");
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
             }
         }
         else if(creatorID>= 0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and name like %?%");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and name like ?");
             searchDailyWorkouts.setInt(1, creatorID);
-            searchDailyWorkouts.setString(2, name);
+            searchDailyWorkouts.setString(2, "%"+name+"%");
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
@@ -477,17 +476,17 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         
         }
         else if(creatorID<0 && name != null){
-                searchWorkouts = conn.prepareStatement("select * from sp_workout where name like %?%");
-                searchWorkouts.setString(1, name);
+                searchWorkouts = conn.prepareStatement("select * from sp_workout where name like ?");
+                searchWorkouts.setString(1, "%"+name+"%");
                 ResultSet result = searchWorkouts.executeQuery();
                 while(result.next()){
                     workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
                 }
             }
         else if(creatorID>=0 && name != null){
-            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and name like %?%");
+            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and name like ?");
             searchWorkouts.setInt(1, creatorID);
-            searchWorkouts.setString(2, name);
+            searchWorkouts.setString(2, "%"+name+"%");
             ResultSet result = searchWorkouts.executeQuery();
             while(result.next()){
                 workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -524,17 +523,17 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID<0 && name != null){
-            searchExercises = conn.prepareStatement("select * from sp_exercise where name like %?%");
-            searchExercises.setString(1, name);
+            searchExercises = conn.prepareStatement("select * from sp_exercise where name like ?");
+            searchExercises.setString(1, "%"+name+"%");
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
             }
         }
         else if(creatorID>=0&&name == null){
-            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and name like %?%");
+            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and name like ?");
             searchExercises.setInt(1, creatorID);
-            searchExercises.setString(2, name);
+            searchExercises.setString(2, "%"+name+"%");
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
@@ -612,9 +611,9 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     public Collection<User> searchUsers(String name, boolean isPro) throws SQLException {
         int ISPRO = isPro ? 1 : 0;
         Collection<User> users = new ArrayList<>();
-        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and username like %?%");
+        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and username like ?");
         searchUsers.setInt(1, ISPRO);
-        searchUsers.setString(2, name);
+        searchUsers.setString(2, "%"+name+"%");
         ResultSet result = searchUsers.executeQuery();
         if(isPro){
         while(result.next()){
@@ -657,17 +656,17 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID<0 && name!=null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where name like %?%");
-            searchPlans.setString(1, name);
+            searchPlans = conn.prepareStatement("select * from sp_plan where name like ?");
+            searchPlans.setString(1, "%"+name+"%");
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
             }
         }
         else if(creatorID>=0 && name != null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and name like %?%");
+            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and name like ?");
             searchPlans.setInt(1, creatorID);
-            searchPlans.setString(2, name);
+            searchPlans.setString(2, "%"+name+"%");
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
