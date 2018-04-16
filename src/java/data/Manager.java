@@ -11,11 +11,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.TreeSet;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.time.ZoneId;
 import java.util.ArrayList;
 /**
  *
@@ -694,7 +692,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         PreparedStatement isLiked = conn.prepareStatement("select case when ((select count(*) from sp_like where idPost = ? and idUser = ?) = 1) then 'true' else 'false' end as isLiked from dual");
         isLiked.setInt(0, postId);
         isLiked.setInt(1, userId);
-        return isLiked.executeQuery().getBoolean(1);
+        return Boolean.valueOf(isLiked.executeQuery().getString(1));
     }
     
 
@@ -864,6 +862,69 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         throw new Exception("Unknown Error");
     }
+    /**
+     * 
+     * @param exerciseID
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public Exercise getExercise(int exerciseID) throws SQLException{
+        PreparedStatement getExercise = conn.prepareStatement("select * from sp_exercise where idExercise = ?");
+        getExercise.setInt(0, exerciseID);
+        ResultSet result = getExercise.executeQuery();
+        return new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4));
+    }
     
+    /**
+     * 
+     * @param userID
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public Collection<User> getFollowedUsers(int userID) throws SQLException{
+        Collection<User> users = new ArrayList<>();
+        PreparedStatement getFollowedUsers = conn.prepareStatement("select * from sp_user where idUser in (select idOl from sp_follow where idFollower = ?)");
+        getFollowedUsers.setInt(0, userID);
+        ResultSet result = getFollowedUsers.executeQuery();
+        while(result.next()){
+            if(Boolean.valueOf(result.getString(5)))
+            users.add(new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+                else if(!Boolean.valueOf(result.getString(5)))
+                    users.add(new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+        }
+        return users;      
+    }
+    /**
+     * 
+     * @param userID
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public Collection<User> getFollowers(int userID) throws SQLException{
+        Collection<User> users = new ArrayList<>();
+        PreparedStatement getFollowers = conn.prepareStatement("select * from sp_user where idUser in (select idfollower from sp_follow where idol = ?)");
+        getFollowers.setInt(0, userID);
+        ResultSet result = getFollowers.executeQuery();
+        while(result.next()){
+             if(Boolean.valueOf(result.getString(5)))
+            users.add(new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+                else if(!Boolean.valueOf(result.getString(5)))
+                    users.add(new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+        }
+        return users;
+    }
     
+    /**
+     * 
+     * @param followerID
+     * @param followsID
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    public boolean isFollowing(int followerID, int followsID) throws SQLException{
+        PreparedStatement isFollowing = conn.prepareStatement("select case when ((select count(*) from sp_follow where idFollower = ? and idOl = ?) = 1) then 'true' else 'false' end as isFollowing from dual");
+        isFollowing.setInt(0, followerID);
+        isFollowing.setInt(1, followsID);
+        return Boolean.valueOf(isFollowing.executeQuery().getString(1));
+    }
 }
