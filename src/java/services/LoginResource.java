@@ -53,10 +53,10 @@ public class LoginResource {
         userID = manager.login(user.getUsername(), user.getPassword());
         }
         catch(SQLException ex){
-            return -1;
+            return -200;
         }
         catch(Exception ex){
-            return -1;
+            return -10;
         }
         return userID;
     }

@@ -39,22 +39,24 @@ public class RegisterResource {
 
     /**
      * Retrieves representation of an instance of services.RegisterResource
+     * @param content
      * @return an instance of java.lang.String
+     * @throws java.lang.Exception
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public int register(String content)throws Exception{
-        int userID = -1;
+        int userID;
         try{
-        handlerObject o = new Gson().fromJson(content, handlerObject.class);
+        handlerObjectRegister o = new Gson().fromJson(content, handlerObjectRegister.class);
         Manager m = Manager.newInstance();
-        userID = m.register(o.username, o.password, o.isPro);
+        userID = m.register(o.username, o.password, o.isPro);       
         }
         catch(SQLException ex){
             return -200;
         }
         catch(JsonSyntaxException ex){
-            return -400;
+            return -100;
         }
         catch(Exception ex){
             return -10;
@@ -63,12 +65,12 @@ public class RegisterResource {
     }
    
 }
-    class handlerObject{
+    class handlerObjectRegister{
         String username;
         String password;
         boolean isPro;
         
-        public handlerObject(String _name, String _password, boolean _isPro) {
+        public handlerObjectRegister(String _name, String _password, boolean _isPro) {
             username = _name;
             password = _password;
             isPro = _isPro;

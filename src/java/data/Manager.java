@@ -42,8 +42,9 @@ public class Manager {
         if(conn==null){
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
             conn = DriverManager.getConnection(CONNSTRING, USER, PASSWORD);
-            conn.setAutoCommit(false);
-            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            conn.setAutoCommit(true);
+            conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            
             return conn;
         }
         else{
@@ -81,10 +82,10 @@ public class Manager {
         insertNewUser.setString(1,username);
         insertNewUser.setString(2,password);
         insertNewUser.setString(3,"");
-        insertNewUser.setBoolean(4,isPro);
+        insertNewUser.setInt(4,(isPro? 1 : 0));
         insertNewUser.executeQuery();
         PreparedStatement selectNewUserId = conn.prepareStatement("select idUser from sp_user where username like ?");
-        selectNewUserId.setString(0, username);
+        selectNewUserId.setString(1, username);
         ResultSet result = selectNewUserId.executeQuery();
         while(result.next()){
             UserId = result.getInt(1);
@@ -98,15 +99,13 @@ public class Manager {
      * @throws java.sql.SQLException 
      */
     public User getProfile(int idUser) throws SQLException{
-        PreparedStatement selectProfile = conn.prepareStatement("select * from sp_user where idUser = ?");
-        selectProfile.setInt(1, idUser);
+        User user = null;
+        PreparedStatement selectProfile = conn.prepareStatement("select * from sp_user where iduser =?");
+        selectProfile.setDouble(1, idUser);
         ResultSet result = selectProfile.executeQuery();
-        User user;
-        result.next();
-        if(result.getBoolean(5))
-             user = new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
-        else
-            user = new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));       
+        while(result.next()){         
+        user = new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
+        }
         return user;
     }
     /**
