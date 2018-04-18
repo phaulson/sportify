@@ -295,9 +295,10 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @throws java.sql.SQLException 
      */
     public int addPlan(int idCreator, String name) throws SQLException{
-        PreparedStatement addPlan = conn.prepareStatement("insert into plan values(seq_plan.nextval, ?, ?)");
+        PreparedStatement addPlan = conn.prepareStatement("insert into sp_plan values(seq_plan.nextval, ?, ?)");
         addPlan.setInt(1, idCreator);
         addPlan.setString(2, name);
+        addPlan.executeQuery();
         PreparedStatement getPlanId = conn.prepareStatement("select seq_plan.currval from dual");
         ResultSet result = getPlanId.executeQuery();
         result.next();
@@ -327,7 +328,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @throws java.sql.SQLException 
      */
     public int addDailyWorkout(int creatorId, String name) throws SQLException{
-        PreparedStatement addDailyWorkout = conn.prepareStatement("insert into dailyworkout values(seq_dailyworkout.nextval, ?, ?)");
+        PreparedStatement addDailyWorkout = conn.prepareStatement("insert into sp_dailyworkout values(seq_dailyworkout.nextval, ?, ?)");
         addDailyWorkout.setInt(1, creatorId);
         addDailyWorkout.setString(2, name);
         addDailyWorkout.executeQuery();
@@ -360,7 +361,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @throws java.sql.SQLException 
      */
     public int addWorkout(int creatorId, String name) throws SQLException{
-        PreparedStatement addWorkout = conn.prepareStatement("insert into workout values(seq_workout.nextval, {creatorID}, '{name}')");
+        PreparedStatement addWorkout = conn.prepareStatement("insert into sp_workout values(seq_workout.nextval, ?, ?)");
         addWorkout.setInt(1, creatorId);
         addWorkout.setString(2, name);
         addWorkout.executeQuery();
@@ -377,7 +378,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @throws java.sql.SQLException 
      */
     public boolean linkExercises(int workoutId, Collection<Integer> exercises) throws SQLException{
-        PreparedStatement linkExercises = conn.prepareStatement("insert into sp_containsDE values(?, ?)");
+        PreparedStatement linkExercises = conn.prepareStatement("insert into sp_containsWE values(?, ?)");
         for(int exerciseId : exercises){
             linkExercises.setInt(1, workoutId);
             linkExercises.setInt(2, exerciseId);

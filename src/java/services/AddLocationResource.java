@@ -43,16 +43,14 @@ public class AddLocationResource {
      * @return an instance of java.lang.String
      */
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public int addLocation(String content) {
         int locationID = 0;
         try{
             handlerObjectGetLocation o = new Gson().fromJson(content, handlerObjectGetLocation.class);
             Manager m = Manager.newInstance();
-            if(o.startdate.equals("1970-01-01") || o.enddate.equals("1970-01-01")){
+            if(o.startdate== null || o.enddate== null){
                 locationID = m.addLocation(o.userID, o.coordinates, o.name, o.type,null, null);
-
             }
             else{
             locationID = m.addLocation(o.userID, o.coordinates, o.name, o.type,LocalDate.parse(o.startdate), LocalDate.parse(o.enddate));
