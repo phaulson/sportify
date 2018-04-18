@@ -20,6 +20,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -44,8 +45,9 @@ public class AddLocationResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public int addLocation(String content) {
+    public Response addLocation(String content) {
         int locationID = 0;
+        Response r;
         try{
             handlerObjectGetLocation o = new Gson().fromJson(content, handlerObjectGetLocation.class);
             Manager m = Manager.newInstance();
@@ -55,14 +57,16 @@ public class AddLocationResource {
             else{
             locationID = m.addLocation(o.userID, o.coordinates, o.name, o.type,LocalDate.parse(o.startdate), LocalDate.parse(o.enddate));
             }
+
+            r = Response.status(Response.Status.OK).entity(locationID).build();
         }
         catch(SQLException ex){
-            return -200;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            return -10;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return locationID;
+        return r;           
 }
 }
     class handlerObjectGetLocation{

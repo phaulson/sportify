@@ -17,6 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -42,20 +43,23 @@ public class AddPostResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public int addPost(String content) {
+    public Response addPost(String content) {
         int postID;
+        Response r;
         try{
             Manager m = Manager.newInstance();
             handlerObjectAddPost o = new Gson().fromJson(content, handlerObjectAddPost.class);
             postID = m.addPost(o.creatorID, o.caption);
+
+            r = Response.status(Response.Status.OK).entity(postID).build();
         }
         catch(SQLException ex){
-            return -200;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            return -10;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return postID;
+        return r;         
     }
 
 }

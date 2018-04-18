@@ -5,6 +5,7 @@
  */
 package services;
 
+import com.google.gson.Gson;
 import data.DailyWorkout;
 import data.Manager;
 import java.sql.SQLException;
@@ -19,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -45,19 +47,22 @@ public class GetDailyWorkoutsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{planID}")
-    public Collection<DailyWorkout> getDailyWorkouts(@PathParam("planID") int planID) {
+    public Response getDailyWorkouts(@PathParam("planID") int planID) {
         Collection<DailyWorkout> dailyWorkouts = new ArrayList<>();
+        Response r;
         try{
             Manager m = Manager.newInstance();
             dailyWorkouts = m.getDailyWorkouts(planID);
+
+            r = Response.status(Response.Status.OK).entity(dailyWorkouts).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return dailyWorkouts;
+        return r;
     }
 
  

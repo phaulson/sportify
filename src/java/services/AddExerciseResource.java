@@ -18,6 +18,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -43,22 +44,24 @@ public class AddExerciseResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public int addExercise(String content) {
+    public Response addExercise(String content) {
         int result = -1;
+        Response r;
         try{
             handleObjectAddExercise o = new Gson().fromJson(content, handleObjectAddExercise.class);
             Manager m = Manager.newInstance();
             result = m.addExercise(o.name, o.description, o.creatorID);
+
+            r = Response.status(Response.Status.OK).entity(result).build();
         }
         catch(SQLException ex){
-            return -200;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            return -10;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return  result;
+        return r;
     }
-
 }
 
 class handleObjectAddExercise{

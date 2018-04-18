@@ -18,6 +18,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -42,20 +43,23 @@ public class AddWorkoutResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public int addWorkout(String content) {
+    public Response addWorkout(String content) {
         int workoutID;
+        Response r;
         try{
             handleObjectAddWorkout o = new Gson().fromJson(content, handleObjectAddWorkout.class);
             Manager m = Manager.newInstance();
             workoutID = m.addWorkout(o.creatorID, o.name);
+
+            r = Response.status(Response.Status.OK).entity(workoutID).build();
         }
         catch(SQLException ex){
-            return -200;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            return -10;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return workoutID;
+        return r;  
     }
 }
 class handleObjectAddWorkout{

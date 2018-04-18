@@ -8,6 +8,7 @@ package services;
 import com.google.gson.Gson;
 import data.Manager;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -17,6 +18,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -41,20 +43,23 @@ public class AddPlanResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public int getJson(String content) {
+    public Response getJson(String content) {
         int planID;
+        Response r;
         try{
             Manager m = Manager.newInstance();
             handlerObjectAddPlanResource o = new Gson().fromJson(content, handlerObjectAddPlanResource.class);
             planID = m.addPlan(o.creatorID, o.name);
+
+            r = Response.status(Response.Status.OK).entity(planID).build();
         }
         catch(SQLException ex){
-            return -200;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            return -10;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return planID;
+        return r;  
     }
 
 }
