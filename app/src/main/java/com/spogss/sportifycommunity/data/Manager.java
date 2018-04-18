@@ -5,6 +5,8 @@
  */
 package com.spogss.sportifycommunity.data;
 
+import com.spogss.sportifycommunity.model.PostModel;
+
 import java.sql.Connection;
 import java.util.Date;
 import java.sql.PreparedStatement;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
  */
 public class Manager {
     private static Manager db = null;
-    private static final String connString = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+    private static final String connString = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
     private static final String USER = "d4a13";
     private static final String PASSWORD = "d4a";   
     Connection conn;
@@ -37,7 +39,10 @@ public class Manager {
 
     private Connection establishConnection()throws Exception{
         DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-        return DriverManager.getConnection(connString, USER, PASSWORD);
+        conn = DriverManager.getConnection(connString, USER, PASSWORD);
+        conn.setAutoCommit(true);
+        conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        return conn;
     }
 
     /**
@@ -73,10 +78,10 @@ public class Manager {
         insertNewUser.setString(1,username);
         insertNewUser.setString(2,password);
         insertNewUser.setString(3,"");
-        insertNewUser.setBoolean(4,isPro);
+        insertNewUser.setInt(4, isPro ? 1 : 0);
         insertNewUser.executeQuery();
         PreparedStatement selectNewUserId = conn.prepareStatement("select idUser from sp_user where username like ?");
-        selectNewUserId.setString(0, username);
+        selectNewUserId.setString(1, username);
         ResultSet result = selectNewUserId.executeQuery();
         while(result.next()){
             UserId = result.getInt(1);
@@ -418,7 +423,7 @@ public class Manager {
             }
         }
         else if(creatorID<0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where name like ?");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where lower(name) like lower(?)");
             searchDailyWorkouts.setString(1, "%" + name + "%");
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
@@ -426,7 +431,7 @@ public class Manager {
             }
         }
         else if(creatorID>= 0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and name like ?");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and lower(name) like lower(?)");
             searchDailyWorkouts.setInt(1, creatorID);
             searchDailyWorkouts.setString(2, "%" + name + "%");
             ResultSet result = searchDailyWorkouts.executeQuery();
@@ -468,7 +473,7 @@ public class Manager {
 
         }
         else if(creatorID<0 && name != null){
-            searchWorkouts = conn.prepareStatement("select * from sp_workout where name like ?");
+            searchWorkouts = conn.prepareStatement("select * from sp_workout where lower(name) like lower(?)");
             searchWorkouts.setString(1, "%" + name + "%");
             ResultSet result = searchWorkouts.executeQuery();
             while(result.next()){
@@ -476,7 +481,7 @@ public class Manager {
             }
         }
         else if(creatorID>=0 && name != null){
-            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and name like ?");
+            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and lower(name) like lower(?)");
             searchWorkouts.setInt(1, creatorID);
             searchWorkouts.setString(2, "%" + name + "%");
             ResultSet result = searchWorkouts.executeQuery();
@@ -515,7 +520,7 @@ public class Manager {
             }
         }
         else if(creatorID<0 && name != null){
-            searchExercises = conn.prepareStatement("select * from sp_exercise where name like ?");
+            searchExercises = conn.prepareStatement("select * from sp_exercise where lower(name) like lower(?)");
             searchExercises.setString(1, "%" + name + "%");
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
@@ -523,7 +528,7 @@ public class Manager {
             }
         }
         else if(creatorID>=0&&name == null){
-            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and name like ?");
+            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and lower(name) like lower(?)");
             searchExercises.setInt(1, creatorID);
             searchExercises.setString(2, "%" + name + "%");
             ResultSet result = searchExercises.executeQuery();
@@ -603,7 +608,7 @@ public class Manager {
     public Collection<User> searchUsers(String name, boolean isPro) throws SQLException {
         int ISPRO = isPro ? 1 : 0;
         Collection<User> users = new ArrayList<>();
-        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and username like ?");
+        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and lower(username) like lower(?)");
         searchUsers.setInt(1, ISPRO);
         searchUsers.setString(2, "%" + name + "%");
         ResultSet result = searchUsers.executeQuery();
@@ -648,7 +653,7 @@ public class Manager {
             }
         }
         else if(creatorID<0 && name!=null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where name like ?");
+            searchPlans = conn.prepareStatement("select * from sp_plan where lower(name) like lower(?)");
             searchPlans.setString(1, "%" + name + "%");
             result = searchPlans.executeQuery();
             while(result.next()){
@@ -656,7 +661,7 @@ public class Manager {
             }
         }
         else if(creatorID>=0 && name != null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and name like ?");
+            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and lower(name) like lower(?)");
             searchPlans.setInt(1, creatorID);
             searchPlans.setString(2, "%" + name + "%");
             result = searchPlans.executeQuery();
@@ -963,5 +968,37 @@ public class Manager {
         ResultSet result = isFollowing.executeQuery();
         result.next();
         return Boolean.valueOf(result.getString(1));
+    }
+
+    public Collection<PostModel> getPostModels(int userId, int lastPostId, int numberOfPosts) throws Exception {
+        Collection<PostModel> posts = new ArrayList<>();
+        if(lastPostId<0){
+            PreparedStatement getPosts = conn.prepareStatement("select idpost, idcreator, caption, timestamp, username, biographie, isPro from sp_revPost inner join sp_user on iduser = idcreator where idCreator in (select idOl from sp_follow where idFollower = ?) and rownum <= ?");
+            getPosts.setInt(1, userId);
+            getPosts.setInt(2, numberOfPosts);
+            ResultSet result = getPosts.executeQuery();
+            while(result.next()){
+                Post p = new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4));
+                User u = new User(p.getCreatorId(), result.getString(5), "", result.getString(6));
+                posts.add(new PostModel(p, u, 0, false));
+            }
+        }
+        else if(lastPostId>=0){
+            PreparedStatement getPosts = conn.prepareStatement("select idpost, idcreator, caption, timestamp, username, biographie, isPro from sp_revPost inner join sp_user on iduser = idcreator where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost < ? and rownum <= ?");
+            getPosts.setInt(1, userId);
+            getPosts.setInt(2,lastPostId);
+            getPosts.setInt(3, numberOfPosts);
+            ResultSet result = getPosts.executeQuery();
+            while(result.next()){
+                Post p = new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4));
+                User u = new User(p.getCreatorId(), result.getString(5), "", result.getString(6));
+                posts.add(new PostModel(p, u, 0, false));
+            }
+        }
+        else{
+            throw new Exception("Unknown Error");
+        }
+
+        return posts;
     }
 }

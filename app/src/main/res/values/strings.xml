@@ -42,6 +42,10 @@
     <!-- Strings related to users -->
     <string name="image_users_profile_description">The user\'s profile picture</string>
 
+    <!-- Strings related to add post -->
+    <string name="textView_addpost">POST</string>
+    <string name="action_post">POST</string>
+
 
     <!-- auto-generated Strings -->
     <string name="action_settings">Settings</string>

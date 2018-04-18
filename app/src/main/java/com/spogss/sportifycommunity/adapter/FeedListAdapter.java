@@ -3,6 +3,7 @@ package com.spogss.sportifycommunity.adapter;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,10 +18,15 @@ import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.model.PostModel;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by Pauli on 26.03.2018.
@@ -31,8 +37,10 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     private SportifyClient client;
 
     // TODO: implement with real posts
-    private HashMap<Integer, Post> posts = new HashMap<Integer, Post>();
+    private HashMap<Integer, PostModel> posts = new HashMap<Integer, PostModel>();
     private ArrayList<Integer> keys = new ArrayList<Integer>();
+
+    private ArrayList<View> views = new ArrayList<View>();
 
     public FeedListAdapter(Context context) {
         this.context = context;
@@ -51,7 +59,7 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
     @Override
     public long getItemId(int i) {
-        return posts.get(keys.get(i)).getId();
+        return posts.get(keys.get(i)).getPost().getId();
     }
 
     @Override
@@ -60,44 +68,47 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         view = inflater.inflate(R.layout.list_content_feed, null);
 
         //get UI controls
-        RelativeLayout rl = (RelativeLayout)view.findViewById(R.id.relativeLayout_feed);
-        RelativeLayout rlHeader = (RelativeLayout)view.findViewById(R.id.relativeLayout_feed_header);
+        RelativeLayout rl = (RelativeLayout) view.findViewById(R.id.relativeLayout_feed);
+        RelativeLayout rlHeader = (RelativeLayout) view.findViewById(R.id.relativeLayout_feed_header);
 
-        TextView username = (TextView)view.findViewById(R.id.textView_feed_username);
-        TextView timeStamp = (TextView)view.findViewById(R.id.textView_feed_timeStamp);
-        TextView caption = (TextView)view.findViewById(R.id.textView_feed_caption);
-        TextView likes = (TextView)view.findViewById(R.id.textView_feed_likes);
+        TextView username = (TextView) view.findViewById(R.id.textView_feed_username);
+        TextView timeStamp = (TextView) view.findViewById(R.id.textView_feed_timeStamp);
+        TextView caption = (TextView) view.findViewById(R.id.textView_feed_caption);
+        TextView likes = (TextView) view.findViewById(R.id.textView_feed_likes);
 
-        ImageView profilePic = (ImageView)view.findViewById(R.id.imageView_feed_profile);
-        ImageView postPic = (ImageView)view.findViewById(R.id.imageView_feed_post);
-        ImageView heart = (ImageView)view.findViewById(R.id.imageView_feed_heart);
-        ImageView comment = (ImageView)view.findViewById(R.id.imageView_feed_comment);
+        ImageView profilePic = (ImageView) view.findViewById(R.id.imageView_feed_profile);
+        ImageView postPic = (ImageView) view.findViewById(R.id.imageView_feed_post);
+        ImageView heart = (ImageView) view.findViewById(R.id.imageView_feed_heart);
+        ImageView comment = (ImageView) view.findViewById(R.id.imageView_feed_comment);
 
 
         // TODO: implement with real posts
-        Post post = posts.get(keys.get(i));
-        rl.setTag(post.getId());
+        PostModel postModel = posts.get(keys.get(i));
+        rl.setTag(postModel.getPost().getId());
 
-        new ProfileTask(post, username).execute((Void) null);
-        timeStamp.setText(post.getTimestamp().toString());
-        caption.setText(post.getCaption());
+        username.setText(postModel.getUser().getUsername());
+        timeStamp.setText(new SimpleDateFormat("dd.MM.yyyy HH:mm").format(postModel.getPost().getTimestamp()).toString());
+        caption.setText(postModel.getPost().getCaption());
 
-        new NumberOfLikesTask(post, likes).execute((Void) null);
+        likes.setText(postModel.getNumberOfLikes() + " like" + (postModel.getNumberOfLikes() != 1 ? "s": ""));
 
         //TODO: implement with pics
-        //profilePic.setImageResource(post.getUser().getProfilePic());
+        profilePic.setImageResource(R.drawable.sp_default_profile_picture);
 
         //check if post has pic
         //if(post.getPostPic() != -1)
         //    postPic.setImageResource(post.getPostPic());
         //else {
-            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) postPic.getLayoutParams();
-            marginParams.topMargin = 0;
-            marginParams.bottomMargin = 0;
+        ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) postPic.getLayoutParams();
+        marginParams.topMargin = 0;
+        marginParams.bottomMargin = 0;
         //}
 
         //check if post is liked
-        new IsLikedTask(post, heart, false);
+        if (postModel.isLiked())
+            heart.setImageResource(R.drawable.sp_heart_filled);
+        else
+            heart.setImageResource(R.drawable.sp_heart_blank);
 
         comment.setImageResource(R.drawable.sp_comment);
 
@@ -127,9 +138,9 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
      * @param post the Post that should be added
      */
     // TODO: implement with real posts
-    public void addPost(Post post) {
-        posts.put(post.getId(), post);
-        keys.add(post.getId());
+    public void addPost(PostModel post) {
+        posts.put(post.getPost().getId(), post);
+        keys.add(post.getPost().getId());
         this.notifyDataSetChanged();
     }
 
@@ -137,12 +148,19 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
      * adds a new Collection of Posts to the Adapter
      * @param p the Posts that should be added
      */
-    public void addPosts(Collection<Post> p) {
-        for(Post post : p) {
-            posts.put(post.getId(), post);
-            keys.add(post.getId());
+    public void addPosts(Collection<PostModel> p) {
+        for(PostModel post : p) {
+            posts.put(post.getPost().getId(), post);
+            keys.add(post.getPost().getId());
         }
+        this.notifyDataSetChanged();
     }
+
+    public void clear() {
+        posts.clear();
+        keys.clear();
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -165,13 +183,24 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     private void like(View view) {
         RelativeLayout rl = (RelativeLayout)view.getParent();
         int idRl = Integer.parseInt(rl.getTag().toString());
-        Post post = posts.get(idRl);
+        PostModel postModel = posts.get(idRl);
 
         ImageView heart = (ImageView) rl.findViewById(R.id.imageView_feed_heart);
-        new IsLikedTask(post, heart, true);
-
         TextView likes = (TextView) rl.findViewById(R.id.textView_feed_likes);
-        new NumberOfLikesTask(post, likes);
+
+        if(postModel.isLiked()) {
+            heart.setImageResource(R.drawable.sp_heart_blank);
+            postModel.setNumberOfLikes(postModel.getNumberOfLikes() - 1);
+            postModel.setLiked(false);
+            new SetLikeTask(postModel.getPost(), false).execute((Void) null);
+        }
+        else {
+            heart.setImageResource(R.drawable.sp_heart_filled);
+            postModel.setNumberOfLikes(postModel.getNumberOfLikes() + 1);
+            postModel.setLiked(true);
+            new SetLikeTask(postModel.getPost(), true).execute((Void) null);
+        }
+        likes.setText(postModel.getNumberOfLikes() + " like" + (postModel.getNumberOfLikes() != 1 ? "s": ""));
     }
 
     @Override
@@ -180,8 +209,8 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
             // TODO: open the ProfileActivity
             RelativeLayout rl = (RelativeLayout) view.getParent();
             int idRl = Integer.parseInt(rl.getTag().toString());
-            Post post = posts.get(idRl);
-            Snackbar.make(view, "The ProfileActivity will be implemented soon", Snackbar.LENGTH_LONG)
+            PostModel postModel = posts.get(idRl);
+            Snackbar.make(view, "The ProfileActivity for '" + postModel.getUser().getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
         return true;
@@ -213,101 +242,19 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
 
     //AsyncTasks
-    private class ProfileTask extends AsyncTask<Void, Void, User> {
-        private Post post;
-        private TextView username;
-
-        public ProfileTask(Post post, TextView username) {
-            this.post = post;
-            this.username = username;
-        }
-        @Override
-        protected User doInBackground(Void... params) {
-            // TODO: call webservice for loading of profile
-            return client.getProfile(post.getCreatorId());
-        }
-
-        @Override
-        protected void onPostExecute(final User user) {
-            username.setText(user.getUsername());
-        }
-    }
-
-    private class NumberOfLikesTask extends AsyncTask<Void, Void, Integer> {
-        private Post post;
-        private TextView likes;
-
-        public NumberOfLikesTask(Post post, TextView likes) {
-            this.post = post;
-            this.likes = likes;
-        }
-        @Override
-        protected Integer doInBackground(Void... params) {
-            // TODO: call webservice for number of likes
-            return client.getNumberOfLikes(post.getId());
-        }
-
-        @Override
-        protected void onPostExecute(final Integer numberOfLikes) {
-            likes.setText(numberOfLikes + " like" + (numberOfLikes != 1 ? "s": ""));
-        }
-    }
-
-    private class IsLikedTask extends AsyncTask<Void, Void, Boolean> {
-        private Post post;
-        private ImageView heart;
-        private boolean like;
-
-        public IsLikedTask(Post post, ImageView heart, boolean like) {
-            this.post = post;
-            this.heart = heart;
-            this.like = like;
-        }
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: call webservice for number of likes
-            return client.isLiked(client.getCurrentUserID(), post.getId());
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean isLiked) {
-            if(like) {
-                if (isLiked)
-                    new SetLikeTask(post, heart, false);
-                else
-                    new SetLikeTask(post, heart, true);
-            }
-            else {
-                if (isLiked)
-                    heart.setImageResource(R.drawable.sp_heart_filled);
-                else
-                    heart.setImageResource(R.drawable.sp_heart_blank);
-            }
-        }
-    }
-
     private class SetLikeTask extends AsyncTask<Void, Void, Boolean> {
         private Post post;
-        private ImageView heart;
         private boolean like;
 
-        public SetLikeTask(Post post, ImageView heart, boolean like) {
+        public SetLikeTask(Post post, boolean like) {
             this.post = post;
-            this.heart = heart;
             this.like = like;
         }
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: call webservice for set Likes
+            int i = 1;
             return client.setLike(client.getCurrentUserID(), post.getId(), like);
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean liked) {
-            if(liked)
-                heart.setImageResource(R.drawable.sp_heart_filled);
-            else
-                heart.setImageResource(R.drawable.sp_heart_blank);
         }
     }
 }

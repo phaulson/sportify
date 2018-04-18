@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,14 +29,15 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Plan;
-import com.spogss.sportifycommunity.data.SportifyClient;
 import com.spogss.sportifycommunity.adapter.FeedListAdapter;
-import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.adapter.SearchListAdapter;
 import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
+import com.spogss.sportifycommunity.data.Plan;
+import com.spogss.sportifycommunity.data.Post;
+import com.spogss.sportifycommunity.data.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
+import com.spogss.sportifycommunity.model.PostModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,21 +49,22 @@ public class FeedActivity extends AppCompatActivity
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private FloatingActionButton fab;
-    SwipeRefreshLayout swipeRefreshLayout;
-    SearchView searchView;
-    ListView listViewFeed;
-    View footerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private SearchView searchView;
+    private ListView listViewFeed;
+    private View footerView;
 
-    SportifyClient client;
+    private SportifyClient client;
     //Adapter for tabs
     private SectionsPageAdapter sectionsPageAdapter;
     //Adapter for posts
-    FeedListAdapter feedListAdapter;
+    private FeedListAdapter feedListAdapter;
     //for loading
-    boolean isLoading = false;
-    Handler loadingHandler;
+    private boolean isLoading = false;
+    private Handler loadingHandler;
 
-    int lastPostID = -1;
+    private int lastPostID = -1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public class FeedActivity extends AppCompatActivity
         setContentView(R.layout.activity_feed);
 
         client = SportifyClient.newInstance();
-        client.setNumberOfPosts(10);
+        client.setNumberOfPosts(6);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,17 +91,6 @@ public class FeedActivity extends AppCompatActivity
 
 
         //Custom code
-/*        users = new ArrayList<User>();
-
-        User johnny = new User("johnnybravo", R.drawable.ic_action_navigation_close);
-        User pauli = new User("paulim", R.drawable.ic_action_voice_search);
-        User simon = new User("simon", R.drawable.ic_action_navigation_close);
-        User webi = new User("webi", R.drawable.ic_action_navigation_arrow_back);
-
-        users.add(johnny);
-        users.add(pauli);
-        users.add(simon);
-        users.add(webi);*/
 
         //tabs
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
@@ -107,28 +99,30 @@ public class FeedActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setVisibility(View.GONE);
-        tabLayout.addOnTabSelectedListener(new TabLayoutListener());
+        viewPager.addOnPageChangeListener(new PageChangeListener(tabLayout));
 
         //content feed
         feedListAdapter = new FeedListAdapter(getApplicationContext());
-        new LoadPostsTask().execute((Void) null);
 
-        listViewFeed = (ListView)findViewById(R.id.listView_feed);
+        listViewFeed = (ListView) findViewById(R.id.listView_feed);
         listViewFeed.setAdapter(feedListAdapter);
         listViewFeed.setOnScrollListener(new ScrollListener());
 
         //swipeRefresh
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeRefresh_feed);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh_feed);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         //loading
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         footerView = layoutInflater.inflate(R.layout.list_footer_feed, null);
         loadingHandler = new LoadingHandler();
+
+        new LoadPostsTask().execute((Void) null);
     }
 
     /**
      * adds the fragments (tabs) to the ViewPager
+     *
      * @param pager the ViewPager to which the fragments are added
      */
     private void setupSearchViewPager(ViewPager pager) {
@@ -157,7 +151,7 @@ public class FeedActivity extends AppCompatActivity
         //Custom code
         MenuItem item = menu.findItem(R.id.action_search);
         item.setOnActionExpandListener(new MenuItemListener());
-        searchView  = (SearchView) item.getActionView();
+        searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchViewListener());
 
         return true;
@@ -170,11 +164,10 @@ public class FeedActivity extends AppCompatActivity
         int id = item.getItemId();
 
         // TODO: implement onMenuItemClick
-        if(id == R.id.nav_home) {
+        if (id == R.id.nav_home) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "The posts will reload soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-        }
-        else if (id == R.id.nav_plans) {
+        } else if (id == R.id.nav_plans) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "The PlansActivity will be implemented soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
 
@@ -222,10 +215,9 @@ public class FeedActivity extends AppCompatActivity
     public void onClick(View view) {
         int id = view.getId();
 
-        if(id == R.id.fab) {
-            // TODO: open new Activity (PostActivity)
-            Snackbar.make(view, "The PostActivity will be implemented soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+        if (id == R.id.fab) {
+            Intent intent = new Intent(this, PostActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -233,35 +225,60 @@ public class FeedActivity extends AppCompatActivity
     @Override
     public void onRefresh() {
         // TODO: implement real refresh method
-        Snackbar.make(getWindow().getDecorView().getRootView(), "Feed will be refreshed soon", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        lastPostID = -1;
+        new LoadPostsTask().execute((Void) null);
         swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
      * creates a new SearchListAdapter and fills it with users whose usernames contain the newText
+     *
      * @param newText the text that the user typed in the SearchView
      */
     private void search(String newText) {
         // TODO: replace with connection to webservice and load data from database
         TabFragmentSearch fragment = ((TabFragmentSearch) sectionsPageAdapter.getItem(viewPager.getCurrentItem()));
-
-        switch(sectionsPageAdapter.getItemPosition(fragment)) {
+        switch (tabLayout.getSelectedTabPosition()) {
             case 0:
-                new SearchUsersTask(newText, fragment, false);
+                new SearchUsersTask(newText.toLowerCase(), fragment, false).execute((Void) null);
                 break;
             case 1:
-                new SearchUsersTask(newText, fragment, true);
+                new SearchUsersTask(newText.toLowerCase(), fragment, true).execute((Void) null);
                 break;
             case 2:
-                new SearchPlansTask(newText, fragment);
+                new SearchPlansTask(newText.toLowerCase(), fragment).execute((Void) null);
                 break;
         }
     }
 
+    /**
+     * loads Post, creator, numberOfLikes and isLiked from database and returns the PostModels
+     *
+     * @return a collection of PostModels
+     */
+    private Collection<PostModel> loadPosts() {
+        // TODO: call webservice for loading
+        ArrayList<PostModel> postModels = new ArrayList<>();
+        long t1 = System.currentTimeMillis();
+        ArrayList<Post> posts = (ArrayList<Post>) client.getPosts(client.getCurrentUserID(), lastPostID);
+        for (Post p : posts) {
+            User u = client.getProfile(p.getCreatorId());
+            int numberOfLikes = client.getNumberOfLikes(p.getId());
+            boolean liked = client.isLiked(client.getCurrentUserID(), p.getId());
+            //Log.i("like", u.getUsername() + " | " + liked);
+            postModels.add(new PostModel(p, u, numberOfLikes, liked));
+        }
+        long t2 = System.currentTimeMillis();
+        Log.i("time", (t2 - t1) + "");
+        if (posts.size() > 0)
+            lastPostID = (postModels).get(postModels.size() - 1).getPost().getId();
+
+        return postModels;
+    }
 
 
     //innerclass
+
     /**
      * Listener that handles the searchViewTextChange event
      */
@@ -269,12 +286,12 @@ public class FeedActivity extends AppCompatActivity
 
         @Override
         public boolean onQueryTextSubmit(String query) {
-            return false;
+            return true;
         }
 
         @Override
-        public boolean onQueryTextChange(String newText) {
-            search(newText);
+        public boolean onQueryTextChange(String query) {
+            search(query);
             return false;
         }
     }
@@ -288,6 +305,7 @@ public class FeedActivity extends AppCompatActivity
         public boolean onMenuItemActionExpand(MenuItem menuItem) {
             fab.setVisibility(View.GONE);
             swipeRefreshLayout.setVisibility(View.GONE);
+            viewPager.setVisibility(View.VISIBLE);
             tabLayout.setVisibility(View.VISIBLE);
             return true;
         }
@@ -296,29 +314,24 @@ public class FeedActivity extends AppCompatActivity
         public boolean onMenuItemActionCollapse(MenuItem menuItem) {
             fab.setVisibility(View.VISIBLE);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
+            viewPager.setVisibility(View.GONE);
             tabLayout.setVisibility(View.GONE);
             return true;
         }
     }
 
     /**
-     * Listener that handles the tabChange event
+     * Listener that handles the TabChangeEvent
      */
-    public class TabLayoutListener implements TabLayout.OnTabSelectedListener {
+    public class PageChangeListener extends TabLayout.TabLayoutOnPageChangeListener {
+
+        public PageChangeListener(TabLayout tabLayout) {
+            super(tabLayout);
+        }
 
         @Override
-        public void onTabSelected(TabLayout.Tab tab) {
+        public void onPageSelected(int index) {
             search(searchView.getQuery().toString());
-        }
-
-        @Override
-        public void onTabUnselected(TabLayout.Tab tab) {
-
-        }
-
-        @Override
-        public void onTabReselected(TabLayout.Tab tab) {
-
         }
     }
 
@@ -334,7 +347,7 @@ public class FeedActivity extends AppCompatActivity
 
         @Override
         public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-            if(absListView.getLastVisiblePosition() == i2 -1 && listViewFeed.getCount() >= client.getNumberOfPosts() && !isLoading) {
+            if ((listViewFeed.getCount() % client.getNumberOfPosts() == 0) && absListView.getLastVisiblePosition() == i2 - 1 && listViewFeed.getCount() >= client.getNumberOfPosts() && !isLoading) {
                 isLoading = true;
                 Thread thread = new ThreadLoadMorePosts();
                 thread.start();
@@ -355,10 +368,13 @@ public class FeedActivity extends AppCompatActivity
                     break;
                 case 1:
                     //add new posts and remove footer
-                    feedListAdapter.addPosts((ArrayList<Post>)msg.obj);
+                    ArrayList<PostModel> models = (ArrayList<PostModel>) msg.obj;
+                    if (models.size() > 0) {
+                        feedListAdapter.addPosts(models);
+                        isLoading = false;
+                    }
                     listViewFeed.removeFooterView(footerView);
-                    isLoading = false;
-                    break;
+                break;
             }
         }
     }
@@ -373,28 +389,24 @@ public class FeedActivity extends AppCompatActivity
             loadingHandler.sendEmptyMessage(0);
 
             //send new Data
-            ArrayList<Post> posts = new ArrayList<>(client.getPosts(client.getCurrentUserID(), lastPostID));
-            if(posts.size() > 0)
-                lastPostID = posts.get(0).getId();
-            loadingHandler.sendMessage(loadingHandler.obtainMessage(1, posts));
+            loadingHandler.sendMessage(loadingHandler.obtainMessage(1, loadPosts()));
         }
     }
 
 
-
     //AsyncTasks
-    private class LoadPostsTask extends AsyncTask<Void, Void, Collection<Post>> {
+    private class LoadPostsTask extends AsyncTask<Void, Void, Collection<PostModel>> {
         @Override
-        protected Collection<Post> doInBackground(Void... params) {
-            // TODO: call webservice for loading
-            return client.getPosts(client.getCurrentUserID(), lastPostID);
+        protected Collection<PostModel> doInBackground(Void... params) {
+            listViewFeed.addHeaderView(footerView);
+            return loadPosts();
         }
 
         @Override
-        protected void onPostExecute(final Collection<Post> posts) {
-            if(posts.size() > 0)
-                lastPostID = ((ArrayList<Post>)posts).get(0).getId();
+        protected void onPostExecute(final Collection<PostModel> posts) {
+            feedListAdapter.clear();
             feedListAdapter.addPosts(posts);
+            listViewFeed.removeHeaderView(footerView);
         }
     }
 
@@ -412,12 +424,16 @@ public class FeedActivity extends AppCompatActivity
         @Override
         protected Collection<User> doInBackground(Void... params) {
             // TODO: call webservice for search users
+            if(name.equals(""))
+                return new ArrayList<User>();
             return client.searchUsers(name, isPro);
         }
 
         @Override
-        protected void onPostExecute(final Collection<User> posts) {
-            SearchListAdapter adapter = new SearchListAdapter(FeedActivity.this);
+        protected void onPostExecute(final Collection<User> users) {
+            SearchListAdapter<User> adapter = new SearchListAdapter<User>(FeedActivity.this);
+            for(User u : users)
+                adapter.addGeneric(u, u.getId());
             fragment.fillList(adapter);
         }
     }
@@ -434,12 +450,16 @@ public class FeedActivity extends AppCompatActivity
         @Override
         protected Collection<Plan> doInBackground(Void... params) {
             // TODO: call webservice for search users
+            if(name.equals(""))
+                return new ArrayList<Plan>();
             return client.searchPlans(name);
         }
 
         @Override
-        protected void onPostExecute(final Collection<Plan> posts) {
-            SearchListAdapter adapter = new SearchListAdapter(FeedActivity.this);
+        protected void onPostExecute(final Collection<Plan> plans) {
+            SearchListAdapter<Plan> adapter = new SearchListAdapter<Plan>(FeedActivity.this);
+            for(Plan p : plans)
+                adapter.addGeneric(p, p.getId());
             fragment.fillList(adapter);
         }
     }

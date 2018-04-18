@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.data.Plan;
 import com.spogss.sportifycommunity.data.User;
 
 import java.util.ArrayList;
@@ -21,11 +22,11 @@ import java.util.HashMap;
  * Created by Pauli on 27.03.2018.
  */
 
-public class SearchListAdapter extends BaseAdapter implements View.OnTouchListener {
+public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchListener {
     private Context context;
 
     // TODO: implement with real users
-    private HashMap<Integer, User> users = new HashMap<Integer, User>();
+    private HashMap<Integer, T> content = new HashMap<Integer, T>();
     private ArrayList<Integer> keys = new ArrayList<Integer>();
 
     public SearchListAdapter(Context context) {
@@ -34,17 +35,17 @@ public class SearchListAdapter extends BaseAdapter implements View.OnTouchListen
 
     @Override
     public int getCount() {
-        return users.size();
+        return content.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return users.get(keys.get(i));
+        return content.get(keys.get(i));
     }
 
     @Override
     public long getItemId(int i) {
-        return users.get(keys.get(i)).getId();
+        return keys.get(i);
     }
 
     @Override
@@ -58,10 +59,16 @@ public class SearchListAdapter extends BaseAdapter implements View.OnTouchListen
         TextView username = (TextView)view.findViewById(R.id.textView_users_username);
 
         // TODO: implement with real users
-        User user = users.get(keys.get(i));
-        rl.setTag(user.getId());
-        username.setText(user.getUsername());
-        //profilePic.setImageResource(user.getProfilePic());
+        Object o = content.get(keys.get(i));
+        rl.setTag(keys.get(i));
+        if(o instanceof User) {
+            username.setText(((User) o).getUsername());
+            profilePic.setImageResource(R.drawable.sp_default_profile_picture);
+        }
+        else if(o instanceof Plan) {
+            username.setText(((Plan) o).getName());
+            profilePic.setVisibility(View.GONE);
+        }
 
         //add eventListeners
         rl.setOnTouchListener(this);
@@ -71,12 +78,12 @@ public class SearchListAdapter extends BaseAdapter implements View.OnTouchListen
 
     /**
      * adds a user to the Adapter
-     * @param user the user that should be added
+     * @param generic the user that should be added
      */
     // TODO: implement with real users
-    public void addUser(User user) {
-        users.put(user.getId(), user);
-        keys.add(user.getId());
+    public void addGeneric(T generic, int id) {
+        content.put(id, generic);
+        keys.add(id);
     }
 
 
@@ -85,8 +92,8 @@ public class SearchListAdapter extends BaseAdapter implements View.OnTouchListen
         if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
             // TODO: open ProfileActivity
             int idRl = Integer.parseInt(view.getTag().toString());
-            User user = users.get(idRl);
-            Snackbar.make(view, "The ProfileActivity for '" + user.getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
+            T user = content.get(idRl);
+            Snackbar.make(view, "The ProfileActivity will be implemented soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
         return true;

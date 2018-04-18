@@ -1,5 +1,7 @@
 package com.spogss.sportifycommunity.data;
 
+import com.spogss.sportifycommunity.model.PostModel;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -58,7 +60,8 @@ public class SportifyClient {
      */
     public int login(String username, String password) {
         try {
-            return manager.login(username, password);
+            setCurrentUserID(manager.login(username, password));
+            return getCurrentUserID();
         } catch (SQLException e) {
             return -1;
         }
@@ -73,10 +76,12 @@ public class SportifyClient {
      */
     public int register(String username, String password, boolean isPro){
         try {
-            return manager.register(username, password, isPro);
+            setCurrentUserID(manager.register(username, password, isPro));
+            return getCurrentUserID();
         } catch (SQLException e) {
-            return -1;
+            e.printStackTrace();
         }
+        return -1;
     }
 
     /**
@@ -333,7 +338,7 @@ public class SportifyClient {
      * @return a collection of DailyWorkouts
      */
     public Collection<DailyWorkout> searchDailyWorkouts(String name) {
-        return searchDailyWorkouts(-1, name);
+        return searchDailyWorkouts(-1, name.toLowerCase());
     }
     /**
      * get all DailyWorkouts with that creatorID and that contain that name
@@ -343,7 +348,7 @@ public class SportifyClient {
      */
     public Collection<DailyWorkout> searchDailyWorkouts(int creatorID, String name) {
         try {
-            return manager.searchDailyWorkouts(creatorID, name);
+            return manager.searchDailyWorkouts(creatorID, name.toLowerCase());
         } catch (Exception e) {
             return null;
         }
@@ -370,7 +375,7 @@ public class SportifyClient {
      * @return a collection of Workouts
      */
     public Collection<Workout> searchWorkouts(String name) {
-        return searchWorkouts(-1, name);
+        return searchWorkouts(-1, name.toLowerCase());
     }
     /**
      * get all Workouts with that creatorID and that contain that name
@@ -380,7 +385,7 @@ public class SportifyClient {
      */
     public Collection<Workout> searchWorkouts(int creatorID, String name) {
         try {
-            return manager.searchWorkouts(creatorID, name);
+            return manager.searchWorkouts(creatorID, name.toLowerCase());
         } catch (Exception e) {
             return null;
         }
@@ -406,7 +411,7 @@ public class SportifyClient {
      * @return a collection of Exercises
      */
     public Collection<Exercise> searchExercises(String name) {
-        return searchExercises(-1, name);
+        return searchExercises(-1, name.toLowerCase());
     }
     /**
      * get all Exercises with that creatorID and that contain that name
@@ -416,7 +421,7 @@ public class SportifyClient {
      */
     public Collection<Exercise> searchExercises(int creatorId, String name) {
         try {
-            return manager.searchExercises(creatorId, name);
+            return manager.searchExercises(creatorId, name.toLowerCase());
         } catch (Exception e) {
             return null;
         }
@@ -467,7 +472,7 @@ public class SportifyClient {
      */
     public Collection<User> searchUsers(String name, boolean pro) {
         try {
-            return manager.searchUsers(name, pro);
+            return manager.searchUsers(name.toLowerCase(), pro);
         } catch (SQLException e) {
             return null;
         }
@@ -494,7 +499,7 @@ public class SportifyClient {
      * @return a collection of Plans
      */
     public Collection<Plan> searchPlans(String name) {
-        return searchPlans(-1, name);
+        return searchPlans(-1, name.toLowerCase());
     }
     /**
      * get all Plans with that creatorID and that contain that name
@@ -504,7 +509,7 @@ public class SportifyClient {
      */
     public Collection<Plan> searchPlans(int creatorID, String name) {
         try {
-            return manager.searchPlans(creatorID, name);
+            return manager.searchPlans(creatorID, name.toLowerCase());
         } catch (Exception e) {
             return null;
         }
