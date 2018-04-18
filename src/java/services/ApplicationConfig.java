@@ -34,6 +34,7 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(data.SearchDailyWorkoutsResource.class);
+        resources.add(data.SearchPlansResource.class);
         resources.add(services.AddDailyWorkoutResource.class);
         resources.add(services.AddExerciseResource.class);
         resources.add(services.AddLocationResource.class);

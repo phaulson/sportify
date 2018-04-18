@@ -624,12 +624,12 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         ResultSet result = searchUsers.executeQuery();
         if(isPro){
         while(result.next()){
-            users.add(new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+            users.add(new ProUser(result.getInt(1), result.getString(2), "", result.getString(4)));
         }
         }
         else{
              while(result.next()){
-                users.add(new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+                users.add(new User(result.getInt(1), result.getString(2), "", result.getString(4)));
         }
         }
         return users;
