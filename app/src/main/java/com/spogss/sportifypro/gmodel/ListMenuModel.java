@@ -1,27 +1,37 @@
 package com.spogss.sportifypro.gmodel;
 
+import android.view.View;
+
 /**
  * Created by samue on 27.03.2018.
  */
 
 public class ListMenuModel {
+    private Integer vid;
 
     private int icon;
     private String title;
     private String counter;
 
+    private View.OnClickListener onClickListener;
+
     private boolean isGroupHeader = false;
 
     public ListMenuModel(String title) {
-        this(-1,title,null);
+        this(null, -1,title,null);
         isGroupHeader = true;
     }
 
-    public ListMenuModel(int icon, String title, String counter) {
+    public ListMenuModel(Integer viewId, int icon, String title, String counter) {
         super();
+        this.vid = viewId;
         this.icon = icon;
         this.title = title;
         this.counter = counter;
+    }
+
+    public ListMenuModel(int icon, String title, String counter) {
+        this(null, icon, title, counter);
     }
 
     public int getIcon() {
@@ -50,6 +60,18 @@ public class ListMenuModel {
 
     public boolean isGroupHeader() {
         return isGroupHeader;
+    }
+
+    public View.OnClickListener getOnClickListener() {
+        return onClickListener;
+    }
+
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public Integer getViewId() {
+        return vid;
     }
 }
 

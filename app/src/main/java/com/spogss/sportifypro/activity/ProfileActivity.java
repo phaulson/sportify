@@ -1,36 +1,42 @@
 package com.spogss.sportifypro.activity;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ActionMenuView;
-import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.spogss.sportifypro.R;
 import com.spogss.sportifypro.data.Database;
-import com.spogss.sportifypro.data.User;
+import com.spogss.sportifypro.data.SportifyClient;
+import com.spogss.sportifypro.data.pojo.ProUser;
+import com.spogss.sportifypro.data.pojo.User;
 import com.spogss.sportifypro.gmodel.ListMenuModel;
 import com.spogss.sportifypro.gmodel.ListMenuModelAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView textView_description;
+
     private ListView listView_menu;
+    private final int V_ID_MENUITEM_SHOW_LOCATIONS = 2508;
+    private final int V_ID_MENUITEM_SHOW_PLANS = 2509;
+
+    private final int REQ_CODE_EDIT_PROFILE = 30;
+
     private FloatingActionButton fab_editOrFollow;
 
-    private Database database;
+    private SportifyClient client;
     private User displayedUser;
 
 
@@ -39,6 +45,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         FOLLOWING,
         OWN
     }
+
     private UserCorrelation correlationState;
 
     @Override
@@ -48,10 +55,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         initialize();
 
-        database = Database.getInstance();
+        client = SportifyClient.newInstance();
 
-        User user = (User) getIntent().getSerializableExtra("profile");
-        setUser(user);
+        Integer userId = (Integer) getIntent().getSerializableExtra("profile");
+
+        new setUserTask().execute(userId);
     }
 
     private void initialize(){
@@ -71,7 +79,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void refreshProfile(){
         collapsingToolbar.setTitle(displayedUser.getUsername());
-        String bio = displayedUser.getBiography();
+        String bio = displayedUser.getDescription();
         bio = (bio == null || bio.isEmpty()) ? getString(R.string.not_specified) : bio;
         Log.i("bio:" , bio);
         textView_description.setText(bio);
@@ -106,21 +114,30 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private ArrayList<ListMenuModel> generateMenuEntries(){
         ArrayList<ListMenuModel> models = new ArrayList<ListMenuModel>();
 
-        models.add(new ListMenuModel("Group Title"));
-        models.add(new ListMenuModel(android.R.drawable.ic_menu_mylocation,"Locations",">>"));
-        models.add(new ListMenuModel(android.R.drawable.ic_menu_my_calendar,"Plans",">>"));
-        models.add(new ListMenuModel(android.R.drawable.ic_menu_camera,"dunno",">>"));
+        ListMenuModel m = new ListMenuModel("Group Title");
+        models.add(m);
+
+        m = new ListMenuModel(V_ID_MENUITEM_SHOW_LOCATIONS,
+                android.R.drawable.ic_menu_mylocation,"Locations",">>");
+        m.setOnClickListener(this);
+        models.add(m);
+
+        m = new ListMenuModel(V_ID_MENUITEM_SHOW_PLANS,
+                android.R.drawable.ic_menu_my_calendar,"Plans",">>");
+        m.setOnClickListener(this);
+        models.add(m);
 
         return models;
     }
 
     private boolean isUserPro(User u){
         // TODO: 27.03.2018 actual code
-        return false;
+        return u instanceof ProUser;
     }
 
     private void refreshCorellationState(){
-        if(displayedUser.getId() == database.getCurrentUserId()){
+        if(displayedUser.getId() == client.getCurrentUserID()){
+            correlationState = UserCorrelation.OWN;
             correlationState = UserCorrelation.OWN;
         }
         else{
@@ -169,13 +186,19 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         break;
                 }
                 break;
+            case V_ID_MENUITEM_SHOW_LOCATIONS:
+                Toast.makeText(getApplicationContext(), "show locations", Toast.LENGTH_SHORT).show();
+                break;
+            case V_ID_MENUITEM_SHOW_PLANS:
+                Toast.makeText(getApplicationContext(), "show plans", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
     
     private void editProfile(){
         Intent intent_editProfile = new Intent(getApplicationContext(), EditProfileActivity.class);
         intent_editProfile.putExtra("profile", displayedUser);
-        startActivity(intent_editProfile);
+        startActivityForResult(intent_editProfile, REQ_CODE_EDIT_PROFILE);
     }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
@@ -198,6 +221,26 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
     }
-    
-    
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQ_CODE_EDIT_PROFILE) {
+            refreshProfile();
+        }
+    }
+
+    private class setUserTask extends AsyncTask<Integer, Void, User>{
+
+        @Override
+        protected User doInBackground(Integer... integers) {
+            User u = client.getProfile(integers[0]);
+            return u;
+        }
+
+        @Override
+        protected void onPostExecute(User user) {
+            setUser(user);
+        }
+    }
 }

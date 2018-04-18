@@ -12,8 +12,8 @@
             android:id="@+id/textInputLayout_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/button_saveProfileChanges">
+            android:layout_alignParentTop="true">
+            <!--android:layout_above="@id/button_saveProfileChanges"-->
 
             <EditText
                 android:id="@+id/editText_description"
@@ -30,7 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Changes"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/textInputLayout_description"
+            android:layout_alignParentBottom="false"
             android:background="@drawable/sp_button"/>
 
 
