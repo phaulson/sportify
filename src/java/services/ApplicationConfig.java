@@ -33,9 +33,13 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(services.AddLocationResource.class);
         resources.add(services.ChangeDescriptionResource.class);
         resources.add(services.GetDailyWorkoutsResource.class);
+        resources.add(services.GetExercisesResource.class);
+        resources.add(services.GetLocationsResource.class);
         resources.add(services.GetPlansResource.class);
+        resources.add(services.GetPostsByCreatorResource.class);
         resources.add(services.GetProfileResource.class);
         resources.add(services.GetWorkoutsResource.class);
         resources.add(services.LoginResource.class);

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 /**
  *
@@ -183,7 +184,7 @@ public class Manager {
      * @throws java.sql.SQLException 
      */
     public Collection<Exercise> getExercises(int idWorkout) throws SQLException{
-        PreparedStatement getExercises = conn.prepareStatement("select sp_exercise.idexercise,sp_exercise.description , sp_exercise.idCreator, sp_exercise.name  from sp_exercise inner join sp_containsWE on sp_containsWE.idexercise = sp_exercise.idexercise inner join sp_workout on sp_workout.idworkout = sp_containsWE.idworkout where sp_workout.idworkout = ?");
+        PreparedStatement getExercises = conn.prepareStatement("select sp_exercise.idexercise,sp_exercise.description , sp_exercise.idCreator, sp_exercise.name  from sp_exercise inner join sp_containsWE on sp_containsWE.idexercise = sp_exercise.idexercise inner join sp_workout on sp_workout.idworkout = sp_containsWE.idworkout where sp_workout.idworkout =?");
         getExercises.setInt(1, idWorkout);
         ResultSet result = getExercises.executeQuery();
         Collection<Exercise> exercises = new ArrayList();
@@ -271,8 +272,14 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         addLocation.setDouble(3,coordinates.getLat());
         addLocation.setDouble(4,coordinates.getLng());
         addLocation.setString(5, type.toString());
+        if(startDate == null || endDate == null){
+            addLocation.setNull(6, Types.VARCHAR);
+            addLocation.setNull(7, Types.VARCHAR);
+        }
+        else{
         addLocation.setTimestamp(6, Timestamp.valueOf(startDate.atStartOfDay()));
         addLocation.setTimestamp(7, Timestamp.valueOf(endDate.atStartOfDay()));
+        }
         addLocation.executeQuery();
         PreparedStatement getLocationId = conn.prepareStatement("select seq_location.currval from dual");
         ResultSet result = getLocationId.executeQuery(); 

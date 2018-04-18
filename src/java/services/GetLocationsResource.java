@@ -5,8 +5,8 @@
  */
 package services;
 
+import data.Location;
 import data.Manager;
-import data.Workout;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,30 +25,30 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Martin
  */
-@Path("getWorkouts")
-public class GetWorkoutsResource {
+@Path("getLocations")
+public class GetLocationsResource {
 
     @Context
     private UriInfo context;
 
     /**
-     * Creates a new instance of GetWorkoutsResource
+     * Creates a new instance of GetLocationsResource
      */
-    public GetWorkoutsResource() {
+    public GetLocationsResource() {
     }
 
     /**
-     * Retrieves representation of an instance of services.GetWorkoutsResource
+     * Retrieves representation of an instance of services.GetLocationsResource
      * @return an instance of java.lang.String
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{workoutID}")
-    public Collection<Workout> getJson(@PathParam("workoutID") int workoutID) {      
-        Collection<Workout> workouts = new ArrayList<>();
+    @Path("{userID}")
+    public Collection<Location> getLocations(@PathParam("userID") int userID) {
+        Collection<Location> locations = new ArrayList<>();
         try{
             Manager m = Manager.newInstance();
-            workouts = m.getWorkouts(workoutID);
+            locations = m.getLocations(userID);
         }
         catch(SQLException ex){
             
@@ -56,9 +56,7 @@ public class GetWorkoutsResource {
         catch(Exception ex){
             
         }
-        return workouts;
-        
+        return locations;
     }
-
 
 }
