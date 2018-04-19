@@ -872,6 +872,9 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     }
     /**
      * 
+     * @param userId
+     * @return 
+     * @throws java.sql.SQLException 
      */
     public Collection<Plan> getSubscribedPlans(int userId) throws SQLException{
         Collection<Plan> plans = new ArrayList<>();
