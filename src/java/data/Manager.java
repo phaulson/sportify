@@ -23,6 +23,7 @@ import java.util.ArrayList;
 public class Manager {
     static Manager db = new Manager();
     private static final String CONNSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+    private static final String ALTERNATIVE_CONNSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
     private static final String USER = "d4a13";
     private static final String PASSWORD = "d4a";   
     Connection conn;
@@ -40,17 +41,18 @@ public class Manager {
     }
    
     private Connection establishConnection()throws Exception{
+
         if(conn==null){
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
             conn = DriverManager.getConnection(CONNSTRING, USER, PASSWORD);
             conn.setAutoCommit(true);
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            
-            return conn;
         }
         else{
             return conn;
         }
+
+        return conn;
     }
      /**
      * überprüft ob login erfolgreich war
@@ -913,7 +915,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @return 
      * @throws java.sql.SQLException 
      */
-    public Exercise getExercise(int exerciseID) throws SQLException{
+public Exercise getExercise(int exerciseID) throws SQLException{
         PreparedStatement getExercise = conn.prepareStatement("select * from sp_exercise where idExercise = ?");
         getExercise.setInt(1, exerciseID);
         ResultSet result = getExercise.executeQuery();

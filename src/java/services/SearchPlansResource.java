@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package data;
+package services;
 
 import com.google.gson.Gson;
+import data.Manager;
+import data.Plan;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,32 +26,31 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Martin
  */
-@Path("searchDailyWorkouts")
-public class SearchDailyWorkoutsResource {
+@Path("searchPlans")
+public class SearchPlansResource {
 
     @Context
     private UriInfo context;
 
     /**
-     * Creates a new instance of SearchDailyWorkoutsResource
+     * Creates a new instance of SearchPlansResource
      */
-    public SearchDailyWorkoutsResource() {
+    public SearchPlansResource() {
     }
 
     /**
-     * Retrieves representation of an instance of data.SearchDailyWorkoutsResource
-     * @param content
+     * Retrieves representation of an instance of data.SearchPlansResource
      * @return an instance of java.lang.String
      */
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Collection<DailyWorkout> getJson(String content) {
-        Collection<DailyWorkout> dailyWorkouts = new ArrayList<>();
+    @Produces(MediaType.APPLICATION_JSON)
+    public Collection<Plan> searchPlans(String content) {
+        Collection<Plan> plans = new ArrayList<>();
         try{
-        handleObjectSearchDailyWorkouts o = new Gson().fromJson(content, handleObjectSearchDailyWorkouts.class);
-        Manager m = Manager.newInstance();
-        dailyWorkouts = m.searchDailyWorkouts(o.creatorID, o.name);
+            handleObjectSearchPlans o = new Gson().fromJson(content, handleObjectSearchPlans.class);
+            Manager m = Manager.newInstance();
+            plans = m.searchPlans(o.creatorID, o.name);           
         }
         catch(SQLException ex){
             
@@ -57,14 +58,15 @@ public class SearchDailyWorkoutsResource {
         catch(Exception ex){
             
         }
-        return dailyWorkouts;
+        return plans;
     }
+
 }
-class handleObjectSearchDailyWorkouts{   
+class handleObjectSearchPlans{
     int creatorID;
     String name;
-    
-    public handleObjectSearchDailyWorkouts(int creatorID, String name) {
+
+    public handleObjectSearchPlans(int creatorID, String name) {
         this.creatorID = creatorID;
         this.name = name;
     }

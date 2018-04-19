@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package data;
+package services;
 
 import com.google.gson.Gson;
+import data.Manager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -24,48 +23,47 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Martin
  */
-@Path("searchPlans")
-public class SearchPlansResource {
+@Path("isPlanSubscribed")
+public class IsPlanSubscribedResource {
 
     @Context
     private UriInfo context;
 
     /**
-     * Creates a new instance of SearchPlansResource
+     * Creates a new instance of IsPlanSubscribedResource
      */
-    public SearchPlansResource() {
+    public IsPlanSubscribedResource() {
     }
 
     /**
-     * Retrieves representation of an instance of data.SearchPlansResource
+     * Retrieves representation of an instance of services.IsPlanSubscribedResource
+     * @param content
      * @return an instance of java.lang.String
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Plan> searchPlans(String content) {
-        Collection<Plan> plans = new ArrayList<>();
-        try{
-            handleObjectSearchPlans o = new Gson().fromJson(content, handleObjectSearchPlans.class);
+    public boolean isPlanSubscribed(String content) {
+         try{
+            handleObjectIsPlanSubscribed o = new Gson().fromJson(content, handleObjectIsPlanSubscribed.class);
             Manager m = Manager.newInstance();
-            plans = m.searchPlans(o.creatorID, o.name);           
+            m.isPlanSubscribed(o.userID, o.planID);
         }
         catch(SQLException ex){
-            
+            return false;
         }
         catch(Exception ex){
-            
+         return false;   
         }
-        return plans;
+         return true;
     }
-
 }
-class handleObjectSearchPlans{
-    int creatorID;
-    String name;
+class handleObjectIsPlanSubscribed{
+    int userID;
+    int planID;
 
-    public handleObjectSearchPlans(int creatorID, String name) {
-        this.creatorID = creatorID;
-        this.name = name;
+    public handleObjectIsPlanSubscribed(int userID, int planID) {
+        this.userID = userID;
+        this.planID = planID;
     }
+    
 }
