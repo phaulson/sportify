@@ -45,7 +45,10 @@
     <!-- Strings related to add post -->
     <string name="textView_addpost">POST</string>
     <string name="action_post">POST</string>
-
+    <string name="action_picture">Add pic</string>
+    <string name="editText_hint_caption">Caption</string>
+    <string name="action_post_cancel">Cancel</string>
+    <string name="imageView_post_post_description">The image to be posted by the user</string>
 
     <!-- auto-generated Strings -->
     <string name="action_settings">Settings</string>
