@@ -3,7 +3,6 @@ package com.spogss.sportifycommunity.adapter;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,16 +16,12 @@ import android.widget.TextView;
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.SportifyClient;
-import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.model.PostModel;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Created by Pauli on 26.03.2018.
@@ -36,11 +31,8 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     private Context context;
     private SportifyClient client;
 
-    // TODO: implement with real posts
     private HashMap<Integer, PostModel> posts = new HashMap<Integer, PostModel>();
     private ArrayList<Integer> keys = new ArrayList<Integer>();
-
-    private ArrayList<View> views = new ArrayList<View>();
 
     public FeedListAdapter(Context context) {
         this.context = context;
@@ -82,7 +74,6 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         ImageView comment = (ImageView) view.findViewById(R.id.imageView_feed_comment);
 
 
-        // TODO: implement with real posts
         PostModel postModel = posts.get(keys.get(i));
         rl.setTag(postModel.getPost().getId());
 
@@ -92,16 +83,19 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
         likes.setText(postModel.getNumberOfLikes() + " like" + (postModel.getNumberOfLikes() != 1 ? "s": ""));
 
-        //TODO: implement with pics
+        //TODO: implement with real profile pics
         profilePic.setImageResource(R.drawable.sp_default_profile_picture);
 
-        //check if post has pic
-        //if(post.getPostPic() != -1)
-        //    postPic.setImageResource(post.getPostPic());
-        //else {
+        //TODO: uncomment once implemented with pics
         ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) postPic.getLayoutParams();
-        marginParams.topMargin = 0;
-        marginParams.bottomMargin = 0;
+        //check if post has pic
+        //if(post.getPostPic() != -1) {
+        //    postPic.setImageResource(post.getPostPic());
+        //    marginParams.height = R.dimen.image_post_height;
+        //}
+        //else {
+            marginParams.topMargin = 0;
+            marginParams.bottomMargin = 0;
         //}
 
         //check if post is liked
@@ -134,17 +128,6 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     }
 
     /**
-     * adds a new Post to the Adapter
-     * @param post the Post that should be added
-     */
-    // TODO: implement with real posts
-    public void addPost(PostModel post) {
-        posts.put(post.getPost().getId(), post);
-        keys.add(post.getPost().getId());
-        this.notifyDataSetChanged();
-    }
-
-    /**
      * adds a new Collection of Posts to the Adapter
      * @param p the Posts that should be added
      */
@@ -166,11 +149,11 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     public void onClick(View view) {
         int id = view.getId();
 
-        // TODO: implement real onClick logic
         if(id == R.id.imageView_feed_heart) {
             like(view);
         }
         else if(id == R.id.imageView_feed_comment) {
+            // TODO: implement comment activity
             Snackbar.make(view, "The CommentActivity will be implemented soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
@@ -252,8 +235,6 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         }
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: call webservice for set Likes
-            int i = 1;
             return client.setLike(client.getCurrentUserID(), post.getId(), like);
         }
     }

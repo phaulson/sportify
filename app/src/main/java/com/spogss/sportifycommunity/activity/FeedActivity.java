@@ -90,8 +90,6 @@ public class FeedActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        //Custom code
-
         //tabs
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -103,7 +101,6 @@ public class FeedActivity extends AppCompatActivity
 
         //content feed
         feedListAdapter = new FeedListAdapter(getApplicationContext());
-
         listViewFeed = (ListView) findViewById(R.id.listView_feed);
         listViewFeed.setAdapter(feedListAdapter);
         listViewFeed.setOnScrollListener(new ScrollListener());
@@ -224,7 +221,6 @@ public class FeedActivity extends AppCompatActivity
     //swipeRefresh event
     @Override
     public void onRefresh() {
-        // TODO: implement real refresh method
         lastPostID = -1;
         new LoadPostsTask().execute((Void) null);
         swipeRefreshLayout.setRefreshing(false);
@@ -236,7 +232,6 @@ public class FeedActivity extends AppCompatActivity
      * @param newText the text that the user typed in the SearchView
      */
     private void search(String newText) {
-        // TODO: replace with connection to webservice and load data from database
         TabFragmentSearch fragment = ((TabFragmentSearch) sectionsPageAdapter.getItem(viewPager.getCurrentItem()));
         switch (tabLayout.getSelectedTabPosition()) {
             case 0:
@@ -257,19 +252,15 @@ public class FeedActivity extends AppCompatActivity
      * @return a collection of PostModels
      */
     private Collection<PostModel> loadPosts() {
-        // TODO: call webservice for loading
-        ArrayList<PostModel> postModels = new ArrayList<>();
-        long t1 = System.currentTimeMillis();
+        // TODO: find way to implement with better performance
+        ArrayList<PostModel> postModels = new ArrayList<PostModel>();
         ArrayList<Post> posts = (ArrayList<Post>) client.getPosts(client.getCurrentUserID(), lastPostID);
         for (Post p : posts) {
             User u = client.getProfile(p.getCreatorId());
             int numberOfLikes = client.getNumberOfLikes(p.getId());
             boolean liked = client.isLiked(client.getCurrentUserID(), p.getId());
-            //Log.i("like", u.getUsername() + " | " + liked);
             postModels.add(new PostModel(p, u, numberOfLikes, liked));
         }
-        long t2 = System.currentTimeMillis();
-        Log.i("time", (t2 - t1) + "");
         if (posts.size() > 0)
             lastPostID = (postModels).get(postModels.size() - 1).getPost().getId();
 
@@ -282,7 +273,7 @@ public class FeedActivity extends AppCompatActivity
     /**
      * Listener that handles the searchViewTextChange event
      */
-    public class SearchViewListener implements SearchView.OnQueryTextListener {
+    private class SearchViewListener implements SearchView.OnQueryTextListener {
 
         @Override
         public boolean onQueryTextSubmit(String query) {
@@ -299,7 +290,7 @@ public class FeedActivity extends AppCompatActivity
     /**
      * Listener that handles the searchItemExpand event
      */
-    public class MenuItemListener implements MenuItem.OnActionExpandListener {
+    private class MenuItemListener implements MenuItem.OnActionExpandListener {
 
         @Override
         public boolean onMenuItemActionExpand(MenuItem menuItem) {
@@ -323,7 +314,7 @@ public class FeedActivity extends AppCompatActivity
     /**
      * Listener that handles the TabChangeEvent
      */
-    public class PageChangeListener extends TabLayout.TabLayoutOnPageChangeListener {
+    private class PageChangeListener extends TabLayout.TabLayoutOnPageChangeListener {
 
         public PageChangeListener(TabLayout tabLayout) {
             super(tabLayout);
@@ -338,7 +329,7 @@ public class FeedActivity extends AppCompatActivity
     /**
      * Listener that handles the ListViewScroll event
      */
-    public class ScrollListener implements AbsListView.OnScrollListener {
+    private class ScrollListener implements AbsListView.OnScrollListener {
 
         @Override
         public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -358,7 +349,7 @@ public class FeedActivity extends AppCompatActivity
     /**
      * Handler that handles the loading Threads
      */
-    public class LoadingHandler extends Handler {
+    private class LoadingHandler extends Handler {
         @Override
         public void dispatchMessage(Message msg) {
             switch (msg.what) {
@@ -382,7 +373,7 @@ public class FeedActivity extends AppCompatActivity
     /**
      * Thread that handles the loading event
      */
-    public class ThreadLoadMorePosts extends Thread {
+    private class ThreadLoadMorePosts extends Thread {
         @Override
         public void run() {
             //message for footer view

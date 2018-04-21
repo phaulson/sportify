@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.spogss.sportifycommunity.activity.PostActivity">
 
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -14,12 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="0px"
-                android:layout_height="0px"
-                android:focusable="true"
-                android:focusableInTouchMode="true" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -30,6 +30,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/feed_margin_small"
+                    android:layout_marginEnd="@dimen/feed_margin_medium"
+                    android:layout_marginStart="@dimen/feed_margin_medium"
                     android:gravity="top|left"
                     android:hint="@string/editText_hint_caption"
                     android:inputType="textMultiLine"
@@ -45,7 +47,7 @@
                 <ImageView
                     android:id="@+id/imageView_post_post"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/image_post_height"
                     android:layout_marginBottom="@dimen/feed_margin_large"
                     android:layout_marginEnd="@dimen/feed_margin_medium"
                     android:layout_marginStart="@dimen/feed_margin_medium"
@@ -58,8 +60,8 @@
                     android:id="@+id/imageButton_post_removePic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/feed_margin_large"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="@dimen/feed_margin_medium"
+                    android:layout_marginTop="@dimen/feed_margin_medium"
                     android:layout_gravity="top|right"
                     android:background="@drawable/sp_button"
                     app:srcCompat="@drawable/ic_action_navigation_close" />

@@ -17,4 +17,7 @@
     <!-- dimens related to users -->
     <dimen name="image_users_square_dimen">45dp</dimen>
     <dimen name="users_text_size">22sp</dimen>
+
+    <!-- dimens related to post -->
+    <dimen name="image_post_height">365dp</dimen>
 </resources>

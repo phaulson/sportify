@@ -3,18 +3,12 @@ package com.spogss.sportifycommunity.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,12 +19,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.data.SportifyClient;
 
 public class PostActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView postPic;
     private EditText caption;
     private ImageButton removePic;
+    private SportifyClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +38,14 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         buttonAddPic.setOnClickListener(this);
 
         postPic = (ImageView) findViewById(R.id.imageView_post_post);
+        postPic.setVisibility(View.GONE);
         caption = (EditText) findViewById(R.id.editText_post_caption);
 
         removePic = (ImageButton) findViewById(R.id.imageButton_post_removePic);
         removePic.setOnClickListener(this);
         removePic.setVisibility(View.GONE);
+
+        client = SportifyClient.newInstance();
     }
 
     @Override
@@ -63,9 +62,12 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     onBackPressed();
                     return true;
                 case R.id.action_post:
-                    String s = caption.getText().toString();
-                    if (caption.getText().equals("") && postPic.getTag() == null)
+                    //TODO: check if caption and picture not set
+                    if (caption.getText().toString().trim().equals(""))
                         throw new Exception("Please write a caption or post a pic");
+                    new AddPostTask().execute((Void) null);
+                    Toast.makeText(this, "Post added", Toast.LENGTH_SHORT).show();
+                    onBackPressed();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -87,12 +89,14 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.imageButton_post_removePic:
                 postPic.setImageDrawable(null);
                 postPic.setTag(null);
+                postPic.setVisibility(View.GONE);
                 removePic.setVisibility(View.GONE);
                 break;
         }
     }
 
     private void showPicDialog() {
+        //TODO: add icons for camera and gallery
         CharSequence options[] = new CharSequence[]{"Camera", "Gallery"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -133,7 +137,16 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     break;
             }
             postPic.setTag("added");
+            postPic.setVisibility(View.VISIBLE);
             removePic.setVisibility(View.VISIBLE);
+        }
+    }
+
+    //AsyncTask
+    private class AddPostTask extends AsyncTask<Void, Void, Integer> {
+        @Override
+        protected Integer doInBackground(Void... params) {
+            return client.addPost(client.getCurrentUserID(), caption.getText().toString());
         }
     }
 }

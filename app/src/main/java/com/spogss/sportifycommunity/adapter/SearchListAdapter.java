@@ -25,7 +25,6 @@ import java.util.HashMap;
 public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchListener {
     private Context context;
 
-    // TODO: implement with real users
     private HashMap<Integer, T> content = new HashMap<Integer, T>();
     private ArrayList<Integer> keys = new ArrayList<Integer>();
 
@@ -58,11 +57,11 @@ public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchLis
         ImageView profilePic = (ImageView)view.findViewById(R.id.imageView_users_profile);
         TextView username = (TextView)view.findViewById(R.id.textView_users_username);
 
-        // TODO: implement with real users
         Object o = content.get(keys.get(i));
         rl.setTag(keys.get(i));
         if(o instanceof User) {
             username.setText(((User) o).getUsername());
+            //TODO: implement with real profile pictures
             profilePic.setImageResource(R.drawable.sp_default_profile_picture);
         }
         else if(o instanceof Plan) {
@@ -80,7 +79,6 @@ public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchLis
      * adds a user to the Adapter
      * @param generic the user that should be added
      */
-    // TODO: implement with real users
     public void addGeneric(T generic, int id) {
         content.put(id, generic);
         keys.add(id);

@@ -13,6 +13,8 @@ import java.util.Date;
  */
 
 public class SportifyClient {
+    //TODO: call webservice in every method
+
     private static SportifyClient client;
     private int currentUserID;
     private int numberOfPosts;
