@@ -323,7 +323,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
         @Override
         protected Integer doInBackground(Void... params) {
-            // TODO: actual login process
             int uid = client.login(mEmail, mPassword);
             Log.i("uid", "uid: " + uid);
             return uid;
@@ -379,8 +378,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
         @Override
         protected Integer doInBackground(Void... params) {
-            // TODO: actual register process
-
             if (isUsernameValid(mEmail) && isPasswordValid(mPassword)) {
                 int u = client.register(mEmail, mPassword, true);
                 return u;
