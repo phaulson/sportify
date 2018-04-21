@@ -1,17 +1,14 @@
 package com.spogss.sportifycommunity.activity;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,24 +19,21 @@ import android.widget.EditText;
 import android.widget.TabHost;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Manager;
 import com.spogss.sportifycommunity.data.SportifyClient;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements OnClickListener {
-
+    private SportifyClient client;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private AsyncTask<Void, Void, Boolean> authTask = null;
+    private AsyncTask<Void, Void, Integer> authTask = null;
 
     // UI references.
+    private ConstraintLayout constraintLayout_initializeOverlay;
+
     private EditText editText_username;
     private EditText editText_password;
     private Button button_signIn;
@@ -59,12 +53,20 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //client = SportifyClient.newInstance();
+
+        //initialize();
+
+        //new ConnectTask().execute();
+
         initialize();
-        attemptLoginWithSavedCredentials();
+        new ConnectTask().execute();
     }
 
-    private void initialize() {
+    private void initialize(){
         setTitle(R.string.app_name); // Sportify pro
+
+        constraintLayout_initializeOverlay = (ConstraintLayout) findViewById(R.id.constraintLayout_initializeOverlay);
 
         editText_username = (EditText) findViewById(R.id.editText_username);
         editText_password = (EditText) findViewById(R.id.editText_password);
@@ -101,16 +103,16 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     /**
      * attempts login with saved credentials
      */
-    private void attemptLoginWithSavedCredentials() {
+    private boolean attemptLoginWithSavedCredentials() {
         SharedPreferences sp1 = this.getSharedPreferences("Login", MODE_PRIVATE);
         String username = sp1.getString("username", null);
         String password = sp1.getString("password", null);
 
-        if(username == null || password == null)
-            return;
-
-        // TODO: webservice call for saved login credentials
-        attemptLogin(username, password);
+        if(username != null && password != null) {
+            attemptLogin(username, password);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -140,7 +142,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         // Reset errors.
         editText_username.setError(null);
         editText_password.setError(null);
-
 
         boolean cancel = false;
         View focusView = null;
@@ -172,9 +173,8 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
             // perform the user login attempt.
             showProgress(true);
             authTask = new UserLoginTask(username, password);
-            authTask.execute((Void) null);
+            authTask.execute();
         }
-
     }
 
     private void attemptRegistration() {
@@ -195,7 +195,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         boolean cancel = false;
         View focusView = null;
 
-        if (!password.equals(pw_conf)) {
+        if(!password.equals(pw_conf)){
             editText_password_r_2.setError(getString(R.string.error_password_match));
             focusView = editText_password_r_2;
             cancel = true;
@@ -280,6 +280,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_signIn:
+                // Store values at the time of the login attempt.
                 String username = editText_username.getText().toString();
                 String password = editText_password.getText().toString();
                 attemptLogin(username, password);
@@ -310,7 +311,8 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserLoginTask extends AsyncTask<Void, Void, Integer> {
+
         private final String mEmail;
         private final String mPassword;
 
@@ -320,20 +322,20 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: call webservice fro login
-            int id = SportifyClient.newInstance().login(mEmail, mPassword);
-            if (id > -1)
-                return true;
-            return false;
+        protected Integer doInBackground(Void... params) {
+            // TODO: actual login process
+            int uid = client.login(mEmail, mPassword);
+            Log.i("uid", "uid: " + uid);
+            return uid;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer loggedInUser) {
             authTask = null;
             showProgress(false);
+            constraintLayout_initializeOverlay.setVisibility(View.GONE);
 
-            if (success) {
+            if (loggedInUser >= 0) {
                 onLoginSuccess(mEmail, mPassword);
             } else {
                 editText_password.setError(getString(R.string.error_incorrect_username_or_password));
@@ -351,7 +353,21 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
     }
 
-    private class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
+    private class ConnectTask extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            client = SportifyClient.newInstance();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if(!attemptLoginWithSavedCredentials())
+                constraintLayout_initializeOverlay.setVisibility(View.GONE);
+        }
+    }
+
+    private class UserRegisterTask extends AsyncTask<Void, Void, Integer> {
 
         private final String mEmail;
         private final String mPassword;
@@ -362,20 +378,23 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: call webservice for register
-            int id = SportifyClient.newInstance().register(mEmail, mPassword, false);
-            if (id > -1)
-                return true;
-            return false;
+        protected Integer doInBackground(Void... params) {
+            // TODO: actual register process
+
+            if (isUsernameValid(mEmail) && isPasswordValid(mPassword)) {
+                int u = client.register(mEmail, mPassword, true);
+                return u;
+            }
+
+            return null;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer success) {
             authTask = null;
             showProgress(false);
 
-            if (success) {
+            if (success >= 0) {
                 onRegistrationSuccess(mEmail, mPassword);
             } else {
                 editText_password.setError(getString(R.string.error_incorrect_username_or_password));
