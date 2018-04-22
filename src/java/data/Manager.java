@@ -107,7 +107,7 @@ public class Manager {
         selectProfile.setDouble(1, idUser);
         ResultSet result = selectProfile.executeQuery();
         while(result.next()){         
-        user = new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
+        user = new User(result.getInt(1), result.getString(2), null, result.getString(4));
         }
         return user;
     }
@@ -239,7 +239,7 @@ public class Manager {
         return posts;
         }
         else if(lastPostId>0){
-            PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and idPost < ? and rownum <= ?");
+            PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and idPost > ? and rownum <= ?");
             getPostsByCreator.setInt(1, idCreator);
             getPostsByCreator.setInt(2, lastPostId);
             getPostsByCreator.setInt(3, numberOfPosts);
@@ -594,7 +594,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         }
         else if(lastPostId>=0){
-            PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost < ? and rownum <= ?");
+            PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost > ? and rownum <= ?");
             getPosts.setInt(1, userId);
             getPosts.setInt(2,lastPostId);
             getPosts.setInt(3, numberOfPosts);
@@ -841,13 +841,13 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         ResultSet result = getNearbyLocations.executeQuery();
         while(result.next()){
-            LocalDate starttime = result.getTimestamp(7).toLocalDateTime().toLocalDate();
-            LocalDate endtime = result.getTimestamp(8).toLocalDateTime().toLocalDate();
+            Timestamp starttime = result.getTimestamp(7);
+            Timestamp endtime = result.getTimestamp(8);
             if(starttime == null && endtime == null){
               locations.add(new Location(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6))));  
             }
             else if(starttime != null && endtime != null){
-              locations.add(new Event(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime, endtime));  
+              locations.add(new Event(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime.toLocalDateTime().toLocalDate(), endtime.toLocalDateTime().toLocalDate()));  
             }
             else{
                 throw new Exception("Unknwon Error");

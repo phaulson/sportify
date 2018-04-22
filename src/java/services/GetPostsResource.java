@@ -6,6 +6,7 @@
 package services;
 
 import com.google.gson.Gson;
+import data.CustomException;
 import data.Manager;
 import data.Post;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -46,29 +48,38 @@ public class GetPostsResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Post> getPosts(String content) {
+    public Response getPosts(String content) {
         Collection<Post> posts = new ArrayList<>();
+        Response r;
         try{
             handlerObjectGetPosts o = new Gson().fromJson(content, handlerObjectGetPosts.class);
             Manager m = Manager.newInstance();
-            posts = m.getPosts(o.userID, o.postID, o.numberOfPosts);
+            posts = m.getPosts(o.userID, o.lastPostID, o.numberOfPosts);
+            
+            if(posts.size() == 0)
+                throw new CustomException("no posts found");
+
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(new Gson().toJson(posts))).build();
+        }
+        catch(CustomException ex){
+            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return posts;
+        return r;        
     }
 }
  class handlerObjectGetPosts{
      int userID;
-     int postID;
+     int lastPostID;
      int numberOfPosts;
     public handlerObjectGetPosts(int userID, int postID, int numberOfPosts) {
         this.userID = userID;
-        this.postID = postID;
+        this.lastPostID = postID;
         this.numberOfPosts = numberOfPosts;
     }
      

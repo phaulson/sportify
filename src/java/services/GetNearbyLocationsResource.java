@@ -7,6 +7,7 @@ package services;
 
 import com.google.gson.Gson;
 import data.Coordinate;
+import data.CustomException;
 import data.Location;
 import data.LocationType;
 import data.Manager;
@@ -22,6 +23,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -48,20 +50,29 @@ public class GetNearbyLocationsResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<Location> getNearbyLocations(String content) {
+    public Response getNearbyLocations(String content) {
         Collection<Location> locations = new ArrayList<>();
+        Response r;
         try{
             handleObjectGetNearbyLocations o = new Gson().fromJson(content, handleObjectGetNearbyLocations.class);
             Manager m = Manager.newInstance();
             locations = m.getNearbyLocations(o.coordinates, o.radius, o.types);
+            
+            if(locations.size() == 0)
+                throw new CustomException("no nearby locations found");
+
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(new Gson().toJson(locations))).build();
+        }
+        catch(CustomException ex){
+            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return locations;
+        return r;        
     }
 }
 class handleObjectGetNearbyLocations{

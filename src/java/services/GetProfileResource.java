@@ -6,6 +6,7 @@
 package services;
 
 import com.google.gson.Gson;
+import data.CustomException;
 import data.Manager;
 import data.User;
 import java.sql.SQLException;
@@ -14,10 +15,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -41,25 +44,32 @@ public class GetProfileResource {
      * @param id
      * @return an instance of java.lang.String
      */
-    @GET
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{userId}")
-    public User getJson(@PathParam("userId") String id) {
+    public Response getJson(String content) {
         User user = null;
+        Response r;
         try{
+            int userId = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
-            user = m.getProfile(Integer.parseInt(id));
+            user = m.getProfile(userId);
+
+            if(user == null)
+                throw new CustomException("no user found");
+            
+            r = Response.status(Response.Status.OK).entity(user).build();
+        }
+        catch(CustomException ex){
+            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
-           
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        if(user == null)
-        return user;
-        
-        return user;
+        return r;
     }
 }
  
