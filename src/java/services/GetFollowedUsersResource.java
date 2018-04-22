@@ -6,6 +6,7 @@
 package services;
 
 import com.google.gson.Gson;
+import data.CustomException;
 import data.Manager;
 import data.User;
 import java.sql.SQLException;
@@ -16,7 +17,9 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -42,19 +45,28 @@ public class GetFollowedUsersResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Collection<User> getFollowedUsers(String content) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFollowedUsers(String content) {
         Collection<User> users = new ArrayList<>();
+        Response r;
         try{
             int userID = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
             users = m.getFollowedUsers(userID);
+            if(users.size() == 0)
+                throw new CustomException("no users found");
+
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(new Gson().toJson(users))).build();
+        }
+        catch(CustomException ex){
+            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return users;
+        return r;        
     }
 }

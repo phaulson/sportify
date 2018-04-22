@@ -44,7 +44,7 @@ public class Manager {
 
         if(conn==null){
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-            conn = DriverManager.getConnection(CONNSTRING, USER, PASSWORD);
+            conn = DriverManager.getConnection(ALTERNATIVE_CONNSTRING, USER, PASSWORD);
             conn.setAutoCommit(true);
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         }
@@ -939,9 +939,9 @@ public Exercise getExercise(int exerciseID) throws SQLException{
         ResultSet result = getFollowedUsers.executeQuery();
         while(result.next()){
             if(Boolean.valueOf(result.getString(5)))
-            users.add(new ProUser(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+            users.add(new ProUser(result.getInt(1), result.getString(2), null, result.getString(4)));
                 else if(!Boolean.valueOf(result.getString(5)))
-                    users.add(new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4)));
+                    users.add(new User(result.getInt(1), result.getString(2), null, result.getString(4)));
         }
         return users;      
     }

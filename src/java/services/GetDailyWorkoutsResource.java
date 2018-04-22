@@ -6,6 +6,7 @@
 package services;
 
 import com.google.gson.Gson;
+import data.CustomException;
 import data.DailyWorkout;
 import data.Manager;
 import java.sql.SQLException;
@@ -53,8 +54,13 @@ public class GetDailyWorkoutsResource {
         try{
             Manager m = Manager.newInstance();
             dailyWorkouts = m.getDailyWorkouts(planID);
+            if(dailyWorkouts.size() == 0)
+                throw new CustomException("no dailyworkouts found");
 
-            r = Response.status(Response.Status.OK).entity(dailyWorkouts).build();
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(dailyWorkouts)).build();
+        }
+        catch(CustomException ex){
+            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();

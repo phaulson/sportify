@@ -5,6 +5,8 @@
  */
 package services;
 
+import com.google.gson.Gson;
+import data.CustomException;
 import data.Exercise;
 import data.Manager;
 import java.sql.SQLException;
@@ -19,6 +21,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -45,19 +48,29 @@ public class GetExercisesResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{workoutID}")
-    public Collection<Exercise> getJson(@PathParam("workoutID") int workoutID) {
+    public Response getJson(@PathParam("workoutID") int workoutID) {
         Collection<Exercise> exercises = new ArrayList<>();
+        Response r;
         try{
             Manager m = Manager.newInstance();
             exercises = m.getExercises(workoutID);
+
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(exercises)).build();
         }
         catch(SQLException ex){
-            
+            //try{
+            //if(ex.getMessage().equals("Erschöpfte Ergebnismenge"))
+                //throw new CustomException("No Excercise with this id");
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();  
+            //}
+            //catch(CustomException custEx){
+            //r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(custEx.getMessage()).build();
+        //}
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return exercises;
+        return r;            
     }
 
 }
