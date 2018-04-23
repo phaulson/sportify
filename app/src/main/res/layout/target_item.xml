@@ -31,7 +31,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/rectangle"
+        android:background="@drawable/sp_rectangle"
         android:gravity="center"
         android:textStyle="bold" />
 

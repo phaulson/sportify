@@ -375,8 +375,10 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if(!attemptLoginWithSavedCredentials())
+            if(!attemptLoginWithSavedCredentials()) {
                 constraintLayout_initializeOverlay.setVisibility(View.GONE);
+                getSupportActionBar().show();
+            }
         }
     }
 
