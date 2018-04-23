@@ -194,7 +194,7 @@ public class Manager {
         ResultSet result = getExercises.executeQuery();
         Collection<Exercise> exercises = new ArrayList();
         while(result.next()){
-            exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));
+            exercises.add(new Exercise(result.getInt(1), result.getInt(3), result.getString(2), result.getString(4)));
         }
         return exercises;
     }

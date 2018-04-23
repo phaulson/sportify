@@ -17,6 +17,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
@@ -45,13 +46,13 @@ public class GetExercisesResource {
      * @param workoutID
      * @return an instance of java.lang.String
      */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{workoutID}")
-    public Response getJson(@PathParam("workoutID") int workoutID) {
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getJson(String content) {
         Collection<Exercise> exercises = new ArrayList<>();
         Response r;
         try{
+            int workoutID = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
             exercises = m.getExercises(workoutID);
 
