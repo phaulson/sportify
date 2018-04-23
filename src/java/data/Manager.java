@@ -44,7 +44,7 @@ public class Manager {
 
         if(conn==null){
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-            conn = DriverManager.getConnection(ALTERNATIVE_CONNSTRING, USER, PASSWORD);
+            conn = DriverManager.getConnection(CONNSTRING, USER, PASSWORD);
             conn.setAutoCommit(true);
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         }
@@ -239,7 +239,7 @@ public class Manager {
         return posts;
         }
         else if(lastPostId>0){
-            PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and idPost > ? and rownum <= ?");
+            PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and idPost < ? and rownum <= ?");
             getPostsByCreator.setInt(1, idCreator);
             getPostsByCreator.setInt(2, lastPostId);
             getPostsByCreator.setInt(3, numberOfPosts);
@@ -594,7 +594,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         }
         }
         else if(lastPostId>=0){
-            PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost > ? and rownum <= ?");
+            PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost < ? and rownum <= ?");
             getPosts.setInt(1, userId);
             getPosts.setInt(2,lastPostId);
             getPosts.setInt(3, numberOfPosts);

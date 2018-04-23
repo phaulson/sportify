@@ -5,6 +5,8 @@
  */
 package services;
 
+import com.google.gson.Gson;
+import data.CustomException;
 import data.Manager;
 import data.Workout;
 import java.sql.SQLException;
@@ -15,10 +17,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -41,23 +45,32 @@ public class GetWorkoutsResource {
      * Retrieves representation of an instance of services.GetWorkoutsResource
      * @return an instance of java.lang.String
      */
-    @GET
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{workoutID}")
-    public Collection<Workout> getJson(@PathParam("workoutID") int workoutID) {      
+    public Response getJson(String content) {      
         Collection<Workout> workouts = new ArrayList<>();
+        Response r;
         try{
+            int dailyWorkoutID = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
-            workouts = m.getWorkouts(workoutID);
+            workouts = m.getWorkouts(dailyWorkoutID);
+
+            if(workouts.isEmpty())
+                throw new CustomException("no plans found");
+            
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(workouts)).build();
+        }
+        catch(CustomException ex){
+            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return workouts;
-        
+        return r;        
     }
 
 

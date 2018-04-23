@@ -59,7 +59,7 @@ public class GetPostsResource {
             if(posts.size() == 0)
                 throw new CustomException("no posts found");
 
-            r = Response.status(Response.Status.OK).entity(new Gson().toJson(new Gson().toJson(posts))).build();
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(posts)).build();
         }
         catch(CustomException ex){
             r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
