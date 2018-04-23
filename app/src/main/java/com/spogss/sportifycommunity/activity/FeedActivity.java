@@ -174,8 +174,7 @@ public class FeedActivity extends AppCompatActivity
 
         // TODO: implement onMenuItemClick
         if (id == R.id.nav_home) {
-            Snackbar.make(getWindow().getDecorView().getRootView(), "The posts will reload soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            onRefresh();
         } else if (id == R.id.nav_plans) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "The PlansActivity will be implemented soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();

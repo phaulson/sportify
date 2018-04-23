@@ -155,10 +155,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void refresh_fab_editOrFollow(){
         switch(correlationState){
             case NOT_FOLLOWING:
-                fab_editOrFollow.setImageResource(android.R.drawable.ic_menu_add);
+                fab_editOrFollow.setImageResource(R.drawable.sp_follow);
                 break;
             case FOLLOWING:
-                fab_editOrFollow.setImageResource(android.R.drawable.ic_menu_delete);
+                fab_editOrFollow.setImageResource(R.drawable.sp_unfollow);
                 break;
             case OWN:
                 fab_editOrFollow.setImageResource(android.R.drawable.ic_menu_edit);

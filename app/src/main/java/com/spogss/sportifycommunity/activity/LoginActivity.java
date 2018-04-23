@@ -379,7 +379,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         @Override
         protected Integer doInBackground(Void... params) {
             if (isUsernameValid(mEmail) && isPasswordValid(mPassword)) {
-                int u = client.register(mEmail, mPassword, true);
+                int u = client.register(mEmail, mPassword, false);
                 return u;
             }
 
