@@ -6,6 +6,7 @@
 package services;
 
 import com.google.gson.Gson;
+import data.CustomException;
 import data.Manager;
 import data.User;
 import java.sql.SQLException;
@@ -45,19 +46,29 @@ public class LoginResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public int login(String content)throws Exception{
-        int userID = -1;        
+    public Response login(String content)throws Exception{
+        int userID = -1;
+        Response r;
         try{
-        User user = new Gson().fromJson(content, User.class);
-        Manager manager = Manager.newInstance();
-        userID = manager.login(user.getUsername(), user.getPassword());
+            User user = new Gson().fromJson(content, User.class);
+            Manager manager = Manager.newInstance();
+            user = manager.login(user.getUsername(), user.getPassword());
+                       
+            r = Response.status(Response.Status.OK).entity(user).build();
         }
         catch(SQLException ex){
-            return -200;
+            try{
+            if(ex.getMessage().contains("Erschöpfte Ergebnismenge"))
+                throw new CustomException("login failed");
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
+            }
+            catch(CustomException custEx){
+                r = Response.status(Response.Status.NOT_FOUND).entity(custEx.getMessage()).build();
+            }
         }
         catch(Exception ex){
-            return -10;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return userID;
+        return r;                
     }
 }

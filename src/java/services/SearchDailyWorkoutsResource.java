@@ -6,6 +6,7 @@
 package services;
 
 import com.google.gson.Gson;
+import data.CustomException;
 import data.DailyWorkout;
 import data.Manager;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -46,20 +48,23 @@ public class SearchDailyWorkoutsResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Collection<DailyWorkout> getJson(String content) {
+    public Response getJson(String content) {
         Collection<DailyWorkout> dailyWorkouts = new ArrayList<>();
+        Response r;
         try{
-        handleObjectSearchDailyWorkouts o = new Gson().fromJson(content, handleObjectSearchDailyWorkouts.class);
-        Manager m = Manager.newInstance();
-        dailyWorkouts = m.searchDailyWorkouts(o.creatorID, o.name);
+            handleObjectSearchDailyWorkouts o = new Gson().fromJson(content, handleObjectSearchDailyWorkouts.class);
+            Manager m = Manager.newInstance();
+            dailyWorkouts = m.searchDailyWorkouts(o.creatorID, o.name); 
+                       
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(dailyWorkouts)).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();            
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return dailyWorkouts;
+        return r;          
     }
 }
 class handleObjectSearchDailyWorkouts{   

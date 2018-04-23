@@ -21,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -42,20 +43,23 @@ public class SearchWorkoutsResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Collection<Workout> searchWrokouts(String content) {
+    public Response searchWorkouts(String content) {
         Collection<Workout> workouts = new ArrayList<>();
+        Response r;
         try{
-        handleObjectSearchWorkouts o = new Gson().fromJson(content, handleObjectSearchWorkouts.class);
-        Manager m = Manager.newInstance();
-        workouts = m.searchWorkouts(o.creatorID, o.name);
+            handleObjectSearchWorkouts o = new Gson().fromJson(content, handleObjectSearchWorkouts.class);
+            Manager m = Manager.newInstance();
+            workouts = m.searchWorkouts(o.creatorID, o.name);
+                       
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(workouts)).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();            
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return workouts;
+        return r;         
     }
 }
 class handleObjectSearchWorkouts{   

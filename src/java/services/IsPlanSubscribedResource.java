@@ -17,6 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -42,19 +43,23 @@ public class IsPlanSubscribedResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean isPlanSubscribed(String content) {
-         try{
+    public Response isPlanSubscribed(String content) {
+        Response r;
+        try{
             handleObjectIsPlanSubscribed o = new Gson().fromJson(content, handleObjectIsPlanSubscribed.class);
             Manager m = Manager.newInstance();
-            m.isPlanSubscribed(o.userID, o.planID);
+            boolean result = m.isPlanSubscribed(o.userID, o.planID);
+           
+            
+            r = Response.status(Response.Status.OK).entity(String.valueOf(result)).build();
         }
         catch(SQLException ex){
-            return false;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-         return false;   
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-         return true;
+        return r;        
     }
 }
 class handleObjectIsPlanSubscribed{

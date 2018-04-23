@@ -14,6 +14,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -39,19 +40,26 @@ public class SetPlanSubscriptionResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean setPlanSub(String content) {
+    public Response setPlanSub(String content) {
+        Response r;
         try{
             handleObjectsetPlanSubscription o = new Gson().fromJson(content, handleObjectsetPlanSubscription.class);
             Manager m = Manager.newInstance();
-            m.setPlanSubscription(o.userID, o.planID, o.subscribe);
+            boolean result = m.setPlanSubscription(o.userID, o.planID, o.subscribe);
+                       
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(result)).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();  
+            if(ex.getMessage().contains("übergeordneter Schlüssel nicht gefunden"))
+                r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("user or plan not valid").build();
+            else if(ex.getMessage().contains("Unique Constraint (D4A13.PK_SUBSCRIPTION) verletzt"))
+                r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("plan hat bereits diesen state lol").build();                      
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return true;
+        return r;        
     }
 }
 class handleObjectsetPlanSubscription{

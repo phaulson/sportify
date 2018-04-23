@@ -20,6 +20,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -46,20 +47,23 @@ public class SearchUsersResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<User> searchUsers(String content) {
+    public Response searchUsers(String content) {
         Collection<User> users = new ArrayList<>();
+        Response r;
         try{
             handleObjectSearchUsers o = new Gson().fromJson(content, handleObjectSearchUsers.class);
             Manager m = Manager.newInstance();
             users = m.searchUsers(o.name, o.isPro);
+                       
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(users)).build();
         }
         catch(SQLException ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();            
         }
         catch(Exception ex){
-            
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-    return users;
+        return r;         
     }
 }
 class handleObjectSearchUsers{
