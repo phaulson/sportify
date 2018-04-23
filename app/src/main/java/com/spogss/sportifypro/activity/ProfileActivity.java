@@ -1,16 +1,24 @@
 package com.spogss.sportifypro.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +47,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private SportifyClient client;
     private User displayedUser;
 
+    private AppBarLayout appBarLayout_profile;
+    private LinearLayout linearLayout_profileContent;
+    private ProgressBar progressBar_profile;
+
 
     private enum UserCorrelation {
         NOT_FOLLOWING,
@@ -52,6 +64,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        setTitle("Profile");
 
         initialize();
 
@@ -68,10 +82,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         listView_menu = (ListView) findViewById(R.id.listView_profileMenu);
         fab_editOrFollow = (FloatingActionButton) findViewById(R.id.fab_editProfile);
         fab_editOrFollow.setOnClickListener(this);
+        appBarLayout_profile = (AppBarLayout) findViewById(R.id.appBar);
+        linearLayout_profileContent = (LinearLayout) findViewById(R.id.linearLayout_profileContent);
+        progressBar_profile = (ProgressBar) findViewById(R.id.progressBar_profile);
     }
 
     private void setUser(User u){
         displayedUser = u;
+        setTitle(u.getUsername());
         refreshProfile();
         refreshCorellationState();
         refresh_fab_editOrFollow();
@@ -226,11 +244,74 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQ_CODE_EDIT_PROFILE) {
-            refreshProfile();
+            new setUserTask().execute(displayedUser.getId());
+        }
+    }
+
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+
+            linearLayout_profileContent.setVisibility(show ? View.GONE : View.VISIBLE);
+            linearLayout_profileContent.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    linearLayout_profileContent.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            fab_editOrFollow.setVisibility(show ? View.GONE : View.VISIBLE);
+            fab_editOrFollow.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    fab_editOrFollow.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            appBarLayout_profile.setVisibility(show ? View.GONE : View.VISIBLE);
+            appBarLayout_profile.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    appBarLayout_profile.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+
+            progressBar_profile.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressBar_profile.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    progressBar_profile.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            progressBar_profile.setVisibility(show ? View.VISIBLE : View.GONE);
+            appBarLayout_profile.setVisibility(show ? View.GONE : View.VISIBLE);
+            linearLayout_profileContent.setVisibility(show ? View.GONE : View.VISIBLE);
+            fab_editOrFollow.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
     private class setUserTask extends AsyncTask<Integer, Void, User>{
+
+        @Override
+        protected void onPreExecute() {
+            showProgress(true);
+        }
 
         @Override
         protected User doInBackground(Integer... integers) {
@@ -241,6 +322,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         protected void onPostExecute(User user) {
             setUser(user);
+            showProgress(false);
         }
     }
 }

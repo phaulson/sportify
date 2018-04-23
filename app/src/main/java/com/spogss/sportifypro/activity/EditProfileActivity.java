@@ -1,5 +1,6 @@
 package com.spogss.sportifypro.activity;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +27,8 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
+        setTitle("Edit Profile");
+
         client = SportifyClient.newInstance();
 
         initialize();
@@ -47,6 +50,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     private void saveChanges(){
         // TODO: 09.04.2018 implement saveChanges in EditProfile
+        button_saveChanges.setVisibility(View.GONE);
         Toast.makeText(getApplicationContext(), "Saving Changes...", Toast.LENGTH_SHORT).show();
         String desc = editText_description.getText().toString();
         new SetDescriptionTask(desc).execute();
@@ -75,5 +79,17 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             return null;
         }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Toast.makeText(getApplicationContext(), "Changes Saved.", Toast.LENGTH_SHORT).show();
+            setResult(Activity.RESULT_OK);
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 }

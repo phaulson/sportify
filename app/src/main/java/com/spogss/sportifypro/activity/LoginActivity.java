@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
         //new ConnectTask().execute();
 
         initialize();
+        getSupportActionBar().hide();
         new ConnectTask().execute();
     }
 
@@ -344,6 +345,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener{
             authTask = null;
             showProgress(false);
             constraintLayout_initializeOverlay.setVisibility(View.GONE);
+            getSupportActionBar().show();
 
             if (loggedInUser >= 0) {
                 saveLoginCredentials(mEmail, mPassword);

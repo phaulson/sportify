@@ -31,11 +31,11 @@
 
     <ProgressBar
         android:id="@+id/progressBar_login"
-        style="?android:attr/progressBarStyleLarge"
+
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_gravity="center"/>
 
     <TabHost
         android:id="@+id/tabHost_host"
