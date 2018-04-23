@@ -1,6 +1,7 @@
 package com.spogss.sportifycommunity.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -12,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.activity.ProfileActivity;
 import com.spogss.sportifycommunity.data.Plan;
 import com.spogss.sportifycommunity.data.User;
 
@@ -90,9 +92,14 @@ public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchLis
         if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
             // TODO: open ProfileActivity
             int idRl = Integer.parseInt(view.getTag().toString());
-            T user = content.get(idRl);
-            Snackbar.make(view, "The ProfileActivity will be implemented soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            T o = content.get(idRl);
+            if(o instanceof User) {
+                Intent intent = new Intent(context, ProfileActivity.class);
+                intent.putExtra("profile", ((User)o).getId());
+                context.startActivity(intent);
+            }
+            else if(o instanceof Plan) {
+            }
         }
         return true;
     }

@@ -1,6 +1,7 @@
 package com.spogss.sportifycommunity.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.view.GestureDetector;
@@ -14,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.activity.ProfileActivity;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.SportifyClient;
 import com.spogss.sportifycommunity.model.PostModel;
@@ -193,8 +195,10 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
             RelativeLayout rl = (RelativeLayout) view.getParent();
             int idRl = Integer.parseInt(rl.getTag().toString());
             PostModel postModel = posts.get(idRl);
-            Snackbar.make(view, "The ProfileActivity for '" + postModel.getUser().getUsername() + "' will be implemented soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+
+            Intent intent = new Intent(context, ProfileActivity.class);
+            intent.putExtra("profile", postModel.getUser().getId());
+            context.startActivity(intent);
         }
         return true;
     }

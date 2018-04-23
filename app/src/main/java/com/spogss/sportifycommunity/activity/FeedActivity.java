@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.adapter.FeedListAdapter;
@@ -38,6 +39,8 @@ import com.spogss.sportifycommunity.data.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 import com.spogss.sportifycommunity.model.PostModel;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +56,7 @@ public class FeedActivity extends AppCompatActivity
     private SearchView searchView;
     private ListView listViewFeed;
     private View footerView;
+    private View navHeader;
 
     private SportifyClient client;
     //Adapter for tabs
@@ -64,6 +68,8 @@ public class FeedActivity extends AppCompatActivity
     private Handler loadingHandler;
 
     private int lastPostID = -1;
+
+    private User user;
 
 
     @Override
@@ -89,6 +95,10 @@ public class FeedActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        navHeader = navigationView.getHeaderView(0);
+        navHeader.setOnClickListener(this);
+        TextView navUsername = (TextView)navHeader.findViewById(R.id.textView_nav_username);
+        navUsername.setText(client.getCurrentUser().getUsername());
 
         //tabs
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
@@ -115,6 +125,8 @@ public class FeedActivity extends AppCompatActivity
         loadingHandler = new LoadingHandler();
 
         new LoadPostsTask().execute((Void) null);
+        listViewFeed.addHeaderView(footerView);
+
     }
 
     /**
@@ -216,6 +228,11 @@ public class FeedActivity extends AppCompatActivity
             Intent intent = new Intent(this, PostActivity.class);
             startActivity(intent);
         }
+        else if(id == navHeader.getId()) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("profile", client.getCurrentUserID());
+            startActivity(intent);
+        }
     }
 
     //swipeRefresh event
@@ -223,7 +240,6 @@ public class FeedActivity extends AppCompatActivity
     public void onRefresh() {
         lastPostID = -1;
         new LoadPostsTask().execute((Void) null);
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     /**
@@ -261,7 +277,7 @@ public class FeedActivity extends AppCompatActivity
             boolean liked = client.isLiked(client.getCurrentUserID(), p.getId());
             postModels.add(new PostModel(p, u, numberOfLikes, liked));
         }
-        if (posts.size() > 0)
+        if (postModels.size() > 0)
             lastPostID = (postModels).get(postModels.size() - 1).getPost().getId();
 
         return postModels;
@@ -380,7 +396,8 @@ public class FeedActivity extends AppCompatActivity
             loadingHandler.sendEmptyMessage(0);
 
             //send new Data
-            loadingHandler.sendMessage(loadingHandler.obtainMessage(1, loadPosts()));
+            loadingHandler.sendMessage(loadingHandler.obtainMessage(1
+                    , loadPosts()));
         }
     }
 
@@ -389,7 +406,6 @@ public class FeedActivity extends AppCompatActivity
     private class LoadPostsTask extends AsyncTask<Void, Void, Collection<PostModel>> {
         @Override
         protected Collection<PostModel> doInBackground(Void... params) {
-            listViewFeed.addHeaderView(footerView);
             return loadPosts();
         }
 
@@ -397,6 +413,7 @@ public class FeedActivity extends AppCompatActivity
         protected void onPostExecute(final Collection<PostModel> posts) {
             feedListAdapter.clear();
             feedListAdapter.addPosts(posts);
+            swipeRefreshLayout.setRefreshing(false);
             listViewFeed.removeHeaderView(footerView);
         }
     }

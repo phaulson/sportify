@@ -50,6 +50,9 @@
     <string name="action_post_cancel">Cancel</string>
     <string name="imageView_post_post_description">The image to be posted by the user</string>
 
+    <!-- Strings related to profile -->
+    <string name="not_specified">Not specified.</string>
+
     <!-- auto-generated Strings -->
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>

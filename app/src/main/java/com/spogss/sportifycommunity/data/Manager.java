@@ -52,16 +52,17 @@ public class Manager {
      * @return bei erfolg -> userId sonst -1
      * @throws SQLException
      */
-    public int login(String username, String password)throws SQLException{
-        int UserId = -1;
+    public User login(String username, String password)throws SQLException{
         PreparedStatement selectUserId;
-        String selectString ="select idUser from sp_user where username like ? and password like ?"; 
+        String selectString ="select * from sp_user where username like ? and password like ?";
         selectUserId = conn.prepareStatement(selectString);
         selectUserId.setString(1, username);
         selectUserId.setString(2,password);
         ResultSet result = selectUserId.executeQuery();
         result.next();
-        return result.getInt(1);
+        if(result.getInt(5) == 1)
+            return new ProUser(result.getInt(1), result.getString(2), null, result.getString (4));
+        return new User(result.getInt(1), result.getString(2), null, result.getString (4));
     }
 
     /**
@@ -72,7 +73,7 @@ public class Manager {
      * @return
      * @throws java.sql.SQLException
      */
-    public int register(String username, String password, boolean isPro) throws SQLException{
+    public User register(String username, String password, boolean isPro) throws SQLException{
         int UserId = -1;
         PreparedStatement insertNewUser = conn.prepareStatement("insert into sp_user values(seq_user.nextval, ?, ?, ?, ?)");
         insertNewUser.setString(1,username);
@@ -80,13 +81,13 @@ public class Manager {
         insertNewUser.setString(3,"");
         insertNewUser.setInt(4, isPro ? 1 : 0);
         insertNewUser.executeQuery();
-        PreparedStatement selectNewUserId = conn.prepareStatement("select idUser from sp_user where username like ?");
+        PreparedStatement selectNewUserId = conn.prepareStatement("select * from sp_user where username like ?");
         selectNewUserId.setString(1, username);
         ResultSet result = selectNewUserId.executeQuery();
-        while(result.next()){
-            UserId = result.getInt(1);
-        }
-        return UserId;
+        result.next();
+        if(isPro)
+            return new ProUser(result.getInt(1), result.getString(2), null, result.getString (4));
+        return new User(result.getInt(1), result.getString(2), null, result.getString (4));
     }
     /**
      * Liefert das Profil zur UserID.
@@ -423,7 +424,7 @@ public class Manager {
             }
         }
         else if(creatorID<0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where lower(name) like lower(?)");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where lower(name) like ?");
             searchDailyWorkouts.setString(1, "%" + name + "%");
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
@@ -801,7 +802,7 @@ public class Manager {
             followUser.executeQuery();
         }
         else if(!follow){
-            followUser = conn.prepareStatement("delete from sp_follow where followerID = ? and followsID = ?");
+            followUser = conn.prepareStatement("delete from sp_follow where idfollower = ? and idol = ?");
             followUser.setInt(1, followerId);
             followUser.setInt(2, followsId);
             followUser.executeQuery();

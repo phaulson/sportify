@@ -16,7 +16,7 @@ public class SportifyClient {
     //TODO: call webservice in every method
 
     private static SportifyClient client;
-    private int currentUserID;
+    private User currentUser;
     private int numberOfPosts;
     private Manager manager = null;
 
@@ -39,11 +39,11 @@ public class SportifyClient {
     }
 
     public int getCurrentUserID() {
-        return currentUserID;
+        return currentUser.getId();
     }
 
-    public void setCurrentUserID(int currentUserID) {
-        this.currentUserID = currentUserID;
+    public User getCurrentUser() {
+        return currentUser;
     }
 
     public int getNumberOfPosts() {
@@ -62,7 +62,7 @@ public class SportifyClient {
      */
     public int login(String username, String password) {
         try {
-            setCurrentUserID(manager.login(username, password));
+            currentUser = manager.login(username, password);
             return getCurrentUserID();
         } catch (SQLException e) {
             return -1;
@@ -78,7 +78,7 @@ public class SportifyClient {
      */
     public int register(String username, String password, boolean isPro){
         try {
-            setCurrentUserID(manager.register(username, password, isPro));
+            currentUser = manager.register(username, password, isPro);
             return getCurrentUserID();
         } catch (SQLException e) {
             e.printStackTrace();
