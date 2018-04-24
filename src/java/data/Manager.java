@@ -63,7 +63,7 @@ public class Manager {
      */
     public User login(String username, String password)throws SQLException{
         PreparedStatement selectUserId;
-        String selectString ="select * from sp_user where username like ? and password like ?"; 
+        String selectString ="select * from sp_user where lower(username) like ? and password like ?"; 
         selectUserId = conn.prepareStatement(selectString);
         selectUserId.setString(1, username);
         selectUserId.setString(2,password);
@@ -438,7 +438,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID<0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where name like ?");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where lower(name) like ?");
             searchDailyWorkouts.setString(1, "%"+name+"%");
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
@@ -446,7 +446,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID>= 0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and name like ?");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and lower(name) like ?");
             searchDailyWorkouts.setInt(1, creatorID);
             searchDailyWorkouts.setString(2, "%"+name+"%");
             ResultSet result = searchDailyWorkouts.executeQuery();
@@ -488,7 +488,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         
         }
         else if(creatorID<=0 && name != null){
-                searchWorkouts = conn.prepareStatement("select * from sp_workout where name like ?");
+                searchWorkouts = conn.prepareStatement("select * from sp_workout where lower(name) like ?");
                 searchWorkouts.setString(1, "%"+name+"%");
                 ResultSet result = searchWorkouts.executeQuery();
                 while(result.next()){
@@ -496,7 +496,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
                 }
             }
         else if(creatorID>0 && name != null){
-            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and name like ?");
+            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and lower(name) like ?");
             searchWorkouts.setInt(1, creatorID);
             searchWorkouts.setString(2, "%"+name+"%");
             ResultSet result = searchWorkouts.executeQuery();
@@ -535,7 +535,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID>0 && name != null){
-            searchExercises = conn.prepareStatement("select * from sp_exercise where name like ?");
+            searchExercises = conn.prepareStatement("select * from sp_exercise where lower(name) like ?");
             searchExercises.setString(1, "%"+name+"%");
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
@@ -543,7 +543,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID>0&&name == null){
-            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and name like ?");
+            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and lower(name) like ?");
             searchExercises.setInt(1, creatorID);
             searchExercises.setString(2, "%"+name+"%");
             ResultSet result = searchExercises.executeQuery();
@@ -625,7 +625,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
     public Collection<User> searchUsers(String name, boolean isPro) throws SQLException {
         int ISPRO = isPro ? 1 : 0;
         Collection<User> users = new ArrayList<>();
-        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and username like ?");
+        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and lower(username) like ?");
         searchUsers.setInt(1, ISPRO);
         searchUsers.setString(2, "%"+name+"%");
         ResultSet result = searchUsers.executeQuery();
@@ -670,7 +670,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID<=0 && name!=null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where name like ?");
+            searchPlans = conn.prepareStatement("select * from sp_plan where lower(name) like ?");
             searchPlans.setString(1, "%"+name+"%");
             result = searchPlans.executeQuery();
             while(result.next()){
@@ -678,7 +678,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             }
         }
         else if(creatorID>0 && name != null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and name like ?");
+            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and lower(name) like ?");
             searchPlans.setInt(1, creatorID);
             searchPlans.setString(2, "%"+name+"%");
             result = searchPlans.executeQuery();
