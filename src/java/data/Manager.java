@@ -109,9 +109,11 @@ public class Manager {
         PreparedStatement selectProfile = conn.prepareStatement("select * from sp_user where iduser =?");
         selectProfile.setDouble(1, idUser);
         ResultSet result = selectProfile.executeQuery();
-        while(result.next()){         
-        user = new User(result.getInt(1), result.getString(2), null, result.getString(4));
-        }
+        result.next();
+        if(result.getInt(5) == 1)
+            user = new ProUser(result.getInt(1), result.getString(2), null, result.getString(4));
+        else
+            user = new User(result.getInt(1), result.getString(2), null, result.getString(4));
         return user;
     }
     /**
@@ -230,7 +232,7 @@ public class Manager {
      * @throws java.sql.SQLException 
      */
     public Collection<Post> getPostsByCreator(int idCreator, int lastPostId, int numberOfPosts) throws SQLException, Exception{
-        if(lastPostId == 0){
+        if(lastPostId <= 0){
         PreparedStatement getPostsByCreator = conn.prepareStatement("select * from sp_revPost where idCreator = ? and rownum <= ?");
         getPostsByCreator.setInt(1, idCreator);
         getPostsByCreator.setInt(2, numberOfPosts);
