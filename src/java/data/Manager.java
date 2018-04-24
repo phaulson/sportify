@@ -587,20 +587,22 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      */
     public Collection<Post> getPosts(int userId, int lastPostId, int numberOfPosts) throws SQLException, Exception {
         Collection<Post> posts = new ArrayList<>();       
-        if(lastPostId<0){
-        PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and rownum <= ?");
+        if(lastPostId<=0){
+        PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where (idCreator in (select idOl from sp_follow where idFollower = ?) or idCreator = ?) and rownum <= ?");
         getPosts.setInt(1, userId);
-        getPosts.setInt(2, numberOfPosts);
+        getPosts.setInt(2, userId);
+        getPosts.setInt(3, numberOfPosts);
         ResultSet result = getPosts.executeQuery();
         while(result.next()){
             posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
         }
         }
-        else if(lastPostId>=0){
-            PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where idCreator in (select idOl from sp_follow where idFollower = ?) and idPost < ? and rownum <= ?");
+        else if(lastPostId>0){
+            PreparedStatement getPosts = conn.prepareStatement("select * from sp_revPost where (idCreator in (select idOl from sp_follow where idFollower = ?) or idCreator = ?) and idPost < ? and rownum <= ?");
             getPosts.setInt(1, userId);
-            getPosts.setInt(2,lastPostId);
-            getPosts.setInt(3, numberOfPosts);
+            getPosts.setInt(2, userId);
+            getPosts.setInt(3,lastPostId);
+            getPosts.setInt(4, numberOfPosts);
             ResultSet result = getPosts.executeQuery();
             while(result.next()){
                 posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
