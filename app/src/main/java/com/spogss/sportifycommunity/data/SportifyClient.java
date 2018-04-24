@@ -30,12 +30,7 @@ public class SportifyClient {
         return client;
     }
     private SportifyClient(){
-        //TODO: proper exception handling
-        try {
-            this.manager = Manager.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.manager = Manager.newInstance();
     }
 
     public int getCurrentUserID() {
@@ -62,7 +57,7 @@ public class SportifyClient {
      */
     public int login(String username, String password) {
         try {
-            currentUser = manager.login(username, password);
+            currentUser = manager.login(username.toLowerCase(), password);
             return getCurrentUserID();
         } catch (SQLException e) {
             return -1;

@@ -7,6 +7,15 @@
     android:fitsSystemWindows="true"
     tools:context="com.spogss.sportifycommunity.activity.ProfileActivity">
 
+    <ProgressBar
+        android:id="@+id/progressBar_profile"
+
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
@@ -44,16 +53,17 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
-
         <LinearLayout
+            android:id="@+id/linearLayout_profileContent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/textView_description"
                 android:layout_width="match_parent"
@@ -67,6 +77,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp" /> <!-- todo change to dp of actual menu height-->
 
+            <ListView
+                android:id="@+id/listView_profile"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:listSelector="@android:color/transparent" />
         </LinearLayout>
 
 

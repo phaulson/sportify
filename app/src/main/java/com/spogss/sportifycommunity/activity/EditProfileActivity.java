@@ -1,8 +1,10 @@
 package com.spogss.sportifycommunity.activity;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +28,9 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setTitle("Edit Profile");
 
         client = SportifyClient.newInstance();
 
@@ -48,6 +53,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
     private void saveChanges(){
         // TODO: 09.04.2018 implement saveChanges in EditProfile
+        button_saveChanges.setVisibility(View.GONE);
         Toast.makeText(getApplicationContext(), "Saving Changes...", Toast.LENGTH_SHORT).show();
         String desc = editText_description.getText().toString();
         new SetDescriptionTask(desc).execute();
@@ -60,6 +66,17 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             case R.id.button_saveProfileChanges:
                 saveChanges();
                 break;
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -76,5 +93,17 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             return null;
         }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Toast.makeText(getApplicationContext(), "Changes Saved.", Toast.LENGTH_SHORT).show();
+            setResult(Activity.RESULT_OK);
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 }

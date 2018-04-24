@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -125,6 +126,8 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
 
         //touch event for header
         rlHeader.setOnTouchListener(this);
+
+        Log.i("Post", postModel.getPost().getCaption());
 
         return view;
     }

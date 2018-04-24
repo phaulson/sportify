@@ -69,8 +69,6 @@ public class FeedActivity extends AppCompatActivity
 
     private int lastPostID = -1;
 
-    private User user;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

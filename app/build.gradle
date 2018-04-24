@@ -33,4 +33,6 @@ dependencies {
     compile 'com.borjabravo:readmoretextview:2.0.1'
     //ojdbc
     compile files('libs/ojdbc14.jar')
+    //gson
+    compile files ('libs/gson-2.5.jar')
 }

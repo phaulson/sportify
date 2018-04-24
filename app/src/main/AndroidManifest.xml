@@ -18,7 +18,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.LoginActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,15 +30,16 @@
             android:name=".activity.FeedActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTop"/>
-        <activity android:name=".activity.PostActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.FeedActivity" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.PostActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activity.ProfileActivity">
+        <activity android:name=".activity.ProfileActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activity.EditProfileActivity">
+        <activity android:name=".activity.EditProfileActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         //new ConnectTask().execute();
 
         initialize();
+        getSupportActionBar().hide();
         new ConnectTask().execute();
     }
 
@@ -346,6 +347,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         @Override
         protected void onCancelled() {
             authTask = null;
+            getSupportActionBar().show();
             showProgress(false);
         }
 
@@ -361,8 +363,10 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if(!attemptLoginWithSavedCredentials())
+            if(!attemptLoginWithSavedCredentials()) {
+                getSupportActionBar().show();
                 constraintLayout_initializeOverlay.setVisibility(View.GONE);
+            }
         }
     }
 

@@ -32,6 +32,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("");
 
         Button buttonAddPic = (Button) findViewById(R.id.button_addPic);
@@ -58,8 +59,8 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         try {
             switch (item.getItemId()) {
-                case R.id.home:
-                    onBackPressed();
+                case android.R.id.home:
+                    finish();
                     return true;
                 case R.id.action_post:
                     //TODO: check if caption and picture not set
