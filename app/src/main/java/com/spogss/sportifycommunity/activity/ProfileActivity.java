@@ -100,9 +100,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         loadingHandler = new LoadingHandler();
 
         new SetUserTask().execute(userId);
-
-        new LoadPostsTask().execute((Void) null);
-        listViewPosts.addHeaderView(footerView);
     }
 
     private void initialize() {
@@ -356,7 +353,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private Collection<PostModel> loadPosts() {
         // TODO: find way to implement with better performance
         ArrayList<PostModel> postModels = new ArrayList<PostModel>();
-        ArrayList<Post> posts = (ArrayList<Post>) client.getPostsByCreator(client.getCurrentUserID(), lastPostID);
+        ArrayList<Post> posts = (ArrayList<Post>) client.getPostsByCreator(displayedUser.getId(), lastPostID);
         for (Post p : posts) {
             int numberOfLikes = client.getNumberOfLikes(p.getId());
             boolean liked = client.isLiked(client.getCurrentUserID(), p.getId());
@@ -445,6 +442,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         protected void onPostExecute(User u) {
             setUser(u, isUserFollowed);
             showProgress(false);
+
+            new LoadPostsTask().execute((Void) null);
+            listViewPosts.addHeaderView(footerView);
         }
     }
 

@@ -111,9 +111,12 @@ public class Manager {
         PreparedStatement selectProfile = conn.prepareStatement("select * from sp_user where iduser =?");
         selectProfile.setDouble(1, idUser);
         ResultSet result = selectProfile.executeQuery();
-        while(result.next()){
+        result.next();
+        if(result.getInt(5) == 1)
+            user = new ProUser(result.getInt(1), result.getString(2), null, result.getString(4));
+        else
             user = new User(result.getInt(1), result.getString(2), null, result.getString(4));
-        }
+
         return user;
     }
     /**
