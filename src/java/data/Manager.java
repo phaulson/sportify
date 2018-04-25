@@ -123,6 +123,38 @@ public class Manager {
      * @return bei erfolg true, sonst false
      * @throws java.sql.SQLException
      */
+    public int getFollowedUsersCount(int idUser) throws SQLException{
+        int count;
+
+        PreparedStatement getCount = conn.prepareStatement("select COUNT(*) from sp_user where idUser in (select idOl from sp_follow where idFollower = ?)");
+        getCount.setInt(1, idUser);      
+        ResultSet result = getCount.executeQuery();
+        result.next();
+        count = result.getInt(1);
+       
+        return count;
+    }
+        public int getFollowersCount(int idUser) throws SQLException{
+        int count;
+
+        PreparedStatement getCount = conn.prepareStatement("select COUNT(*) from sp_user where idUser in (select idfollower from sp_follow where idol = ?)");
+        getCount.setInt(1, idUser);      
+        ResultSet result = getCount.executeQuery();
+        result.next();
+        count = result.getInt(1);
+
+        return count;
+    }
+    public int getSubscribersCount(int idPlan) throws SQLException{
+        int count;
+        PreparedStatement getCount = conn.prepareStatement("select COUNT(*) from sp_user where iduser in (select idUser from sp_subscription where idPlan = ?)");
+        getCount.setInt(1, idPlan);      
+        ResultSet result = getCount.executeQuery();
+        result.next();
+        count = result.getInt(1);
+
+        return count;
+    }
     public boolean changeDescription(int idUser, String newDescription) throws SQLException{
         try{
         PreparedStatement changeDescription = conn.prepareStatement("update sp_user set biographie = ? where idUser = ?");

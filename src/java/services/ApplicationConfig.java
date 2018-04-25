@@ -45,7 +45,9 @@ public class ApplicationConfig extends Application {
         resources.add(services.GetDailyWorkoutsResource.class);
         resources.add(services.GetExerciseResource.class);
         resources.add(services.GetExercisesResource.class);
+        resources.add(services.GetFollowedUsersCountResource.class);
         resources.add(services.GetFollowedUsersResource.class);
+        resources.add(services.GetFollowersCountResource.class);
         resources.add(services.GetFollowersResource.class);
         resources.add(services.GetLocationsResource.class);
         resources.add(services.GetNearbyLocationsResource.class);
@@ -55,6 +57,7 @@ public class ApplicationConfig extends Application {
         resources.add(services.GetPostsResource.class);
         resources.add(services.GetProfileResource.class);
         resources.add(services.GetSubscribedPlansResource.class);
+        resources.add(services.GetSubscribersCountResource.class);
         resources.add(services.GetWorkoutsResource.class);
         resources.add(services.IsFollowingResource.class);
         resources.add(services.IsLikedResource.class);
