@@ -17,6 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -41,19 +42,22 @@ public class AddCommentResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public boolean addComment(String content) {
+    public Response addComment(String content) {
+        Response r;
         try{
             handleObjectAddComment o = new Gson().fromJson(content, handleObjectAddComment.class);
             Manager m = Manager.newInstance();
-            m.addComment(o.userID, o.postID, o.text);
+            boolean result = m.addComment(o.userID, o.postID, o.text);
+
+            r = Response.status(Response.Status.OK).entity(String.valueOf(result)).build();
         }
         catch(SQLException ex){
-            return false;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
         catch(Exception ex){
-            return false;
+            r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return true;
+        return r;        
     }
 
 }
