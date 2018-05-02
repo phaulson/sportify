@@ -11,3 +11,4 @@ This is a fitness app
 * Sportify Community: [Link](https://github.com/phaulson/SportifyCommunity)
 * Sportify Pro: [Link](https://github.com/phaulson/SportifyPro)
 * Sportify Webservice: [Link](https://github.com/phaulson/SportifyWebservice)
+* Sportify Webservice Links: [Link](https://htlvillachat-my.sharepoint.com/personal/ofnerm_edu_htl-villach_at/_layouts/15/doc.aspx?sourcedoc={f2c9d3c8-29e5-44b8-b3bb-418bba70b304}&action=edit)
