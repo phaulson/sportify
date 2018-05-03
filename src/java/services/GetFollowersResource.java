@@ -54,7 +54,7 @@ public class GetFollowersResource {
         try{
             int userID = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
-            users = m.getFollowers(userID);
+            users = m.getFollowers(userID, 0, 10);
             if(users.size() == 0)
                 throw new CustomException("no follower found");
 

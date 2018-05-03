@@ -996,10 +996,13 @@ public Exercise getExercise(int exerciseID) throws SQLException{
      * @return 
      * @throws java.sql.SQLException 
      */
-    public Collection<User> getFollowers(int userID) throws SQLException{
+    public Collection<User> getFollowers(int userID, int lastFollowerId, int numberOfFollower) throws SQLException{
         Collection<User> users = new ArrayList<>();
-        PreparedStatement getFollowers = conn.prepareStatement("select * from sp_user where idUser in (select idfollower from sp_follow where idol = ?)");
+        PreparedStatement getFollowers = conn.prepareStatement("select * from sp_follow inner join sp_user on iduser = idfollower where idol = ? and idfollower > ? and rownum <= ? order by idfollower"); 
+        //PreparedStatement getFollowers = conn.prepareStatement("select * from sp_user where idUser in (select idfollower from sp_follow where idol = ?)");
         getFollowers.setInt(1, userID);
+        getFollowers.setInt(2, lastFollowerId);
+        getFollowers.setInt(3, numberOfFollower);
         ResultSet result = getFollowers.executeQuery();
         while(result.next()){
              if(Boolean.valueOf(result.getString(5)))
