@@ -52,9 +52,9 @@ public class GetFollowersResource {
         Collection<User> users = new ArrayList<>();
         Response r;
         try{
-            int userID = new Gson().fromJson(content, Integer.class);
+            handleObjectGetFollowers o = new Gson().fromJson(content, handleObjectGetFollowers.class);
             Manager m = Manager.newInstance();
-            users = m.getFollowers(userID, 0, 10);
+            users = m.getFollowers(o.userId, o.lastFollowerId, o.numberOfFollower);
             if(users.size() == 0)
                 throw new CustomException("no follower found");
 
@@ -71,4 +71,16 @@ public class GetFollowersResource {
         }
         return r;          
     }
+}
+class handleObjectGetFollowers{
+    int userId;
+    int lastFollowerId;
+    int numberOfFollower;
+
+    public handleObjectGetFollowers(int userId, int lastFollowerId, int numberOfFollower) {
+        this.userId = userId;
+        this.lastFollowerId = lastFollowerId;
+        this.numberOfFollower = numberOfFollower;
+    }
+    
 }
