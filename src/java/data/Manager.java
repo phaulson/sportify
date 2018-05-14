@@ -510,19 +510,23 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @throws java.sql.SQLException
      * @throws java.lang.Exception
      */
-    public Collection<Workout> searchWorkouts(int creatorID, String name) throws SQLException, Exception {
+    public Collection<Workout> searchWorkouts(int creatorID, String name, int lastWorkoutId, int numberOfWorkouts) throws SQLException, Exception {
         PreparedStatement searchWorkouts;
         Collection<Workout> workouts = new ArrayList<>();
         if(creatorID<=0 && name == null){
-            searchWorkouts = conn.prepareStatement("select * from sp_workout");
+            searchWorkouts = conn.prepareStatement("select * from sp_workout where idworkout > ? and rownum <= ?");
+            searchWorkouts.setInt(1, lastWorkoutId);
+            searchWorkouts.setInt(2, numberOfWorkouts);
             ResultSet result = searchWorkouts.executeQuery();
             while(result.next()){
                 workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
             }
         }
         else if(creatorID>0 && name == null){
-        searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ?");
+        searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and idworkout > ? and rownum <= ?");
         searchWorkouts.setInt(1, creatorID);
+        searchWorkouts.setInt(2, lastWorkoutId);
+        searchWorkouts.setInt(3, numberOfWorkouts);
         ResultSet result = searchWorkouts.executeQuery();
         while(result.next()){
             workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -530,17 +534,21 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         
         }
         else if(creatorID<=0 && name != null){
-                searchWorkouts = conn.prepareStatement("select * from sp_workout where lower(name) like ?");
+                searchWorkouts = conn.prepareStatement("select * from sp_workout where lower(name) like ? and idworkout > ? and rownum <= ?");
                 searchWorkouts.setString(1, "%"+name+"%");
+                searchWorkouts.setInt(2, lastWorkoutId);
+                searchWorkouts.setInt(3, numberOfWorkouts);
                 ResultSet result = searchWorkouts.executeQuery();
                 while(result.next()){
                     workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
                 }
             }
         else if(creatorID>0 && name != null){
-            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and lower(name) like ?");
+            searchWorkouts = conn.prepareStatement("select * from sp_workout where idCreator = ? and lower(name) like ? and idworkout > ? and rownum <= ?");
             searchWorkouts.setInt(1, creatorID);
             searchWorkouts.setString(2, "%"+name+"%");
+            searchWorkouts.setInt(3, lastWorkoutId);
+            searchWorkouts.setInt(4, numberOfWorkouts);
             ResultSet result = searchWorkouts.executeQuery();
             while(result.next()){
                 workouts.add(new Workout(result.getInt(1), result.getInt(2), result.getString(3)));
@@ -558,36 +566,44 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @return a collection of Exercises
      * @throws java.sql.SQLException
      */
-    public Collection<Exercise> searchExercises(int creatorID, String name) throws SQLException, Exception {
+    public Collection<Exercise> searchExercises(int creatorID, String name, int lastExerciseId, int numberOfExercises) throws SQLException, Exception {
         PreparedStatement searchExercises;
         Collection<Exercise> exercises = new ArrayList<>();
         if(creatorID<=0 && name == null){
-            searchExercises = conn.prepareStatement("select * from sp_exercise");
+            searchExercises = conn.prepareStatement("select * from sp_exercise where idexercise > ? and rownum <= ?");
+            searchExercises.setInt(1, lastExerciseId);
+            searchExercises.setInt(2, numberOfExercises);
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));
             }
         }
         else if(creatorID>0 && name == null){
-            searchExercises = conn.prepareStatement("select * from sp_exercise where idCreator = ?");
+            searchExercises = conn.prepareStatement("select * from sp_exercise where idCreator = ? and idexercise > ? and rownum <= ?");
             searchExercises.setInt(1, creatorID);
+            searchExercises.setInt(2, lastExerciseId);
+            searchExercises.setInt(3, numberOfExercises);
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));            
             }
         }
         else if(creatorID>0 && name != null){
-            searchExercises = conn.prepareStatement("select * from sp_exercise where lower(name) like ?");
+            searchExercises = conn.prepareStatement("select * from sp_exercise where lower(name) like ? and idexercise > ? and rownum <= ?");
             searchExercises.setString(1, "%"+name+"%");
+            searchExercises.setInt(2, lastExerciseId);
+            searchExercises.setInt(3, numberOfExercises);
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
             }
         }
         else if(creatorID>0&&name == null){
-            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and lower(name) like ?");
+            searchExercises = conn.prepareStatement("select * from sp_exerice where idCreator = ? and lower(name) like ? and idexercise > ? and rownum <= ?");
             searchExercises.setInt(1, creatorID);
             searchExercises.setString(2, "%"+name+"%");
+            searchExercises.setInt(3, lastExerciseId);
+            searchExercises.setInt(4, numberOfExercises);
             ResultSet result = searchExercises.executeQuery();
             while(result.next()){
                 exercises.add(new Exercise(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4)));               
@@ -664,12 +680,14 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @return a collection of Users
      * @throws java.sql.SQLException
      */
-    public Collection<User> searchUsers(String name, boolean isPro) throws SQLException {
+    public Collection<User> searchUsers(String name, boolean isPro, int lastUserId, int numberOfUsers) throws SQLException {
         int ISPRO = isPro ? 1 : 0;
         Collection<User> users = new ArrayList<>();
-        PreparedStatement searchUsers = conn.prepareStatement("select * from sp_user where isPro = ? and lower(username) like ?");
+        PreparedStatement searchUsers = conn.prepareStatement("select * from (select *  from sp_user where ispro = ? order by iduser) where lower(username) like ? and idUser > ? and rownum <= ?");
         searchUsers.setInt(1, ISPRO);
         searchUsers.setString(2, "%"+name+"%");
+        searchUsers.setInt(3, lastUserId);
+        searchUsers.setInt(4, numberOfUsers);
         ResultSet result = searchUsers.executeQuery();
         if(isPro){
         while(result.next()){
@@ -692,37 +710,45 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @return a collection of Plans
      * @throws java.sql.SQLException
      */
-    public Collection<Plan> searchPlans(int creatorID, String name) throws SQLException, Exception {
+    public Collection<Plan> searchPlans(int creatorID, String name, int lastPlanId, int numberOfPlans) throws SQLException, Exception {
         PreparedStatement searchPlans;
         Collection<Plan> plans = new ArrayList<>();
         ResultSet result;
         if(creatorID<=0 && name == null){
-            searchPlans = conn.prepareStatement("select * from sp_plan");
+            searchPlans = conn.prepareStatement("select * from sp_plan where idplan > ? and rownum <= ? order by idplan");
+            searchPlans.setInt(1, lastPlanId);
+            searchPlans.setInt(2, numberOfPlans);
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
             }
         }
         else if(creatorID>0 && name == null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ?");
+            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and idplan > ? and rownum <= ? order by idplan");
             searchPlans.setInt(1, creatorID);
+            searchPlans.setInt(2, lastPlanId);
+            searchPlans.setInt(3, numberOfPlans);
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
             }
         }
         else if(creatorID<=0 && name!=null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where lower(name) like ?");
+            searchPlans = conn.prepareStatement("select * from sp_plan where lower(name) like ? and idplan > ? and rownum <= ? order by idplan");
             searchPlans.setString(1, "%"+name+"%");
+            searchPlans.setInt(2, lastPlanId);
+            searchPlans.setInt(3, numberOfPlans);
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));
             }
         }
         else if(creatorID>0 && name != null){
-            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and lower(name) like ?");
+            searchPlans = conn.prepareStatement("select * from sp_plan where idCreator = ? and lower(name) like ? and idplan > ? and rownum <= ? order by idplan");
             searchPlans.setInt(1, creatorID);
             searchPlans.setString(2, "%"+name+"%");
+            searchPlans.setInt(3, lastPlanId);
+            searchPlans.setInt(4, numberOfPlans);
             result = searchPlans.executeQuery();
             while(result.next()){
                 plans.add(new Plan(result.getInt(1), result.getInt(2), result.getString(3)));

@@ -53,7 +53,7 @@ public class SearchUsersResource {
         try{
             handleObjectSearchUsers o = new Gson().fromJson(content, handleObjectSearchUsers.class);
             Manager m = Manager.newInstance();
-            users = m.searchUsers(o.name, o.isPro);
+            users = m.searchUsers(o.name, o.isPro, o.lastUserId, o.numberOfUsers);
                        
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(users)).build();
         }
@@ -69,10 +69,14 @@ public class SearchUsersResource {
 class handleObjectSearchUsers{
     String name;
     boolean isPro;
+    int lastUserId;
+    int numberOfUsers;
 
-    public handleObjectSearchUsers(String name, boolean isPro) {
+    public handleObjectSearchUsers(String name, boolean isPro, int lastUserId, int numberOfUsers) {
         this.name = name;
         this.isPro = isPro;
+        this.lastUserId = lastUserId;
+        this.numberOfUsers = numberOfUsers;
     }
     
 }

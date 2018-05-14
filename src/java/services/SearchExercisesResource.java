@@ -49,7 +49,7 @@ public class SearchExercisesResource {
         try{
             handleObjectSearchExercises o = new Gson().fromJson(content, handleObjectSearchExercises.class);
             Manager m = Manager.newInstance();
-            exercises = m.searchExercises(o.creatorID, o.name); 
+            exercises = m.searchExercises(o.creatorID, o.name, o.lastExerciseId, o.numberOfExercises); 
                        
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(exercises)).build();
         }
@@ -65,9 +65,13 @@ public class SearchExercisesResource {
 class handleObjectSearchExercises{   
     int creatorID;
     String name;
+    int lastExerciseId;
+    int numberOfExercises;
     
-    public handleObjectSearchExercises(int creatorID, String name) {
+    public handleObjectSearchExercises(int creatorID, String name, int lastExerciseId, int numberOfExercises) {
         this.creatorID = creatorID;
         this.name = name;
+        this.lastExerciseId = lastExerciseId;
+        this.numberOfExercises = numberOfExercises;
     }
 }
