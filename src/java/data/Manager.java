@@ -453,36 +453,44 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * @return a collection of DailyWorkouts
      * @throws java.sql.SQLException
      */
-    public Collection<DailyWorkout> searchDailyWorkouts(int creatorID, String name) throws SQLException, Exception {
+    public Collection<DailyWorkout> searchDailyWorkouts(int creatorID, String name, int lastDailyWorkoutId, int numberOfDailyWorkouts) throws SQLException, Exception {
         PreparedStatement searchDailyWorkouts;
         Collection<DailyWorkout> dailyWorkouts = new ArrayList<>();
         if(creatorID<0 && name == null) {
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where iddailyworkout > ? and rownum <= ?");
+            searchDailyWorkouts.setInt(1, lastDailyWorkoutId);
+            searchDailyWorkouts.setInt(2, numberOfDailyWorkouts);
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
             }
         }
         else if(creatorID>=0 && name == null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ?");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and iddailyworkout > ? and rownum <= ?");
             searchDailyWorkouts.setInt(1, creatorID);
+            searchDailyWorkouts.setInt(2, lastDailyWorkoutId);
+            searchDailyWorkouts.setInt(3, numberOfDailyWorkouts);
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
             }
         }
         else if(creatorID<0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where lower(name) like ?");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where lower(name) like ? and iddailyworkout > ? and rownum <= ?");
             searchDailyWorkouts.setString(1, "%"+name+"%");
+            searchDailyWorkouts.setInt(2, lastDailyWorkoutId);
+            searchDailyWorkouts.setInt(3, numberOfDailyWorkouts);
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
             }
         }
         else if(creatorID>= 0 && name != null){
-            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and lower(name) like ?");
+            searchDailyWorkouts = conn.prepareStatement("select * from sp_dailyworkout where idCreator = ? and lower(name) like ? and iddailyworkout > ? and rownum <= ?");
             searchDailyWorkouts.setInt(1, creatorID);
             searchDailyWorkouts.setString(2, "%"+name+"%");
+            searchDailyWorkouts.setInt(3, lastDailyWorkoutId);
+            searchDailyWorkouts.setInt(4, numberOfDailyWorkouts);
             ResultSet result = searchDailyWorkouts.executeQuery();
             while(result.next()){
                 dailyWorkouts.add(new DailyWorkout(result.getInt(1), result.getInt(2),result.getString(3)));
