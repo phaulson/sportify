@@ -26,10 +26,6 @@ public class TabFragmentSearch extends Fragment {
         return view;
     }
 
-    public ListView getListSearch() {
-        return listSearch;
-    }
-
     /**
      * sets the Adapter to the ListView
      * @param adapter the Adapter ro fill the ListView with

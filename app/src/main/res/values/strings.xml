@@ -53,6 +53,13 @@
     <!-- Strings related to profile -->
     <string name="not_specified">Not specified.</string>
 
+    <!-- Strings related to show_plans -->
+    <string name="image_show_plans_description">The image of the plan</string>
+    <string name="button_show_plans_unsubscribe">Unsubscribe</string>
+
+    <!-- Strings related to plan -->
+
+
     <!-- auto-generated Strings -->
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>

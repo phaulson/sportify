@@ -714,4 +714,43 @@ public class SportifyClient {
             return false;
         }
     }
+
+    /**
+     * get the number of users that follow the user with this userId
+     * @param userid
+     * @return number of followers
+     */
+    public int getNumberOfFollowers(int userid) {
+        try {
+            return manager.getFollowersCount(userid);
+        } catch (SQLException e) {
+            return -1;
+        }
+    }
+
+    /**
+     * get the number of users that the user with this userId follows
+     * @param userid
+     * @return number of followed users
+     */
+    public int getNumberOfFollowedUsers(int userid) {
+        try {
+            return manager.getFollowedUsersCount(userid);
+        } catch (SQLException e) {
+            return -1;
+        }
+    }
+
+    /**
+     * return the number of users that are subscribed to the plan with this planID
+     * @param planid
+     * @return number of subscribers
+     */
+    public int getNumberOfSubscribers(int planid) {
+        try {
+            return manager.getSubscribersCount(planid);
+        } catch (SQLException e) {
+            return -1;
+        }
+    }
 }

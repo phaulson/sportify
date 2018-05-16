@@ -19,10 +19,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -258,26 +256,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         startActivityForResult(intent_editProfile, REQ_CODE_EDIT_PROFILE);
     }
 
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null)
-            return;
-
-        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
-        int totalHeight = 0;
-        View view = null;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            view = listAdapter.getView(i, view, listView);
-            if (i == 0)
-                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ListView.LayoutParams.WRAP_CONTENT));
-
-            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-            totalHeight += view.getMeasuredHeight();
-        }
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -443,6 +421,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             setUser(u, isUserFollowed);
             showProgress(false);
 
+            lastPostID = -1;
             new LoadPostsTask().execute((Void) null);
             listViewPosts.addHeaderView(footerView);
         }
@@ -475,6 +454,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             feedListAdapter.clear();
             feedListAdapter.addPosts(posts);
             listViewPosts.removeHeaderView(footerView);
+            ViewCompat.setNestedScrollingEnabled(listViewPosts, true);
         }
     }
 }

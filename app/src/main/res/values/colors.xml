@@ -6,6 +6,7 @@
 
     <color name="colorAccent">#1ed760</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteTransparent">#BBFFFFFF</color>
 
 
     <color name="colorAccentBackup">#FF4081</color>

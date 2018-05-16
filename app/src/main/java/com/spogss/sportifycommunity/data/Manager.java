@@ -194,7 +194,7 @@ public class Manager {
      * @throws java.sql.SQLException
      */
     public Collection<Exercise> getExercises(int idWorkout) throws SQLException{
-        PreparedStatement getExercises = conn.prepareStatement("select sp_exercise.idexercise,sp_exercise.description , sp_exercise.idCreator, sp_exercise.name  from sp_exercise inner join sp_containsWE on sp_containsWE.idexercise = sp_exercise.idexercise inner join sp_workout on sp_workout.idworkout = sp_containsWE.idworkout where sp_workout.idworkout =?");
+        PreparedStatement getExercises = conn.prepareStatement("select sp_exercise.idexercise, sp_exercise.name , sp_exercise.idCreator, sp_exercise.description  from sp_exercise inner join sp_containsWE on sp_containsWE.idexercise = sp_exercise.idexercise inner join sp_workout on sp_workout.idworkout = sp_containsWE.idworkout where sp_workout.idworkout =?");
         getExercises.setInt(1, idWorkout);
         ResultSet result = getExercises.executeQuery();
         Collection<Exercise> exercises = new ArrayList();
@@ -995,5 +995,38 @@ public class Manager {
         ResultSet result = isFollowing.executeQuery();
         result.next();
         return Boolean.valueOf(result.getString(1));
+    }
+
+    public int getFollowedUsersCount(int idUser) throws SQLException{
+        int count;
+
+        PreparedStatement getCount = conn.prepareStatement("select COUNT(*) from sp_user where idUser in (select idOl from sp_follow where idFollower = ?)");
+        getCount.setInt(1, idUser);
+        ResultSet result = getCount.executeQuery();
+        result.next();
+        count = result.getInt(1);
+
+        return count;
+    }
+    public int getFollowersCount(int idUser) throws SQLException{
+        int count;
+
+        PreparedStatement getCount = conn.prepareStatement("select COUNT(*) from sp_user where idUser in (select idfollower from sp_follow where idol = ?)");
+        getCount.setInt(1, idUser);
+        ResultSet result = getCount.executeQuery();
+        result.next();
+        count = result.getInt(1);
+
+        return count;
+    }
+    public int getSubscribersCount(int idPlan) throws SQLException{
+        int count;
+        PreparedStatement getCount = conn.prepareStatement("select COUNT(*) from sp_user where iduser in (select idUser from sp_subscription where idPlan = ?)");
+        getCount.setInt(1, idPlan);
+        ResultSet result = getCount.executeQuery();
+        result.next();
+        count = result.getInt(1);
+
+        return count;
     }
 }

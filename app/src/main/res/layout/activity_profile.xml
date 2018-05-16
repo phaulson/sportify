@@ -83,8 +83,6 @@
                 android:layout_height="fill_parent"
                 android:listSelector="@android:color/transparent" />
         </LinearLayout>
-
-
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton

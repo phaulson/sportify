@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,8 +38,6 @@ import com.spogss.sportifycommunity.data.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 import com.spogss.sportifycommunity.model.PostModel;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -173,10 +170,11 @@ public class FeedActivity extends AppCompatActivity
         // TODO: implement onMenuItemClick
         if (id == R.id.nav_home) {
             onRefresh();
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_plans) {
-            Snackbar.make(getWindow().getDecorView().getRootView(), "The PlansActivity will be implemented soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-
+            Intent intent = new Intent(this, ShowPlansActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_map) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "The MapActivity will be implemented soon", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -188,10 +186,6 @@ public class FeedActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             logout();
         }
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -240,7 +234,7 @@ public class FeedActivity extends AppCompatActivity
     }
 
     /**
-     * creates a new SearchListAdapter and fills it with users whose usernames contain the newText
+     * creates a new PlansListAdapter and fills it with users whose usernames contain the newText
      *
      * @param newText the text that the user typed in the SearchView
      */

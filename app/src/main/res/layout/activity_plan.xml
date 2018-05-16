@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.spogss.sportifycommunity.activity.PlanActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/feed_margin_large"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageView_plan"
+                android:layout_width="@dimen/image_plan_square_dimen"
+                android:layout_height="@dimen/image_plan_square_dimen"
+                android:contentDescription="@string/image_show_plans_description"
+                android:scaleType="fitCenter" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView_plan_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:textSize="@dimen/plan_text_size_name" />
+
+                <TextView
+                    android:id="@+id/textView_plan_subscribers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="14 subscribers"
+                    android:textSize="@dimen/plans_text_size_subscribers" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_plan_subscribe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/feed_margin_medium"
+            android:layout_marginStart="@dimen/feed_margin_medium"
+            android:layout_marginEnd="@dimen/feed_margin_medium"
+            android:background="@drawable/sp_button"
+            android:layout_gravity="center"
+            android:text="@string/button_show_plans_unsubscribe"
+            android:textColor="@color/colorWhite" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabsDailyWorkout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/feed_margin_large"
+            android:layout_marginStart="@dimen/feed_margin_medium"
+            android:layout_marginEnd="@dimen/feed_margin_medium"
+            app:tabMode="scrollable"
+            android:layout_gravity="center_horizontal"
+            android:elevation="@dimen/feed_margin_small"
+            app:tabTextColor="@color/colorWhiteTransparent"
+            app:tabSelectedTextColor="@color/colorWhite"
+            app:tabIndicatorColor="@color/colorWhite"
+            android:background="@color/colorPrimary"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPagerDailyWorkout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

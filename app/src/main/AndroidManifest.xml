@@ -29,18 +29,20 @@
         <activity
             android:name=".activity.FeedActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activity.PostActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".activity.ProfileActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".activity.EditProfileActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.PostActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.EditProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.ShowPlansActivity" />
+        <activity android:name=".activity.PlanActivity" />
     </application>
 
 </manifest>

@@ -68,7 +68,7 @@ public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchLis
         }
         else if(o instanceof Plan) {
             username.setText(((Plan) o).getName());
-            profilePic.setVisibility(View.GONE);
+            profilePic.setImageResource(R.drawable.sp_plan);
         }
 
         //add eventListeners
@@ -90,7 +90,6 @@ public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchLis
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            // TODO: open ProfileActivity
             int idRl = Integer.parseInt(view.getTag().toString());
             T o = content.get(idRl);
             if(o instanceof User) {
