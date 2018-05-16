@@ -1,13 +1,27 @@
-package com.spogss.sportifycommunity.data;
+package com.spogss.sportifycommunity.data.Connection;
 
-import com.spogss.sportifycommunity.model.PostModel;
+import com.google.gson.Gson;
+import com.spogss.sportifycommunity.data.Comment;
+import com.spogss.sportifycommunity.data.Coordinate;
+import com.spogss.sportifycommunity.data.DailyWorkout;
+import com.spogss.sportifycommunity.data.Exercise;
+import com.spogss.sportifycommunity.data.Location;
+import com.spogss.sportifycommunity.data.LocationType;
+import com.spogss.sportifycommunity.data.Manager;
+import com.spogss.sportifycommunity.data.Plan;
+import com.spogss.sportifycommunity.data.Post;
+import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.data.Workout;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
+//import org.json.JSONObject;
 /**
  * Created by Pauli on 09.04.2018.
  */
@@ -19,19 +33,50 @@ public class SportifyClient {
     private User currentUser;
     private int numberOfPosts;
     private Manager manager = null;
+    private final Gson GSON = new Gson();
 
+
+    private static URL url;
     /**
      * singleton for SportifyClient
      * @return the static SportifyClient
      */
     public static SportifyClient newInstance(){
-        if(client == null)
-            client = new SportifyClient();
+        if (client == null) {
+            try {
+                URL url = new URL("http", "192.168.142.188", 8080, "SportifyWebService/webresources");
+                client = new SportifyClient(url);
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            }
+        }
         return client;
     }
-    private SportifyClient(){
-        this.manager = Manager.newInstance();
+    private SportifyClient(URL url){
+        this.url = url;
     }
+    private String get(HttpMethod httpMethod, String route, String... params) throws Exception {
+        ControllerSync controller = new ControllerSync(url);
+
+        ArrayList<String> connectionParams = new ArrayList<>();
+        connectionParams.add(httpMethod.toString());
+        connectionParams.add(route);
+        connectionParams.addAll(Arrays.asList(params));
+        params = connectionParams.toArray(params);
+
+        controller.execute(params);
+
+        AsyncResult<String> result =  controller.get();
+        if(result.getError() != null) {
+            throw result.getError();
+        }
+
+        return result.getResult();
+    }
+
+
+//REQUESTS
+
 
     public int getCurrentUserID() {
         return currentUser.getId();
@@ -55,12 +100,14 @@ public class SportifyClient {
      * @param password
      * @return userId if successful, else -1
      */
-    public int login(String username, String password) {
+    public int login(String username, String password) throws Exception{
         try {
-            currentUser = manager.login(username.toLowerCase(), password);
+            String accountString = "{username: '"+ username+"', password: '"+password+"'}";
+            String result = get(HttpMethod.POST,"login",accountString);
+            currentUser = GSON.fromJson(result, User.class);
             return getCurrentUserID();
         } catch (SQLException e) {
-            return -1;
+            throw new Exception("Couldn't get user data!");
         }
     }
 

@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 
 public class PostActivity extends AppCompatActivity implements View.OnClickListener {
 

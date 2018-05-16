@@ -31,7 +31,7 @@ import com.spogss.sportifycommunity.adapter.FeedListAdapter;
 import com.spogss.sportifycommunity.adapter.ListMenuModelAdapter;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.ProUser;
-import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.model.ListMenuModel;
 import com.spogss.sportifycommunity.model.PostModel;

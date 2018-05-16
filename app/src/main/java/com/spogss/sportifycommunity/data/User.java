@@ -7,7 +7,6 @@ package com.spogss.sportifycommunity.data;
 
 import java.io.Serializable;
 import java.util.TreeSet;
-
 /**
  *
  * @author Martin

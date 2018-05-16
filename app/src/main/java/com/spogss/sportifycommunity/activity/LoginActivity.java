@@ -19,7 +19,7 @@ import android.widget.EditText;
 import android.widget.TabHost;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 
 /**
  * A login screen that offers login via email/password.
@@ -324,9 +324,14 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
         @Override
         protected Integer doInBackground(Void... params) {
-            int uid = client.login(mEmail, mPassword);
-            Log.i("uid", "uid: " + uid);
-            return uid;
+            try {
+                int uid = client.login(mEmail, mPassword);
+                Log.i("uid", "uid: " + uid);
+                return uid;
+            }
+            catch (Exception ex){
+                return -1;
+            }
         }
 
         @Override

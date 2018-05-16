@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SportifyCommunity.iml" filepath="$PROJECT_DIR$/SportifyCommunity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SportifyCommunityApp.iml" filepath="$PROJECT_DIR$/SportifyCommunityApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

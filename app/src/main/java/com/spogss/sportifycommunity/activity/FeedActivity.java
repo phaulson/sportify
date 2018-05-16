@@ -34,7 +34,7 @@ import com.spogss.sportifycommunity.adapter.SearchListAdapter;
 import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
 import com.spogss.sportifycommunity.data.Plan;
 import com.spogss.sportifycommunity.data.Post;
-import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 import com.spogss.sportifycommunity.model.PostModel;

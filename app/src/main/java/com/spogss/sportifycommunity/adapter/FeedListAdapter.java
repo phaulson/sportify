@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.activity.ProfileActivity;
 import com.spogss.sportifycommunity.data.Post;
-import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 import com.spogss.sportifycommunity.model.PostModel;
 
 import java.text.SimpleDateFormat;
