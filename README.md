@@ -8,7 +8,7 @@ This is a fitness app
 * Icon: [PNG](https://drive.google.com/file/d/1U4bt2wKzjk38yMzVAUXZpofS_Twp17uY/view)
 * User Stories: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/ofnerm_edu_htl-villach_at/EUfeAuCabJVHhh7jTAg2yKcBzy2b4qcj2hSA9tUyU00AAQ?e=bOx9i2)
 * Webserviceschnittstelle: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/muehlbap_edu_htl-villach_at/EWPSAxonp8pMrIdG62xMdAABv-EUqb2kXk_5Nwro7frIYg?e=Lt7NbU)
-* Change-Log: [Word] (https://htlvillachat-my.sharepoint.com/:w:/g/personal/webhofeg_edu_htl-villach_at/EbV8QrXSf8xBgy6LEbu4wmEBCfHqSHNl1HzQZfdgjI_Iwg?e=qhhW5J) 
+* Change-Log: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/webhofeg_edu_htl-villach_at/EbV8QrXSf8xBgy6LEbu4wmEBCfHqSHNl1HzQZfdgjI_Iwg?e=qhhW5J) 
 * Sportify Community: [Link](https://github.com/phaulson/SportifyCommunity)
 * Sportify Pro: [Link](https://github.com/phaulson/SportifyPro)
 * Sportify Webservice: [Link](https://github.com/phaulson/SportifyWebservice)
