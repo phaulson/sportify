@@ -28,4 +28,6 @@
     <!-- dimens related to plan -->
     <dimen name="image_plan_square_dimen">100dp</dimen>
     <dimen name="plan_text_size_name">36dp</dimen>
+    <dimen name="workout_text_size">28dp</dimen>
+    <dimen name="exercise_text_size">20dp</dimen>
 </resources>

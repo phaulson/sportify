@@ -43,6 +43,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".activity.ShowPlansActivity" />
         <activity android:name=".activity.PlanActivity" />
+        <activity android:name=".activity.ExerciseActivity"></activity>
     </application>
 
 </manifest>

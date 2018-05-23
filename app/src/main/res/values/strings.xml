@@ -57,8 +57,8 @@
     <string name="image_show_plans_description">The image of the plan</string>
     <string name="button_show_plans_unsubscribe">Unsubscribe</string>
 
-    <!-- Strings related to plan -->
-
+    <!-- Strings related to exercise -->
+    <string name="image_exercise_description">An image to illustrate the exercise</string>
 
     <!-- auto-generated Strings -->
     <string name="action_settings">Settings</string>

@@ -37,6 +37,7 @@ import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
+import com.spogss.sportifycommunity.model.PlanModel;
 import com.spogss.sportifycommunity.model.PostModel;
 
 import java.util.ArrayList;
@@ -174,6 +175,7 @@ public class FeedActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_plans) {
             Intent intent = new Intent(this, ShowPlansActivity.class);
+            intent.putExtra("userid", -1);
             startActivity(intent);
         } else if (id == R.id.nav_map) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "The MapActivity will be implemented soon", Snackbar.LENGTH_LONG)
@@ -437,7 +439,7 @@ public class FeedActivity extends AppCompatActivity
         }
     }
 
-    private class SearchPlansTask extends AsyncTask<Void, Void, Collection<Plan>> {
+    private class SearchPlansTask extends AsyncTask<Void, Void, Collection<PlanModel>> {
         private String name;
         private TabFragmentSearch fragment;
 
@@ -447,18 +449,27 @@ public class FeedActivity extends AppCompatActivity
         }
 
         @Override
-        protected Collection<Plan> doInBackground(Void... params) {
+        protected Collection<PlanModel> doInBackground(Void... params) {
             // TODO: call webservice for search users
             if(name.equals(""))
-                return new ArrayList<Plan>();
-            return client.searchPlans(name);
+                return new ArrayList<PlanModel>();
+
+            ArrayList<PlanModel> planModels = new ArrayList<PlanModel>();
+            ArrayList<Plan> plans = (ArrayList<Plan>) client.searchPlans(name);
+            for (Plan p : plans) {
+                boolean subscribed = client.isPlanSubscribed(client.getCurrentUserID(), p.getId());
+                int numberOfSubscribers = client.getNumberOfSubscribers(p.getId());
+                planModels.add(new PlanModel(p, numberOfSubscribers, subscribed));
+            }
+
+            return planModels;
         }
 
         @Override
-        protected void onPostExecute(final Collection<Plan> plans) {
-            SearchListAdapter<Plan> adapter = new SearchListAdapter<Plan>(FeedActivity.this);
-            for(Plan p : plans)
-                adapter.addGeneric(p, p.getId());
+        protected void onPostExecute(final Collection<PlanModel> plans) {
+            SearchListAdapter<PlanModel> adapter = new SearchListAdapter<PlanModel>(FeedActivity.this);
+            for(PlanModel p : plans)
+                adapter.addGeneric(p, p.getPlan().getId());
             fragment.fillList(adapter);
         }
     }

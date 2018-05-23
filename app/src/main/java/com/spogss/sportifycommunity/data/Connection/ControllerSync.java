@@ -11,11 +11,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by nicok on 18.04.2018 ^-^ ^-^.
- */
-
-public class ControllerSync extends AsyncTask<String, Void, AsyncResult<String>> {
+public class ControllerSync {
     private URL url;
     //   private static String token;
 
@@ -23,10 +19,8 @@ public class ControllerSync extends AsyncTask<String, Void, AsyncResult<String>>
         this.url = url;
     }
 
-    @Override
-    protected AsyncResult<String> doInBackground(String... params) {
-        AsyncResult<String> result;
-
+    protected String getJSONString(String... params) {
+        String result;
         // extract request params for clarity
         HttpMethod httpMethod = HttpMethod.valueOf(params[0]);
         String route = params[1];
@@ -50,15 +44,15 @@ public class ControllerSync extends AsyncTask<String, Void, AsyncResult<String>>
                 write(connection, httpMethod, payload);
             }
 
-            result = new AsyncResult<>(read(connection));
+            result = read(connection);
 
             connection.disconnect();
 
-        } catch (Exception ex) {
-            result = new AsyncResult<>(ex);
-        }
+            return result;
 
-        return result;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private void write(HttpURLConnection connection, HttpMethod httpMethod, String json) throws IOException {

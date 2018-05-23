@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +16,7 @@ import android.widget.TextView;
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
 import com.spogss.sportifycommunity.data.DailyWorkout;
-import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 import com.spogss.sportifycommunity.fragment.TabFragmentDailyWorkout;
 import com.spogss.sportifycommunity.model.PlanModel;
 
@@ -167,7 +168,7 @@ public class PlanActivity extends AppCompatActivity implements View.OnClickListe
             viewPager.setAdapter(sectionsPageAdapter);
 
             if(viewPager.getAdapter().getCount() > 0)
-                viewPager.setCurrentItem(1);
+                new PageChangeListener(tabLayout).onPageSelected(0);
         }
     }
 }

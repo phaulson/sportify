@@ -7,6 +7,7 @@
         android:id="@+id/textView_workouts_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft" />
+        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:textSize="@dimen/exercise_text_size"/>
 
 </RelativeLayout>

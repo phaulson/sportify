@@ -13,6 +13,8 @@ import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.data.Workout;
 
+import org.json.JSONObject;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -44,7 +46,7 @@ public class SportifyClient {
     public static SportifyClient newInstance(){
         if (client == null) {
             try {
-                URL url = new URL("http", "192.168.142.188", 8080, "SportifyWebService/webresources");
+                URL url = new URL("http", "192.168.43.184", 8080, "SportifyWebService/webresources");
                 client = new SportifyClient(url);
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
@@ -54,7 +56,9 @@ public class SportifyClient {
     }
     private SportifyClient(URL url){
         this.url = url;
+        this.manager = Manager.newInstance();
     }
+
     private String get(HttpMethod httpMethod, String route, String... params) throws Exception {
         ControllerSync controller = new ControllerSync(url);
 
@@ -64,19 +68,8 @@ public class SportifyClient {
         connectionParams.addAll(Arrays.asList(params));
         params = connectionParams.toArray(params);
 
-        controller.execute(params);
-
-        AsyncResult<String> result =  controller.get();
-        if(result.getError() != null) {
-            throw result.getError();
-        }
-
-        return result.getResult();
+        return controller.getJSONString(params);
     }
-
-
-//REQUESTS
-
 
     public int getCurrentUserID() {
         return currentUser.getId();
@@ -102,9 +95,12 @@ public class SportifyClient {
      */
     public int login(String username, String password) throws Exception{
         try {
-            String accountString = "{username: '"+ username+"', password: '"+password+"'}";
-            String result = get(HttpMethod.POST,"login",accountString);
-            currentUser = GSON.fromJson(result, User.class);
+          /*JSONObject jsonObject = new JSONObject();
+            jsonObject.put("username", username);
+            jsonObject.put("password", password);
+
+            currentUser = GSON.fromJson(get(HttpMethod.POST, "login", jsonObject.toString()), User.class);*/
+            currentUser = manager.login(username, password);
             return getCurrentUserID();
         } catch (SQLException e) {
             throw new Exception("Couldn't get user data!");

@@ -13,9 +13,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.activity.PlanActivity;
 import com.spogss.sportifycommunity.activity.ProfileActivity;
 import com.spogss.sportifycommunity.data.Plan;
 import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.model.PlanModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,8 +68,8 @@ public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchLis
             //TODO: implement with real profile pictures
             profilePic.setImageResource(R.drawable.sp_default_profile_picture);
         }
-        else if(o instanceof Plan) {
-            username.setText(((Plan) o).getName());
+        else if(o instanceof PlanModel) {
+            username.setText(((PlanModel) o).getPlan().getName());
             profilePic.setImageResource(R.drawable.sp_plan);
         }
 
@@ -97,7 +99,10 @@ public class SearchListAdapter<T> extends BaseAdapter implements View.OnTouchLis
                 intent.putExtra("profile", ((User)o).getId());
                 context.startActivity(intent);
             }
-            else if(o instanceof Plan) {
+            else if(o instanceof PlanModel) {
+                Intent intent = new Intent(context, PlanActivity.class);
+                intent.putExtra("plan", (PlanModel)o);
+                context.startActivity(intent);
             }
         }
         return true;

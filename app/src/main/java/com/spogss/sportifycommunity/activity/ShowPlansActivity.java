@@ -12,7 +12,7 @@ import android.widget.ListView;
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.adapter.PlansListAdapter;
 import com.spogss.sportifycommunity.data.Plan;
-import com.spogss.sportifycommunity.data.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.SportifyClient;
 import com.spogss.sportifycommunity.model.PlanModel;
 
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ public class ShowPlansActivity extends AppCompatActivity {
     private SportifyClient client;
     private PlansListAdapter plansListAdapter;
 
+    private int userid;
 
 
     @Override
@@ -33,6 +34,8 @@ public class ShowPlansActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_plans);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("Plans");
+
+        userid = (Integer) getIntent().getSerializableExtra("userid");
 
         client = SportifyClient.newInstance();
         plansListAdapter = new PlansListAdapter(getApplicationContext());
@@ -66,7 +69,13 @@ public class ShowPlansActivity extends AppCompatActivity {
     private Collection<PlanModel> loadPlans() {
         // TODO: find way to implement with better performance
         ArrayList<PlanModel> planModels = new ArrayList<PlanModel>();
-        ArrayList<Plan> plans = (ArrayList<Plan>) client.getSubscribedPlans(client.getCurrentUserID());
+        ArrayList<Plan> plans = new ArrayList<>();
+
+        if(userid == -1)
+            plans = (ArrayList<Plan>) client.getSubscribedPlans(client.getCurrentUserID());
+        else if (userid > -1)
+            plans = (ArrayList<Plan>) client.getPlans(userid);
+
         for (Plan p : plans) {
             boolean subscribed = client.isPlanSubscribed(client.getCurrentUserID(), p.getId());
             int numberOfSubscribers = client.getNumberOfSubscribers(p.getId());
