@@ -13,7 +13,7 @@ import java.util.TreeSet;
  * @author Martin
  */
 public class ProUser extends User implements Serializable{
-    public ProUser(int idUser, String username, String password, String biographie) {
-        super(idUser, username, password, biographie);
+    public ProUser(int id, String username, String password, String description) {
+        super(id, username, password, description);
     }
 }

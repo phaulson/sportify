@@ -1,6 +1,7 @@
 package com.spogss.sportifycommunity.data.Connection;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.spogss.sportifycommunity.data.Comment;
 import com.spogss.sportifycommunity.data.Coordinate;
 import com.spogss.sportifycommunity.data.DailyWorkout;
@@ -17,7 +18,6 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +34,10 @@ public class SportifyClient {
     private static SportifyClient client;
     private User currentUser;
     private int numberOfPosts;
+    private int numberOfUsers;
+    private int numberOfPlans;
+    private int numberOfComments;
+    private boolean isPro;
     private Manager manager = null;
     private final Gson GSON = new Gson();
 
@@ -46,7 +50,7 @@ public class SportifyClient {
     public static SportifyClient newInstance(){
         if (client == null) {
             try {
-                URL url = new URL("http", "192.168.43.184", 8080, "SportifyWebService/webresources");
+                URL url = new URL("http", "192.168.142.188", 8080, "SportifyWebService/webresources");
                 client = new SportifyClient(url);
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
@@ -56,6 +60,7 @@ public class SportifyClient {
     }
     private SportifyClient(URL url){
         this.url = url;
+        this.isPro = false;
         this.manager = Manager.newInstance();
     }
 
@@ -87,6 +92,30 @@ public class SportifyClient {
         this.numberOfPosts = numberOfPosts;
     }
 
+    public int getNumberOfUsers() {
+        return numberOfUsers;
+    }
+
+    public void setNumberOfUsers(int numberOfUsers) {
+        this.numberOfUsers = numberOfUsers;
+    }
+
+    public int getNumberOfPlans() {
+        return numberOfPlans;
+    }
+
+    public void setNumberOfPlans(int numberOfPlans) {
+        this.numberOfPlans = numberOfPlans;
+    }
+
+    public int getNumberOfComments() {
+        return numberOfComments;
+    }
+
+    public void setNumberOfComments(int numberOfComments) {
+        this.numberOfComments = numberOfComments;
+    }
+
     /**
      * checks if login is okay and returns the userID
      * @param username
@@ -95,14 +124,15 @@ public class SportifyClient {
      */
     public int login(String username, String password) throws Exception{
         try {
-          /*JSONObject jsonObject = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
             jsonObject.put("username", username);
             jsonObject.put("password", password);
+            jsonObject.put("isPro", isPro);
 
-            currentUser = GSON.fromJson(get(HttpMethod.POST, "login", jsonObject.toString()), User.class);*/
-            currentUser = manager.login(username, password);
+            currentUser = GSON.fromJson(get(HttpMethod.POST, "login", jsonObject.toString()), User.class);
+            //currentUser = manager.login(username, password);
             return getCurrentUserID();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new Exception("Couldn't get user data!");
         }
     }
@@ -116,9 +146,15 @@ public class SportifyClient {
      */
     public int register(String username, String password, boolean isPro){
         try {
-            currentUser = manager.register(username, password, isPro);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("username", username);
+            jsonObject.put("password", password);
+            jsonObject.put("isPro", isPro);
+
+            currentUser = GSON.fromJson(get(HttpMethod.POST, "register", jsonObject.toString()), User.class);
+            //currentUser = manager.register(username, password, isPro);
             return getCurrentUserID();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return -1;
@@ -131,8 +167,8 @@ public class SportifyClient {
      */
     public User getProfile(int idUser){
         try {
-            return manager.getProfile(idUser);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getProfile", idUser + ""), User.class);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -145,8 +181,13 @@ public class SportifyClient {
      */
     public boolean changeDescription(int idUser, String newDescription){
         try {
-            return manager.changeDescription(idUser, newDescription);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", idUser);
+            jsonObject.put("description", newDescription);
+
+            return GSON.fromJson(get(HttpMethod.POST, "changeDescription", jsonObject.toString()), Boolean.class);
+            //return manager.changeDescription(idUser, newDescription);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -158,8 +199,9 @@ public class SportifyClient {
      */
     public Collection<Plan> getPlans(int idUser){
         try {
-            return manager.getPlans(idUser);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getPlans", idUser + ""), new TypeToken<Collection<Plan>>(){}.getType());
+            //return manager.getPlans(idUser);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -171,8 +213,9 @@ public class SportifyClient {
      */
     public Collection<DailyWorkout> getDailyWorkouts(int idPlan){
         try {
-            return manager.getDailyWorkouts(idPlan);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getDailyWorkouts", idPlan + ""), new TypeToken<Collection<DailyWorkout>>(){}.getType());
+            //return manager.getDailyWorkouts(idPlan);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -184,8 +227,9 @@ public class SportifyClient {
      */
     public Collection<Workout> getWorkouts(int idDailyWorkout){
         try {
-            return manager.getWorkouts(idDailyWorkout);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getWorkouts", idDailyWorkout + ""), new TypeToken<Collection<Workout>>(){}.getType());
+            //return manager.getWorkouts(idDailyWorkout);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -197,8 +241,9 @@ public class SportifyClient {
      */
     public Collection<Exercise> getExercises(int idWorkout){
         try {
-            return manager.getExercises(idWorkout);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getExercises", idWorkout + ""), new TypeToken<Collection<Exercise>>(){}.getType());
+            //return manager.getExercises(idWorkout);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -210,8 +255,9 @@ public class SportifyClient {
      */
     public Collection<Location> getLocations(int idUser){
         try {
-            return manager.getLocations(idUser);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getLocations", idUser + ""), new TypeToken<Collection<Location>>(){}.getType());
+            //return manager.getLocations(idUser);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -224,7 +270,13 @@ public class SportifyClient {
      */
     public Collection<Post> getPostsByCreator(int idCreator, int lastPostId){
         try {
-            return manager.getPostsByCreator(idCreator, lastPostId, numberOfPosts);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", idCreator);
+            jsonObject.put("lastPostID", lastPostId);
+            jsonObject.put("numberOfPosts", numberOfPosts);
+
+            return GSON.fromJson(get(HttpMethod.POST, "getPostsByCreator", jsonObject.toString()), new TypeToken<Collection<Post>>(){}.getType());
+            //return manager.getPostsByCreator(idCreator, lastPostId, numberOfPosts);
         } catch (Exception e) {
             return null;
         }
@@ -251,8 +303,17 @@ public class SportifyClient {
      */
     public int addLocation(int idUser, Coordinate coordinates, String name, LocationType type, Date startDate, Date endDate){
         try {
-            return manager.addLocation(idUser, coordinates, name, type, startDate, endDate);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", idUser);
+            jsonObject.put("coordinates", coordinates);
+            jsonObject.put("name", name);
+            jsonObject.put("type", type);
+            jsonObject.put("startdate", startDate);
+            jsonObject.put("enddate", endDate);
+
+            return GSON.fromJson(get(HttpMethod.POST, "addLocation", jsonObject.toString()), Integer.class);
+            //return manager.addLocation(idUser, coordinates, name, type, startDate, endDate);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -265,8 +326,13 @@ public class SportifyClient {
      */
     public int addPlan(int idCreator, String name){
         try {
-            return manager.addPlan(idCreator, name);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", idCreator);
+            jsonObject.put("name", name);
+
+            return GSON.fromJson(get(HttpMethod.POST, "addPlan", jsonObject.toString()), Integer.class);
+            //return manager.addPlan(idCreator, name);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -279,8 +345,13 @@ public class SportifyClient {
      */
     public boolean linkDailyWorkouts(int planId, Collection<Integer> dailyWorkouts){
         try {
-            return manager.linkDailyWorkouts(planId, dailyWorkouts);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("planID", planId);
+            jsonObject.put("dailyWorkouts", dailyWorkouts);
+
+            return GSON.fromJson(get(HttpMethod.POST, "linkDailyWorkouts", jsonObject.toString()), Boolean.class);
+            //return manager.linkDailyWorkouts(planId, dailyWorkouts);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -293,22 +364,32 @@ public class SportifyClient {
      */
     public int addDailyWorkout(int creatorId, String name){
         try {
-            return manager.addDailyWorkout(creatorId, name);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorId);
+            jsonObject.put("name", name);
+
+            return GSON.fromJson(get(HttpMethod.POST, "addDailyWorkout", jsonObject.toString()), Integer.class);
+            //return manager.addDailyWorkout(creatorId, name);
+        } catch (Exception e) {
             return -1;
         }
     }
 
     /**
      * links Workouts to a DailyWorkout
-     * @param planId
+     * @param dailyWorkoutId
      * @param workouts
      * @return true if successful, false when failed
      */
-    public boolean linkWorkouts(int planId, Collection<Integer> workouts){
+    public boolean linkWorkouts(int dailyWorkoutId, Collection<Integer> workouts){
         try {
-            return manager.linkWorkouts(planId, workouts);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("dailyWorkoutID", dailyWorkoutId);
+            jsonObject.put("workouts", workouts);
+
+            return GSON.fromJson(get(HttpMethod.POST, "linkWorkouts", jsonObject.toString()), Boolean.class);
+            //return manager.linkWorkouts(planId, workouts);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -321,8 +402,13 @@ public class SportifyClient {
      */
     public int addWorkout(int creatorId, String name){
         try {
-            return manager.addWorkout(creatorId, name);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorId);
+            jsonObject.put("name", name);
+
+            return GSON.fromJson(get(HttpMethod.POST, "addWorkout", jsonObject.toString()), Integer.class);
+            //return manager.addWorkout(creatorId, name);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -335,8 +421,13 @@ public class SportifyClient {
      */
     public boolean linkExercises(int workoutId, Collection<Integer> exercises){
         try {
-            return manager.linkExercises(workoutId, exercises);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("workoutID", workoutId);
+            jsonObject.put("exercises", exercises);
+
+            return GSON.fromJson(get(HttpMethod.POST, "linkExercises", jsonObject.toString()), Boolean.class);
+            //return manager.linkExercises(workoutId, exercises);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -348,10 +439,16 @@ public class SportifyClient {
      * @param creatorId
      * @return exerciseID if successful, else -1
      */
-    public int addExerise(String name, String description, int creatorId) {
+    public int addExerise(int creatorId, String name, String description) {
         try {
-            return manager.addExercise(name, description, creatorId);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorId);
+            jsonObject.put("name", name);
+            jsonObject.put("description", description);
+
+            return GSON.fromJson(get(HttpMethod.POST, "addExercise", jsonObject.toString()), Integer.class);
+            //return manager.addExercise(name, description, creatorId);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -388,7 +485,12 @@ public class SportifyClient {
      */
     public Collection<DailyWorkout> searchDailyWorkouts(int creatorID, String name) {
         try {
-            return manager.searchDailyWorkouts(creatorID, name.toLowerCase());
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorID);
+            jsonObject.put("name", name);
+
+            return GSON.fromJson(get(HttpMethod.POST, "searchDailyWorkouts", jsonObject.toString()), new TypeToken<Collection<DailyWorkout>>(){}.getType());
+            //return manager.searchDailyWorkouts(creatorID, name.toLowerCase());
         } catch (Exception e) {
             return null;
         }
@@ -425,7 +527,12 @@ public class SportifyClient {
      */
     public Collection<Workout> searchWorkouts(int creatorID, String name) {
         try {
-            return manager.searchWorkouts(creatorID, name.toLowerCase());
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorID);
+            jsonObject.put("name", name);
+
+            return GSON.fromJson(get(HttpMethod.POST, "searchWorkouts", jsonObject.toString()), new TypeToken<Collection<Workout>>(){}.getType());
+            //return manager.searchWorkouts(creatorID, name.toLowerCase());
         } catch (Exception e) {
             return null;
         }
@@ -461,7 +568,12 @@ public class SportifyClient {
      */
     public Collection<Exercise> searchExercises(int creatorId, String name) {
         try {
-            return manager.searchExercises(creatorId, name.toLowerCase());
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorId);
+            jsonObject.put("name", name);
+
+            return GSON.fromJson(get(HttpMethod.POST, "searchExercises", jsonObject.toString()), new TypeToken<Collection<Exercise>>(){}.getType());
+            //return manager.searchExercises(creatorId, name.toLowerCase());
         } catch (Exception e) {
             return null;
         }
@@ -475,8 +587,13 @@ public class SportifyClient {
      */
     public int addPost(int creatorId, String caption) {
         try {
-            return manager.addPost(creatorId, caption);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorId);
+            jsonObject.put("caption", caption);
+
+            return GSON.fromJson(get(HttpMethod.POST, "addPost", jsonObject.toString()), Integer.class);
+            //return manager.addPost(creatorId, caption);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -497,11 +614,16 @@ public class SportifyClient {
      */
     public Collection<Post> getPosts(int userId, int lastPostId) {
         try {
-            return manager.getPosts(userId, lastPostId, numberOfPosts);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", userId);
+            jsonObject.put("lastPostID", lastPostId);
+            jsonObject.put("numberOfPosts", numberOfPosts);
+
+            return GSON.fromJson(get(HttpMethod.POST, "getPosts", jsonObject.toString()), new TypeToken<Collection<Post>>(){}.getType());
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
+
     }
 
     /**
@@ -510,10 +632,17 @@ public class SportifyClient {
      * @param pro
      * @return a collection of Users
      */
-    public Collection<User> searchUsers(String name, boolean pro) {
+    public Collection<User> searchUsers(String name, boolean pro, int lastUserID) {
         try {
-            return manager.searchUsers(name.toLowerCase(), pro);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", name);
+            jsonObject.put("isPro", pro);
+            jsonObject.put("lastUserId", lastUserID);
+            jsonObject.put("numberOfUsers", numberOfUsers);
+
+            return GSON.fromJson(get(HttpMethod.POST, "searchUsers", jsonObject.toString()), new TypeToken<Collection<User>>(){}.getType());
+            //return manager.searchUsers(name.toLowerCase(), pro);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -522,24 +651,24 @@ public class SportifyClient {
      * get all Plans
      * @return a collection of Plans
      */
-    public Collection<Plan> searchPlans() {
-        return searchPlans(-1, null);
+    public Collection<Plan> searchPlans(int lastUserId) {
+        return searchPlans(-1, null, lastUserId);
     }
     /**
      * get all Plans with this creatorID
      * @param creatorID
      * @return a collection of Plans
      */
-    public Collection<Plan> searchPlans(int creatorID) {
-        return searchPlans(creatorID, null);
+    public Collection<Plan> searchPlans(int creatorID, int lastPlanId) {
+        return searchPlans(creatorID, null, lastPlanId);
     }
     /**
      * get all Plans that contain that name
      * @param name
      * @return a collection of Plans
      */
-    public Collection<Plan> searchPlans(String name) {
-        return searchPlans(-1, name.toLowerCase());
+    public Collection<Plan> searchPlans(String name, int lastPlanId) {
+        return searchPlans(-1, name.toLowerCase(), lastPlanId);
     }
     /**
      * get all Plans with that creatorID and that contain that name
@@ -547,9 +676,16 @@ public class SportifyClient {
      * @param name
      * @return a collection of Plans
      */
-    public Collection<Plan> searchPlans(int creatorID, String name) {
+    public Collection<Plan> searchPlans(int creatorID, String name, int lastPlanId) {
         try {
-            return manager.searchPlans(creatorID, name.toLowerCase());
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("creatorID", creatorID);
+            jsonObject.put("name", name);
+            jsonObject.put("lastPlanId", lastPlanId);
+            jsonObject.put("numberOfPlans", numberOfPlans);
+
+            return GSON.fromJson(get(HttpMethod.POST, "searchPlans", jsonObject.toString()), new TypeToken<Collection<Plan>>(){}.getType());
+            //return manager.searchUsers(name.toLowerCase(), pro);
         } catch (Exception e) {
             return null;
         }
@@ -562,8 +698,8 @@ public class SportifyClient {
      */
     public int getNumberOfLikes(int postId) {
         try {
-            return manager.getNumberOfLikes(postId);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getNumberOfLikes", postId + ""), Integer.class);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -576,8 +712,12 @@ public class SportifyClient {
      */
     public boolean isLiked(int userId, int postId) {
         try {
-            return manager.isLiked(userId, postId);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", userId);
+            jsonObject.put("postID", postId);
+
+            return GSON.fromJson(get(HttpMethod.POST, "isLiked", jsonObject.toString()), Boolean.class);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -599,7 +739,12 @@ public class SportifyClient {
      */
     public Collection<Comment> getComments(int postID, int lastCommentId) {
         try {
-            return manager.getComments(postID, lastCommentId, numberOfPosts);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("postID", postID);
+            jsonObject.put("lastCommentID", lastCommentId);
+            jsonObject.put("numberOfComments", numberOfComments);
+
+            return GSON.fromJson(get(HttpMethod.POST, "getComments", jsonObject.toString()), new TypeToken<Collection<Comment>>(){}.getType());
         } catch (Exception e) {
             return null;
         }
@@ -613,7 +758,13 @@ public class SportifyClient {
      */
     public boolean setLike(int userId, int postId, boolean likes) {
         try {
-            return manager.setLike(userId, postId, likes);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", userId);
+            jsonObject.put("postID", postId);
+            jsonObject.put("likes", likes);
+
+            return GSON.fromJson(get(HttpMethod.POST, "setLike", jsonObject.toString()), Boolean.class);
+            //return manager.setLike(userId, postId, likes);
         } catch (Exception e) {
             return false;
         }
@@ -628,8 +779,14 @@ public class SportifyClient {
      */
     public boolean addComment(int userId, int postId, String text) {
         try {
-            return manager.addComment(userId, postId, text);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", userId);
+            jsonObject.put("postID", postId);
+            jsonObject.put("text", text);
+
+            return GSON.fromJson(get(HttpMethod.POST, "addComment", jsonObject.toString()), Boolean.class);
+            //return manager.addComment(userId, postId, text);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -643,8 +800,14 @@ public class SportifyClient {
      */
     public boolean setUserFollow(int followerId, int followsId, boolean follow) {
         try {
-            return manager.setUserFollow(followerId, followsId, follow);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("followerID", followerId);
+            jsonObject.put("followsID", followsId);
+            jsonObject.put("follow", follow);
+
+            return GSON.fromJson(get(HttpMethod.POST, "setUserFollow", jsonObject.toString()), Boolean.class);
+            //return manager.setUserFollow(followerId, followsId, follow);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -658,7 +821,13 @@ public class SportifyClient {
      */
     public Collection<Location> getNearbyLocations(Coordinate coordinate, double radius, Collection<LocationType> types) {
         try {
-            return manager.getNearbyLocations(coordinate, radius, (ArrayList<LocationType>) types);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("coordinates", coordinate);
+            jsonObject.put("radius", radius);
+            jsonObject.put("types", types);
+
+            return GSON.fromJson(get(HttpMethod.POST, "getNearbyLocations", jsonObject.toString()), new TypeToken<Collection<Location>>(){}.getType());
+            //return manager.getNearbyLocations(coordinate, radius, (ArrayList<LocationType>) types);
         } catch (Exception e) {
             return null;
         }
@@ -671,8 +840,9 @@ public class SportifyClient {
      */
     public Collection<Plan> getSubscribedPlans(int userId) {
         try {
-            return manager.getSubscribedPlans(userId);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getSubscribedPlans", userId + ""), new TypeToken<Collection<Plan>>(){}.getType());
+            //return manager.getSubscribedPlans(userId);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -685,8 +855,13 @@ public class SportifyClient {
      */
     public boolean isPlanSubscribed(int userId, int planId) {
         try {
-            return manager.isPlanSubscribed(userId, planId);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", userId);
+            jsonObject.put("planID", planId);
+
+            return GSON.fromJson(get(HttpMethod.POST, "isPlanSubscribed", jsonObject.toString()), Boolean.class);
+            //return manager.isPlanSubscribed(userId, planId);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -700,7 +875,12 @@ public class SportifyClient {
      */
     public boolean setPlanSubscription(int planId, int userId, boolean subscribe) {
         try {
-            return manager.setPlanSubscription(userId, planId, subscribe);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userID", userId);
+            jsonObject.put("planID", planId);
+
+            return GSON.fromJson(get(HttpMethod.POST, "setPlanSubscription", jsonObject.toString()), Boolean.class);
+            //return manager.setPlanSubscription(userId, planId, subscribe);
         } catch (Exception e) {
             return false;
         }
@@ -713,8 +893,9 @@ public class SportifyClient {
      */
     public Exercise getExercise(int idExercise){
         try {
-            return manager.getExercise(idExercise);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getExercise", idExercise + ""), Exercise.class);
+            //return manager.getExercise(idExercise);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -725,8 +906,9 @@ public class SportifyClient {
      */
     public Collection<User> getUsersIFollow(int idUser){
         try {
-            return manager.getFollowedUsers(idUser);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getFollowedUsers", idUser + ""), new TypeToken<Collection<User>>(){}.getType());
+            //return manager.getFollowedUsers(idUser);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -738,8 +920,9 @@ public class SportifyClient {
      */
     public Collection<User> getUsersThatFollowMe(int idUser){
         try {
-            return manager.getFollowers(idUser);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getFollowers", idUser + ""), new TypeToken<Collection<User>>(){}.getType());
+            //return manager.getFollowers(idUser);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -752,8 +935,13 @@ public class SportifyClient {
      */
     public boolean isFollowing(int idFollower, int idFollows){
         try {
-            return manager.isFollowing(idFollower, idFollows);
-        } catch (SQLException e) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("followerID", idFollower);
+            jsonObject.put("followsID", idFollows);
+
+            return GSON.fromJson(get(HttpMethod.POST, "isFollowing", jsonObject.toString()), Boolean.class);
+            //return manager.isFollowing(idFollower, idFollows);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -765,8 +953,9 @@ public class SportifyClient {
      */
     public int getNumberOfFollowers(int userid) {
         try {
-            return manager.getFollowersCount(userid);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getFollowersCount", userid + ""), Integer.class);
+            //return manager.getFollowersCount(userid);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -778,8 +967,9 @@ public class SportifyClient {
      */
     public int getNumberOfFollowedUsers(int userid) {
         try {
-            return manager.getFollowedUsersCount(userid);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getFollowedUsersCount", userid + ""), Integer.class);
+            //return manager.getFollowedUsersCount(userid);
+        } catch (Exception e) {
             return -1;
         }
     }
@@ -791,8 +981,9 @@ public class SportifyClient {
      */
     public int getNumberOfSubscribers(int planid) {
         try {
-            return manager.getSubscribersCount(planid);
-        } catch (SQLException e) {
+            return GSON.fromJson(get(HttpMethod.POST, "getSubscribersCount", planid + ""), Integer.class);
+            //return manager.getSubscribersCount(planid);
+        } catch (Exception e) {
             return -1;
         }
     }

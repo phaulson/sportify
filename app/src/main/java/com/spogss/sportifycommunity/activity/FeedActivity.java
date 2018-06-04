@@ -75,6 +75,9 @@ public class FeedActivity extends AppCompatActivity
 
         client = SportifyClient.newInstance();
         client.setNumberOfPosts(6);
+        client.setNumberOfUsers(10);
+        client.setNumberOfPlans(10);
+        client.setNumberOfComments(10);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -424,10 +427,10 @@ public class FeedActivity extends AppCompatActivity
 
         @Override
         protected Collection<User> doInBackground(Void... params) {
-            // TODO: call webservice for search users
+            // TODO: implement with lastUserID
             if(name.equals(""))
                 return new ArrayList<User>();
-            return client.searchUsers(name, isPro);
+            return client.searchUsers(name, isPro, -1);
         }
 
         @Override
@@ -450,12 +453,12 @@ public class FeedActivity extends AppCompatActivity
 
         @Override
         protected Collection<PlanModel> doInBackground(Void... params) {
-            // TODO: call webservice for search users
+            // TODO: implement with lastPlanID
             if(name.equals(""))
                 return new ArrayList<PlanModel>();
 
             ArrayList<PlanModel> planModels = new ArrayList<PlanModel>();
-            ArrayList<Plan> plans = (ArrayList<Plan>) client.searchPlans(name);
+            ArrayList<Plan> plans = (ArrayList<Plan>) client.searchPlans(name, -1);
             for (Plan p : plans) {
                 boolean subscribed = client.isPlanSubscribed(client.getCurrentUserID(), p.getId());
                 int numberOfSubscribers = client.getNumberOfSubscribers(p.getId());

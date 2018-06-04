@@ -12,24 +12,24 @@ import java.util.TreeSet;
  * @author Martin
  */
 public class User implements Serializable{
-    private int id;
+    private int idUser;
     private String username;
     private String password;
     private String description;
 
-    public User(int id, String username, String password, String description) {
-        this.id = id;
+    public User(int idUser, String username, String password, String description) {
+        this.idUser = idUser;
         this.username = username;
         this.password = password;
         this.description = description;
     }
 
     public int getId() {
-        return id;
+        return idUser;
     }
 
     public void setIdUser(int id) {
-        this.id = id;
+        this.idUser = id;
     }
 
     public String getUsername() {
@@ -59,7 +59,7 @@ public class User implements Serializable{
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 59 * hash + this.id;
+        hash = 59 * hash + this.idUser;
         return hash;
     }
 
@@ -75,7 +75,7 @@ public class User implements Serializable{
             return false;
         }
         final User other = (User) obj;
-        if (this.id != other.id) {
+        if (this.idUser != other.idUser) {
             return false;
         }
         return true;
