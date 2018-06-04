@@ -55,9 +55,6 @@ public class GetPostsResource {
             handlerObjectGetPosts o = new Gson().fromJson(content, handlerObjectGetPosts.class);
             Manager m = Manager.newInstance();
             posts = m.getPosts(o.userID, o.lastPostID, o.numberOfPosts);
-            
-            if(posts.size() == 0)
-                throw new CustomException("no posts found");
 
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(posts)).build();
         }

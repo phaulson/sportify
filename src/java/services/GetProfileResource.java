@@ -54,14 +54,9 @@ public class GetProfileResource {
             int userId = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
             user = m.getProfile(userId);
+            String userString = new Gson().toJson(user);
 
-            if(user == null)
-                throw new CustomException("no user found");
-            
-            r = Response.status(Response.Status.OK).entity(user).build();
-        }
-        catch(CustomException ex){
-            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
+            r = Response.status(Response.Status.OK).entity(userString).build();
         }
         catch(SQLException ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();

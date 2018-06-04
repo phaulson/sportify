@@ -48,6 +48,7 @@ public class GetExercisesResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getJson(String content) {
         Collection<Exercise> exercises = new ArrayList<>();
         Response r;

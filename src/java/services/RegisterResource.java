@@ -47,6 +47,7 @@ public class RegisterResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response register(String content)throws Exception{
         User user;
         Response r;

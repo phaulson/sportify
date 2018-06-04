@@ -53,13 +53,7 @@ public class GetFollowedUsersResource {
             int userID = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
             users = m.getFollowedUsers(userID);
-            if(users.size() == 0)
-                throw new CustomException("no users found");
-
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(new Gson().toJson(users))).build();
-        }
-        catch(CustomException ex){
-            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();

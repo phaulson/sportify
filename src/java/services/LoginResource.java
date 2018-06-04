@@ -8,6 +8,7 @@ package services;
 import com.google.gson.Gson;
 import data.CustomException;
 import data.Manager;
+import data.ProUser;
 import data.User;
 import java.sql.SQLException;
 import javax.ws.rs.core.Context;
@@ -46,15 +47,22 @@ public class LoginResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response login(String content)throws Exception{
-        int userID = -1;
         Response r;
+        User user;
         try{
-            User user = new Gson().fromJson(content, User.class);
+            handleObjectlogin credentials = new Gson().fromJson(content, handleObjectlogin.class);
             Manager manager = Manager.newInstance();
-            user = manager.login(user.getUsername(), user.getPassword());
-                       
-            r = Response.status(Response.Status.OK).entity(user).build();
+            user = manager.login(credentials.getUsername(), credentials.getPassword());
+            if(user instanceof ProUser && !credentials.isPro){
+                throw new CustomException("Pro User needs Pro App");
+            }
+            else if(user.getClass().equals(User.class)&& credentials.isPro){
+                throw new CustomException("Community User needs Community App");
+            }
+            String userString = new Gson().toJson(user);
+            r = Response.status(Response.Status.OK).entity(userString).build();
         }
         catch(SQLException ex){
             try{
@@ -71,4 +79,30 @@ public class LoginResource {
         }
         return r;                
     }
+}
+class handleObjectlogin{
+    String username;
+    String password;
+    boolean isPro;
+
+    public handleObjectlogin(String username, String password, boolean isPro) {
+        this.username = username;
+        this.password = password;
+        this.isPro = isPro;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public boolean isIsPro() {
+        return isPro;
+    }
+
+
+    
 }

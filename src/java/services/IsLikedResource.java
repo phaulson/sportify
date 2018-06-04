@@ -42,6 +42,7 @@ public class IsLikedResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getJson(String content) {
         boolean result;
         Response r;

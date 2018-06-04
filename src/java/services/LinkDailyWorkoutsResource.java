@@ -45,6 +45,7 @@ public class LinkDailyWorkoutsResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response linkDailyWorkouts(String content) {
         boolean result = false;
         Response r;

@@ -2,6 +2,7 @@ package data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /*
@@ -16,32 +17,32 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class Event extends Location implements Serializable{
-    private LocalDate startDateTime;
-    private LocalDate endDateTime;
+    private Date startDateTime;
+    private Date endDateTime;
 
     public Event(){
         super();
     }
     
-    public Event(int idLocation,  int idPage, String name,Coordinate c, LocationType type, LocalDate startDateTime, LocalDate endDateTime) {
+    public Event(int idLocation,  int idPage, String name,Coordinate c, LocationType type, Date startDateTime, Date endDateTime) {
         super(idLocation,idPage,name, c,  type);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;        
     }
 
-    public LocalDate getStartDateTime() {
+    public Date getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(LocalDate startDateTime) {
+    public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public LocalDate getEndDateTime() {
+    public Date getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(LocalDate endDateTime) {
+    public void setEndDateTime(Date endDateTime) {
         this.endDateTime = endDateTime;
     }
     

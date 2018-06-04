@@ -43,6 +43,7 @@ public class AddPostResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addPost(String content) {
         int postID;
         Response r;

@@ -8,9 +8,12 @@ package services;
 import com.google.gson.Gson;
 import data.Manager;
 import java.sql.SQLException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -29,7 +32,8 @@ public class GetSubscribersCountResource {
      */
     public GetSubscribersCountResource() {
     }
-
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response getCount(String content){
         Response r;
         try{

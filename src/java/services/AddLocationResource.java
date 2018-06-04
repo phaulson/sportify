@@ -45,6 +45,7 @@ public class AddLocationResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addLocation(String content) {
         int locationID = 0;
         Response r;

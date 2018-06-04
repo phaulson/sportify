@@ -44,6 +44,7 @@ public class AddDailyWorkoutResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addDailyWorkout(String content) {
         int dailyWorkoutID;
         Response r;

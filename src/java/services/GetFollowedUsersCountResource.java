@@ -41,6 +41,7 @@ public class GetFollowedUsersCountResource {
  */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getCount(String content){
         Response r;
         try{

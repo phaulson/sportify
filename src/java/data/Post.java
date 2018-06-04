@@ -7,6 +7,7 @@ package data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -18,13 +19,13 @@ public class Post implements Serializable{
     private int id;
     private String caption;
     private int creatorId;
-    private LocalDate timestamp;
+    private Date timestamp;
 
     public Post(){
         
     }
     
-    public Post(int postId, int creatorId, String caption, LocalDate timestamp) {
+    public Post(int postId, int creatorId, String caption, Date timestamp) {
         this.id = postId;
         this.caption = caption;
         this.creatorId = creatorId;
@@ -55,11 +56,11 @@ public class Post implements Serializable{
         this.creatorId = creatorId;
     }
 
-    public LocalDate getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

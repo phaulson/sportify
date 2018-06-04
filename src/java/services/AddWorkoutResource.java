@@ -43,6 +43,7 @@ public class AddWorkoutResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addWorkout(String content) {
         int workoutID;
         Response r;

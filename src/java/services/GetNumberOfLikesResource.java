@@ -43,6 +43,7 @@ public class GetNumberOfLikesResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+
     public Response getNumberOfLikes(String content) {
         int numberOfLikes = 0;
         Response r;

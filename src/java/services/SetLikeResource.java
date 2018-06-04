@@ -42,6 +42,7 @@ public class SetLikeResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response setLikes(String content) {
         Response r;
         try{

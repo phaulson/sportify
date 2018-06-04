@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class Manager {
     static Manager db = new Manager();
     private static final String CONNSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
-    private static final String ALTERNATIVE_CONNSTRING = "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
+    private static final String ALTERNATIVE_CONNSTRING= "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
     private static final String USER = "d4a13";
     private static final String PASSWORD = "d4a";   
     Connection conn;
@@ -63,7 +63,7 @@ public class Manager {
      */
     public User login(String username, String password)throws SQLException{
         PreparedStatement selectUserId;
-        String selectString ="select * from sp_user where lower(username) like ? and password like ?"; 
+        String selectString ="select idUser, username, password, biographie, isPro from sp_user where lower(username) like ? and password like ?"; 
         selectUserId = conn.prepareStatement(selectString);
         selectUserId.setString(1, username);
         selectUserId.setString(2,password);
@@ -250,7 +250,7 @@ public class Manager {
                 locations.add(new Location(result.getInt(1), result.getInt(2), result.getString(3), new Coordinate(result.getInt(4), result.getInt(5)), LocationType.valueOf(result.getString(6))));
             }
             else if(starttime != null && endtime != null){
-                locations.add(new Event(result.getInt(1), result.getInt(2), result.getString(3), new Coordinate(result.getInt(4), result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime.toLocalDate(), endtime.toLocalDate()));
+                locations.add(new Event(result.getInt(1), result.getInt(2), result.getString(3), new Coordinate(result.getInt(4), result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime, endtime));
             }
         }
         return locations;
@@ -271,7 +271,7 @@ public class Manager {
         ResultSet result = getPostsByCreator.executeQuery();
         Collection<Post> posts = new ArrayList();
         while(result.next()){
-              posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getDate(4).toLocalDate()));
+              posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4)));
         }
         return posts;
         }
@@ -283,7 +283,7 @@ public class Manager {
             ResultSet result = getPostsByCreator.executeQuery();
             Collection<Post> posts = new ArrayList();
             while(result.next()){
-                posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getDate(4).toLocalDate()));
+                posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4)));
             }
             return posts;
         }
@@ -652,7 +652,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
         getPosts.setInt(3, numberOfPosts);
         ResultSet result = getPosts.executeQuery();
         while(result.next()){
-            posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
+            posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4)));
         }
         }
         else if(lastPostId>0){
@@ -663,7 +663,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
             getPosts.setInt(4, numberOfPosts);
             ResultSet result = getPosts.executeQuery();
             while(result.next()){
-                posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4).toLocalDateTime().toLocalDate()));
+                posts.add(new Post(result.getInt(1), result.getInt(2), result.getString(3), result.getTimestamp(4)));
             }
         }
         else{
@@ -926,7 +926,7 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
               locations.add(new Location(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6))));  
             }
             else if(starttime != null && endtime != null){
-              locations.add(new Event(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime.toLocalDateTime().toLocalDate(), endtime.toLocalDateTime().toLocalDate()));  
+              locations.add(new Event(result.getInt(1), result.getInt(2),result.getString(3), new Coordinate(result.getInt(4),result.getInt(5)), LocationType.valueOf(result.getString(6)), starttime, endtime));  
             }
             else{
                 throw new Exception("Unknwon Error");

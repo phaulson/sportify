@@ -44,6 +44,7 @@ public class AddExerciseResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addExercise(String content) {
         int result = -1;
         Response r;
