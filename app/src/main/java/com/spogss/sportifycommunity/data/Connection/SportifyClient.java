@@ -878,6 +878,7 @@ public class SportifyClient {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("userID", userId);
             jsonObject.put("planID", planId);
+            jsonObject.put("subscribe", subscribe);
 
             return GSON.fromJson(get(HttpMethod.POST, "setPlanSubscription", jsonObject.toString()), Boolean.class);
             //return manager.setPlanSubscription(userId, planId, subscribe);
