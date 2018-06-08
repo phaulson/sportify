@@ -1,14 +1,18 @@
 package com.spogss.sportifycommunity.data.Connection;
 
+import android.os.AsyncTask;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spogss.sportifycommunity.data.Comment;
+import com.spogss.sportifycommunity.data.Connection.asynctasks.ClientQueryListener;
+import com.spogss.sportifycommunity.data.Connection.asynctasks.UserLoginTask;
+import com.spogss.sportifycommunity.data.Connection.asynctasks.UserRegisterTask;
 import com.spogss.sportifycommunity.data.Coordinate;
 import com.spogss.sportifycommunity.data.DailyWorkout;
 import com.spogss.sportifycommunity.data.Exercise;
 import com.spogss.sportifycommunity.data.Location;
 import com.spogss.sportifycommunity.data.LocationType;
-import com.spogss.sportifycommunity.data.Manager;
 import com.spogss.sportifycommunity.data.Plan;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.User;
@@ -38,7 +42,6 @@ public class SportifyClient {
     private int numberOfPlans;
     private int numberOfComments;
     private boolean isPro;
-    private Manager manager = null;
     private final Gson GSON = new Gson();
 
 
@@ -61,7 +64,6 @@ public class SportifyClient {
     private SportifyClient(URL url){
         this.url = url;
         this.isPro = false;
-        this.manager = Manager.newInstance();
     }
 
     private String get(HttpMethod httpMethod, String route, String... params) throws Exception {
@@ -138,6 +140,19 @@ public class SportifyClient {
     }
 
     /**
+     *
+     * @param un
+     * @param pw
+     * @param listener
+     * @return calls listener with (userid, username, password)
+     */
+    public void loginAsync(String un, String pw, ClientQueryListener listener){
+        UserLoginTask t = new UserLoginTask(un, pw);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
      * if the username is not in use, a new User is added to the database
      * @param username
      * @param password
@@ -158,6 +173,19 @@ public class SportifyClient {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    /**
+     * calls listener with (id, un, pw)
+     * @param un
+     * @param pw
+     * @param listener
+     *
+     */
+    public void registerAsync(String un, String pw, ClientQueryListener listener){
+        UserRegisterTask t = new UserRegisterTask(un, pw);
+        t.setListener(listener);
+        t.execute();
     }
 
     /**
@@ -800,6 +828,7 @@ public class SportifyClient {
      */
     public boolean setUserFollow(int followerId, int followsId, boolean follow) {
         try {
+
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("followerID", followerId);
             jsonObject.put("followsID", followsId);

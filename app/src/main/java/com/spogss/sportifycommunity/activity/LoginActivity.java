@@ -19,12 +19,14 @@ import android.widget.EditText;
 import android.widget.TabHost;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.data.Connection.QueryType;
 import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.Connection.asynctasks.ClientQueryListener;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements OnClickListener {
+public class LoginActivity extends AppCompatActivity implements OnClickListener, ClientQueryListener {
     private SportifyClient client;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -173,8 +175,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            authTask = new UserLoginTask(username, password);
-            authTask.execute();
+            client.loginAsync(username, password, this);
         }
     }
 
@@ -227,9 +228,9 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            authTask = new UserRegisterTask(username, password);
-            authTask.execute((Void) null);
+                showProgress(true);
+
+                client.registerAsync(username, password, this);
         }
     }
 
@@ -292,6 +293,32 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         }
     }
 
+    private void afterLogin(int id, String un, String pw){
+        showProgress(false);
+        constraintLayout_initializeOverlay.setVisibility(View.GONE);
+
+        if (id >= 0) {
+            onLoginSuccess(un, pw);
+        } else {
+            editText_password.setError(getString(R.string.error_incorrect_username_or_password));
+            editText_username.setError(getString(R.string.error_incorrect_username_or_password));
+            editText_password.requestFocus();
+        }
+    }
+
+    private void afterRegister(int id, String un, String pw){
+        authTask = null;
+        showProgress(false);
+
+        if (id >= 0) {
+            onRegistrationSuccess(un, pw);
+        } else {
+            editText_password.setError(getString(R.string.error_incorrect_username_or_password));
+            editText_username.setError(getString(R.string.error_incorrect_username_or_password));
+            editText_password.requestFocus();
+        }
+    }
+
     private void onLoginSuccess(String username, String password) {
         saveLoginCredentials(username, password);
         launchFeed();
@@ -308,56 +335,30 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
         finish();
     }
 
+    @Override
+    public void onSuccess(Object... results) {
+        QueryType type = (QueryType) results[0];
+        switch (type){
+            case LOGIN:
+                afterLogin((int) results[1], (String) results[2], (String) results[3]);
+                break;
+            case REGISTER:
+                afterRegister((int) results[1], (String) results[2], (String) results[3]);
+                break;
+        }
+    }
+
+    @Override
+    public void onFail(Object... errors) {
+        authTask = null;
+        getSupportActionBar().show();
+        showProgress(false);
+    }
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    private class UserLoginTask extends AsyncTask<Void, Void, Integer> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Integer doInBackground(Void... params) {
-            try {
-                int uid = client.login(mEmail, mPassword);
-                Log.i("uid", "uid: " + uid);
-                return uid;
-            }
-            catch (Exception ex){
-                return -1;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(final Integer loggedInUser) {
-            authTask = null;
-            showProgress(false);
-            constraintLayout_initializeOverlay.setVisibility(View.GONE);
-
-            if (loggedInUser >= 0) {
-                onLoginSuccess(mEmail, mPassword);
-            } else {
-                editText_password.setError(getString(R.string.error_incorrect_username_or_password));
-                editText_username.setError(getString(R.string.error_incorrect_username_or_password));
-                editText_password.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            authTask = null;
-            getSupportActionBar().show();
-            showProgress(false);
-        }
-
-
-    }
 
     private class ConnectTask extends AsyncTask<Void, Void, Void>{
         @Override
@@ -397,16 +398,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener 
 
         @Override
         protected void onPostExecute(final Integer success) {
-            authTask = null;
-            showProgress(false);
 
-            if (success >= 0) {
-                onRegistrationSuccess(mEmail, mPassword);
-            } else {
-                editText_password.setError(getString(R.string.error_incorrect_username_or_password));
-                editText_username.setError(getString(R.string.error_incorrect_username_or_password));
-                editText_password.requestFocus();
-            }
         }
 
         @Override
