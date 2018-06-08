@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
@@ -39,7 +40,7 @@ public class ChangeDescriptionResource {
      * @param content representation for the resource
      * @return 
      */
-    @PUT
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response changeDescription(String content) {
@@ -49,8 +50,8 @@ public class ChangeDescriptionResource {
             handlerObjectChangeDescription o = new Gson().fromJson(content, handlerObjectChangeDescription.class);
             Manager m = Manager.newInstance();
             result = m.changeDescription(o.userID, o.description);
-
-            r = Response.status(Response.Status.OK).entity(result).build();
+            String resultString = String.valueOf(result);
+            r = Response.status(Response.Status.OK).entity(resultString).build();
         }
         catch(SQLException ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();

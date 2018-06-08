@@ -22,15 +22,21 @@ import java.util.ArrayList;
  */
 public class Manager {
     static Manager db = new Manager();
+    //connection from inside the htl network
     private static final String CONNSTRING = "jdbc:oracle:thin:@192.168.128.152:1521:ora11g";
+    //connection from outside the htl network
     private static final String ALTERNATIVE_CONNSTRING= "jdbc:oracle:thin:@212.152.179.117:1521:ora11g";
+    //user credentials
     private static final String USER = "d4a13";
     private static final String PASSWORD = "d4a";   
     Connection conn;
-    
+    //singleton implementation
     public static Manager newInstance(){       
         return db;
     }
+    /**
+     * Constructor
+     */
     public Manager(){
         try{
        conn = establishConnection();
@@ -39,7 +45,11 @@ public class Manager {
             System.out.println("Error while establishing connection!\n"+e.getMessage());
         }
     }
-   
+   /**
+    * establishes the connection to the db
+    * @return
+    * @throws Exception 
+    */
     private Connection establishConnection()throws Exception{
 
         if(conn==null){
@@ -105,7 +115,7 @@ public class Manager {
      * @throws java.sql.SQLException 
      */
     public User getProfile(int idUser) throws SQLException{
-        User user = null;
+        User user;
         PreparedStatement selectProfile = conn.prepareStatement("select * from sp_user where iduser =?");
         selectProfile.setDouble(1, idUser);
         ResultSet result = selectProfile.executeQuery();
@@ -117,9 +127,21 @@ public class Manager {
         return user;
     }
     /**
+     * 
+     * @param idUser
+     * @return
+     * @throws SQLException 
+     */
+    public boolean isPro(int idUser) throws SQLException{
+        PreparedStatement selectIsPro = conn.prepareStatement("select isPro from sp_user where iduser =?");
+        selectIsPro.setDouble(1, idUser);
+        ResultSet result = selectIsPro.executeQuery();
+        result.next();
+        return result.getInt(1) == 1;
+    }
+    /**
      * Ändert die Biographie eines Users zur UserID. 
      * @param idUser
-     * @param newDescription
      * @return bei erfolg true, sonst false
      * @throws java.sql.SQLException
      */
@@ -450,6 +472,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * get all DailyWorkouts with that creatorID and that contain that name
      * @param creatorID
      * @param name
+     * @param lastDailyWorkoutId
+     * @param numberOfDailyWorkouts
      * @return a collection of DailyWorkouts
      * @throws java.sql.SQLException
      */
@@ -506,6 +530,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * get all Workouts
      * @param creatorID
      * @param name
+     * @param lastWorkoutId
+     * @param numberOfWorkouts
      * @return a collection of Workouts
      * @throws java.sql.SQLException
      * @throws java.lang.Exception
@@ -563,6 +589,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * get all Exercises
      * @param creatorID
      * @param name
+     * @param lastExerciseId
+     * @param numberOfExercises
      * @return a collection of Exercises
      * @throws java.sql.SQLException
      */
@@ -677,6 +705,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * gets all Users that contain that name and their pro-attribute is equivalent to the pro-parameter
      * @param name
      * @param isPro
+     * @param lastUserId
+     * @param numberOfUsers
      * @return a collection of Users
      * @throws java.sql.SQLException
      */
@@ -707,6 +737,8 @@ Wenn startdate und enddate nicht NULL sind, handelt es sich um ein Event und der
      * get all Plans
      * @param creatorID
      * @param name
+     * @param lastPlanId
+     * @param numberOfPlans
      * @return a collection of Plans
      * @throws java.sql.SQLException
      */
@@ -1027,6 +1059,8 @@ public Exercise getExercise(int exerciseID) throws SQLException{
     /**
      * 
      * @param userID
+     * @param lastFollowerId
+     * @param numberOfFollower
      * @return 
      * @throws java.sql.SQLException 
      */

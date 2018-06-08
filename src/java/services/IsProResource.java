@@ -6,16 +6,12 @@
 package services;
 
 import com.google.gson.Gson;
-import data.CustomException;
 import data.Manager;
-import data.Plan;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -28,34 +24,34 @@ import javax.ws.rs.core.Response;
  *
  * @author Martin
  */
-@Path("getSubscribedPlans")
-public class GetSubscribedPlansResource {
+@Path("isPro")
+public class IsProResource {
 
     @Context
     private UriInfo context;
 
     /**
-     * Creates a new instance of GetSubscribedPlansResource
+     * Creates a new instance of IsProResource
      */
-    public GetSubscribedPlansResource() {
+    public IsProResource() {
     }
 
     /**
-     * Retrieves representation of an instance of services.GetSubscribedPlansResource
+     * Retrieves representation of an instance of services.IsProResource
      * @param content
      * @return an instance of java.lang.String
      */
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getJson(String content) {
-        Collection<Plan> plans = new ArrayList<>();
+    @Consumes(MediaType.APPLICATION_JSON)
+    
+    public Response isPro(String content) {
         Response r;
-        try{
+        try{    
             int userID = new Gson().fromJson(content, Integer.class);
-            Manager m = Manager.newInstance();
-            plans = m.getSubscribedPlans(userID);
-            r = Response.status(Response.Status.OK).entity(new Gson().toJson(plans)).build();
+            Manager m = new Manager();
+            boolean result = m.isPro(userID);
+            r = Response.status(Response.Status.OK).entity(new Gson().toJson(result)).build();
         }
         catch(SQLException ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
@@ -63,6 +59,7 @@ public class GetSubscribedPlansResource {
         catch(Exception ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();
         }
-        return r;        
+        return r;
+        
     }
 }

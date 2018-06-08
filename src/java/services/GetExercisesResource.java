@@ -43,7 +43,7 @@ public class GetExercisesResource {
 
     /**
      * Retrieves representation of an instance of services.GetExercisesResource
-     * @param workoutID
+     * @param content
      * @return an instance of java.lang.String
      */
     @POST
@@ -56,18 +56,12 @@ public class GetExercisesResource {
             int workoutID = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
             exercises = m.getExercises(workoutID);
-
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(exercises)).build();
         }
         catch(SQLException ex){
-            //try{
-            //if(ex.getMessage().equals("Erschöpfte Ergebnismenge"))
-                //throw new CustomException("No Excercise with this id");
+
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();  
-            //}
-            //catch(CustomException custEx){
-            //r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(custEx.getMessage()).build();
-        //}
+
         }
         catch(Exception ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("internal server error: " + ex.getMessage()).build();

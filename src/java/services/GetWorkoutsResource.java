@@ -55,14 +55,7 @@ public class GetWorkoutsResource {
             int dailyWorkoutID = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
             workouts = m.getWorkouts(dailyWorkoutID);
-
-            if(workouts.isEmpty())
-                throw new CustomException("no plans found");
-            
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(workouts)).build();
-        }
-        catch(CustomException ex){
-            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
         }
         catch(SQLException ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();

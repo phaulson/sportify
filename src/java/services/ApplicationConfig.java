@@ -62,6 +62,7 @@ public class ApplicationConfig extends Application {
         resources.add(services.IsFollowingResource.class);
         resources.add(services.IsLikedResource.class);
         resources.add(services.IsPlanSubscribedResource.class);
+        resources.add(services.IsProResource.class);
         resources.add(services.LinkDailyWorkoutsResource.class);
         resources.add(services.LinkExercisesResource.class);
         resources.add(services.LinkWorkoutsResource.class);
