@@ -40,8 +40,6 @@ public class LoginResource {
     /**
      * Retrieves representation of an instance of services.LoginResource
      * @param content
-     * @param username
-     * @param password
      * @return an instance of java.lang.String
      * @throws java.lang.Exception
      */

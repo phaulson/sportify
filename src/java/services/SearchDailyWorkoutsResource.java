@@ -6,7 +6,6 @@
 package services;
 
 import com.google.gson.Gson;
-import data.CustomException;
 import data.DailyWorkout;
 import data.Manager;
 import java.sql.SQLException;
@@ -16,10 +15,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -49,7 +46,7 @@ public class SearchDailyWorkoutsResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getJson(String content) {
-        Collection<DailyWorkout> dailyWorkouts = new ArrayList<>();
+        Collection<DailyWorkout> dailyWorkouts;
         Response r;
         try{
             handleObjectSearchDailyWorkouts o = new Gson().fromJson(content, handleObjectSearchDailyWorkouts.class);

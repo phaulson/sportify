@@ -6,7 +6,6 @@
 package services;
 
 import com.google.gson.Gson;
-import data.CustomException;
 import data.Manager;
 import data.User;
 import java.sql.SQLException;
@@ -47,7 +46,7 @@ public class GetFollowedUsersResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFollowedUsers(String content) {
-        Collection<User> users = new ArrayList<>();
+        Collection<User> users;
         Response r;
         try{
             int userID = new Gson().fromJson(content, Integer.class);

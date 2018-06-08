@@ -6,7 +6,6 @@
 package services;
 
 import com.google.gson.Gson;
-import data.CustomException;
 import data.DailyWorkout;
 import data.Manager;
 import java.sql.SQLException;
@@ -16,11 +15,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -43,14 +39,14 @@ public class GetDailyWorkoutsResource {
 
     /**
      * Retrieves representation of an instance of services.GetDailyWorkoutsResource
-     * @param planID
+     * @param content
      * @return an instance of java.lang.String
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getDailyWorkouts(String content) {
-        Collection<DailyWorkout> dailyWorkouts = new ArrayList<>();
+        Collection<DailyWorkout> dailyWorkouts;
         Response r;
         try{
             int planID = new Gson().fromJson(content, Integer.class);

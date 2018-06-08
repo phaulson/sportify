@@ -44,27 +44,22 @@ public class GetPlansResource {
 
     /**
      * Retrieves representation of an instance of services.GetPlansResource
+     * @param content
      * @return an instance of java.lang.String
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
    public Response getPlans(String content) {
-        Collection<Plan> plans = new ArrayList<>();
+        Collection<Plan> plans;
         Response r;
         try{
             int userid = new Gson().fromJson(content, Integer.class);
             Manager m = Manager.newInstance();
             plans = m.getPlans(userid);
-            
-            if(plans.size() == 0)
-                throw new CustomException("no plans found");
-
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(new Gson().toJson(plans))).build();
         }
-        catch(CustomException ex){
-            r = Response.status(Response.Status.NO_CONTENT).entity(ex.getMessage()).build();
-        }
+
         catch(SQLException ex){
             r = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("sql error occured: " + ex.getMessage()).build();
         }
