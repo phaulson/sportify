@@ -33,12 +33,12 @@ public class LoadPostModelsTask extends ClientTask<Void, Void, Collection<PostMo
 
     @Override
     protected void onPostExecute(final Collection<PostModel> postModels) {
-        getListener().onSuccess(QueryType.GET_POSTS, postModels, lastPostId);
+        getListener().onSuccess(QueryType.LOAD_POSTS, postModels, lastPostId);
     }
 
     @Override
     protected void onCancelled() {
-        getListener().onSuccess(QueryType.GET_POSTS);
+        getListener().onSuccess(QueryType.LOAD_POSTS);
     }
 
     /**

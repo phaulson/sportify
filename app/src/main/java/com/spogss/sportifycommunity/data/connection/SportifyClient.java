@@ -10,7 +10,9 @@ import com.spogss.sportifycommunity.data.connection.asynctasks.ConnectTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.FollowUserTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.GetProfileTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.LoadDailyWorkoutsTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.LoadPlanModelsTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.LoadPostModelsTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.LoadWorkoutsTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.SearchPlansTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.SearchUsersTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.SetDescriptionTask;
@@ -1151,6 +1153,28 @@ public class SportifyClient {
      */
     public void setUserFollowAsync(int followsId, boolean follow, ClientQueryListener listener){
         FollowUserTask t = new FollowUserTask(followsId, follow);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (userId)
+     * @param userId
+     * @param listener
+     */
+    public void getPlansAsync(int userId, ClientQueryListener listener){
+        LoadPlanModelsTask t = new LoadPlanModelsTask(userId);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (dailyWorkoutId)
+     * @param dailyWorkoutId
+     * @param listener
+     */
+    public void getWorkoutsAsync(int dailyWorkoutId, ClientQueryListener listener){
+        LoadWorkoutsTask t = new LoadWorkoutsTask(dailyWorkoutId);
         t.setListener(listener);
         t.execute();
     }

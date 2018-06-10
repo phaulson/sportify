@@ -4,7 +4,7 @@ public enum QueryType {
     CONNECT,
     LOGIN,
     REGISTER,
-    GET_POSTS,
+    LOAD_POSTS,
     SEARCH_USERS,
     SEARCH_PLANS,
     SET_LIKE,
@@ -13,5 +13,7 @@ public enum QueryType {
     LOAD_DAILYWORKOUTS,
     ADD_POST,
     GET_PROFILE,
-    FOLLOW
+    FOLLOW,
+    LOAD_PLANS,
+    LOAD_WORKOUTS
 }

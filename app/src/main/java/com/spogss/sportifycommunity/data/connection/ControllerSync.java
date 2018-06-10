@@ -49,6 +49,7 @@ public class ControllerSync {
             return result;
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             return null;
         }
     }

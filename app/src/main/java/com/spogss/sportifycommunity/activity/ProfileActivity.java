@@ -37,6 +37,7 @@ import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 import com.spogss.sportifycommunity.model.ListMenuModel;
 import com.spogss.sportifycommunity.model.PostModel;
+import com.spogss.sportifycommunity.model.UserModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +62,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private View footerView;
 
     private SportifyClient client;
-    private User displayedUser;
+    private UserModel displayedUser;
     private FeedListAdapter feedListAdapter;
 
     //for loading
@@ -98,6 +99,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         footerView = layoutInflater.inflate(R.layout.list_footer_feed, null);
 
         client.getProfileAsync(userId, this);
+        client.getPostsAsync(userId, lastPostID, true, this);
+        listViewPosts.addHeaderView(footerView);
     }
 
     private void initialize() {
@@ -114,11 +117,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         listViewPosts = (ListView) findViewById(R.id.listView_profile);
     }
 
-    private void setUser(User u, boolean isUserFollowed) {
+    private void setUser(UserModel u) {
         displayedUser = u;
-        setTitle(u.getUsername());
+        setTitle(u.getUser().getUsername());
         refreshProfile();
-        refreshCorellationState(isUserFollowed);
+        refreshCorellationState(u.isFollowing());
         refresh_fab_editOrFollow();
     }
 
@@ -134,12 +137,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void refreshProfile() {
-        collapsingToolbar.setTitle(displayedUser.getUsername());
-        String bio = displayedUser.getDescription();
+        collapsingToolbar.setTitle(displayedUser.getUser().getUsername());
+        String bio = displayedUser.getUser().getDescription();
         bio = (bio == null || bio.isEmpty()) ? getString(R.string.not_specified) : bio;
         Log.i("bio:", bio);
         textView_description.setText(bio);
-        if (isUserPro(displayedUser)) {
+        if (isUserPro(displayedUser.getUser())) {
             listView_menu.setVisibility(View.VISIBLE);
             setListMenu();
         } else {
@@ -190,20 +193,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void refreshCorellationState(boolean isUserFollowed) {
-        if (displayedUser.getId() == client.getCurrentUserID()) {
+        if (displayedUser.getUser().getId() == client.getCurrentUserID()) {
             correlationState = UserCorrelation.OWN;
             correlationState = UserCorrelation.OWN;
         } else {
+            displayedUser.setFollowing(isUserFollowed);
             if (isUserFollowed) {
                 correlationState = UserCorrelation.FOLLOWING;
             } else {
                 correlationState = UserCorrelation.NOT_FOLLOWING;
             }
         }
-    }
-
-    private boolean isUserFollowed(User u) {
-        return client.isFollowing(client.getCurrentUserID(), u.getId());
     }
 
     private void refresh_fab_editOrFollow() {
@@ -227,12 +227,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.fab_editProfile:
                 switch (correlationState) {
                     case NOT_FOLLOWING:
-                        client.setUserFollowAsync(displayedUser.getId(), true, this);
+                        client.setUserFollowAsync(displayedUser.getUser().getId(), true, this);
                         refreshCorellationState(true);
                         refresh_fab_editOrFollow();
                         break;
                     case FOLLOWING:
-                        client.setUserFollowAsync(displayedUser.getId(), false, this);
+                        client.setUserFollowAsync(displayedUser.getUser().getId(), false, this);
                         refreshCorellationState(false);
                         refresh_fab_editOrFollow();
                         break;
@@ -246,7 +246,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case V_ID_MENUITEM_SHOW_PLANS:
                 Intent intent = new Intent(this, ShowPlansActivity.class);
-                intent.putExtra("userid", displayedUser.getId());
+                intent.putExtra("userid", displayedUser.getUser().getId());
                 startActivity(intent);
                 break;
         }
@@ -254,7 +254,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void editProfile() {
         Intent intent_editProfile = new Intent(getApplicationContext(), EditProfileActivity.class);
-        intent_editProfile.putExtra("profile", displayedUser);
+        intent_editProfile.putExtra("profile", displayedUser.getUser());
         startActivityForResult(intent_editProfile, REQ_CODE_EDIT_PROFILE);
     }
 
@@ -263,7 +263,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_EDIT_PROFILE) {
-            client.getProfileAsync(displayedUser.getId(), this);
+            client.getProfileAsync(displayedUser.getUser().getId(), this);
         }
     }
 
@@ -330,16 +330,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         QueryType type = (QueryType)results[0];
         switch (type) {
             case GET_PROFILE:
-                User u = (User)results[1];
-                setUser(u, isUserFollowed(u));
+                UserModel u = (UserModel) results[1];
+                setUser(u);
                 showProgress(false);
-
-                lastPostID = -1;
-                client.getPostsAsync(u.getId(), lastPostID, true, this);
-                listViewPosts.addHeaderView(footerView);
                 break;
 
-            case GET_POSTS:
+            case LOAD_POSTS:
                 Collection<PostModel> posts = (Collection<PostModel>)results[1];
 
                 if(lastPostID == -1)
@@ -347,6 +343,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if(posts.size() > 0)
                     isLoading = false;
 
+                lastPostID = (int)results[2];
                 feedListAdapter.addPosts(posts);
                 listViewPosts.removeHeaderView(footerView);
                 listViewPosts.removeFooterView(footerView);
@@ -362,7 +359,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             case GET_PROFILE:
                 Toast.makeText(this, "Error while loading profile", Toast.LENGTH_SHORT).show();
                 break;
-            case GET_POSTS:
+            case LOAD_POSTS:
                 Toast.makeText(this, "Error while loading posts", Toast.LENGTH_SHORT).show();
                 break;
             case FOLLOW:
@@ -385,7 +382,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         public void onScroll(AbsListView absListView, int i, int i1, int i2) {
             if ((listViewPosts.getCount() % client.getNumberOfPosts() == 0) && absListView.getLastVisiblePosition() == i2 - 1 && listViewPosts.getCount() >= client.getNumberOfPosts() && !isLoading) {
                 isLoading = true;
-                client.getPostsAsync(displayedUser.getId(), lastPostID, true, ProfileActivity.this);
+                client.getPostsAsync(displayedUser.getUser().getId(), lastPostID, true, ProfileActivity.this);
                 listViewPosts.addFooterView(footerView);
             }
         }

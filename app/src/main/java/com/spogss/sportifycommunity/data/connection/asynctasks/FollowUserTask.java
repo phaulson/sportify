@@ -21,7 +21,7 @@ public class FollowUserTask extends ClientTask <Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        return client.setUserFollow(client.getCurrentUserID(),followsId, follow);
+        return client.setUserFollow(client.getCurrentUserID(), followsId, follow);
     }
 
     @Override

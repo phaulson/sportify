@@ -262,7 +262,7 @@ public class FeedActivity extends AppCompatActivity
     public void onSuccess(Object... results) {
         QueryType type = (QueryType)results[0];
         switch (type) {
-            case GET_POSTS:
+            case LOAD_POSTS:
                 Collection<PostModel> postModels = (Collection<PostModel>) results[1];
 
                 if(lastPostID == -1)
@@ -298,7 +298,7 @@ public class FeedActivity extends AppCompatActivity
     public void onFail(Object... errors) {
         QueryType type = (QueryType)errors[0];
         switch (type){
-            case GET_POSTS:
+            case LOAD_POSTS:
                 Toast.makeText(this, "Error while loading posts", Toast.LENGTH_SHORT).show();
                 break;
             case SEARCH_USERS:

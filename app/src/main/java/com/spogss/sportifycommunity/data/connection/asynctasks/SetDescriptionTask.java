@@ -13,6 +13,7 @@ public class SetDescriptionTask extends ClientTask<Void, Void, Boolean> {
 
     public SetDescriptionTask(String description){
         this.description = description;
+        client = SportifyClient.newInstance();
     }
 
     @Override
