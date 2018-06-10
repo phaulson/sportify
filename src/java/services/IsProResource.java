@@ -47,7 +47,7 @@ public class IsProResource {
         Response r;
         try{    
             int userID = new Gson().fromJson(content, Integer.class);
-            Manager m = new Manager();
+            Manager m = Manager.newInstance();
             boolean result = m.isPro(userID);
             r = Response.status(Response.Status.OK).entity(new Gson().toJson(result)).build();
         }
