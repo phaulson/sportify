@@ -59,7 +59,7 @@ public class Manager {
 
         if (conn == null) {
             DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-            conn = DriverManager.getConnection(ALTERNATIVE_CONNSTRING, USER, PASSWORD);
+            conn = DriverManager.getConnection(CONNSTRING, USER, PASSWORD);
             conn.setAutoCommit(true);
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         } else {
