@@ -1,13 +1,7 @@
-package com.spogss.sportifycommunity.data.Connection.asynctasks;
+package com.spogss.sportifycommunity.data.connection.asynctasks;
 
-import android.app.DownloadManager;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-
-import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Connection.QueryType;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.QueryType;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
 
 public class UserLoginTask extends ClientTask<Void, Void, Integer> {
 
@@ -23,14 +17,7 @@ public class UserLoginTask extends ClientTask<Void, Void, Integer> {
 
     @Override
     protected Integer doInBackground(Void... params) {
-        try {
-            int uid = client.login(mEmail, mPassword);
-            Log.i("uid", "uid: " + uid);
-            return uid;
-        }
-        catch (Exception ex){
-            return -1;
-        }
+        return client.login(mEmail, mPassword);
     }
 
     @Override

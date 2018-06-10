@@ -6,23 +6,27 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
 import com.spogss.sportifycommunity.data.DailyWorkout;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.QueryType;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
+import com.spogss.sportifycommunity.data.connection.asynctasks.LoadDailyWorkoutsTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.SubscribeTask;
 import com.spogss.sportifycommunity.fragment.TabFragmentDailyWorkout;
 import com.spogss.sportifycommunity.model.PlanModel;
 
 import java.util.Collection;
 
-public class PlanActivity extends AppCompatActivity implements View.OnClickListener {
+public class PlanActivity extends AppCompatActivity implements View.OnClickListener, ClientQueryListener {
 
     private PlanModel planModel;
     private SportifyClient client;
@@ -65,7 +69,7 @@ public class PlanActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        new LoadDailyWorkoutsTask().execute((Void) null);
+        client.getDailyWorkoutsAsync(planModel.getPlan().getId(), this);
     }
 
     @Override
@@ -105,16 +109,50 @@ public class PlanActivity extends AppCompatActivity implements View.OnClickListe
         TextView subscribers = (TextView) findViewById(R.id.textView_plan_subscribers);
 
         if (planModel.isSubscribed()) {
-            new SubscribeTask(planModel.getPlan().getId(), false).execute((Void) null);
+            client.setPlanSubscriptionAsync(planModel.getPlan().getId(), false, this);
             planModel.setSubscribed(false);
             planModel.setNumberOfSubscribers(planModel.getNumberOfSubscribers() - 1);
         } else {
-            new SubscribeTask(planModel.getPlan().getId(), true).execute((Void) null);
+            client.setPlanSubscriptionAsync(planModel.getPlan().getId(), true, this);
             planModel.setSubscribed(true);
             planModel.setNumberOfSubscribers(planModel.getNumberOfSubscribers() + 1);
         }
         setButtonLayout(button);
         subscribers.setText(planModel.getNumberOfSubscribers() + (planModel.getNumberOfSubscribers() == 1 ? " subscriber" : " subscribers"));
+    }
+
+    @Override
+    public void onSuccess(Object... results) {
+        QueryType type = (QueryType)results[0];
+        switch (type) {
+            case LOAD_DAILYWORKOUTS:
+                sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+                for(DailyWorkout dw : (Collection<DailyWorkout>)results[1]) {
+                    TabFragmentDailyWorkout tabFragmentDailyWorkout = new TabFragmentDailyWorkout();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("dailyworkout", dw);
+                    tabFragmentDailyWorkout.setArguments(bundle);
+
+                    sectionsPageAdapter.addFragment(tabFragmentDailyWorkout, dw.getName());
+                }
+                viewPager.setAdapter(sectionsPageAdapter);
+
+                if(viewPager.getAdapter().getCount() > 0)
+                    new PageChangeListener(tabLayout).onPageSelected(0);
+                break;
+        }
+    }
+
+    @Override
+    public void onFail(Object... errors) {
+        QueryType type = (QueryType)errors[0];
+        switch (type) {
+            case SUBSCRIBE:
+                Toast.makeText(this, "Error while subscribing to plan", Toast.LENGTH_SHORT).show();
+            case LOAD_DAILYWORKOUTS:
+                Toast.makeText(this, "Error while loading to workouts", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //Listener
@@ -128,47 +166,6 @@ public class PlanActivity extends AppCompatActivity implements View.OnClickListe
         public void onPageSelected(int index) {
             TabFragmentDailyWorkout fragment = ((TabFragmentDailyWorkout) sectionsPageAdapter.getItem(index));
             fragment.loadData();
-        }
-    }
-
-    //AsyncTasks
-    private class SubscribeTask extends AsyncTask<Void, Void, Boolean> {
-        private int planId;
-        private boolean subscribe;
-
-        public SubscribeTask(int planId, boolean subscribe) {
-            this.planId = planId;
-            this.subscribe = subscribe;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            return  client.setPlanSubscription(planId, client.getCurrentUserID(), subscribe);
-        }
-    }
-
-    private class LoadDailyWorkoutsTask extends AsyncTask<Void, Void, Collection<DailyWorkout>> {
-        @Override
-        protected Collection<DailyWorkout> doInBackground(Void... params) {
-            return client.getDailyWorkouts(planModel.getPlan().getId());
-        }
-
-        @Override
-        protected void onPostExecute(final Collection<DailyWorkout> dws) {
-            sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
-            for(DailyWorkout dw : dws) {
-                TabFragmentDailyWorkout tabFragmentDailyWorkout = new TabFragmentDailyWorkout();
-
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("dailyworkout", dw);
-                tabFragmentDailyWorkout.setArguments(bundle);
-
-                sectionsPageAdapter.addFragment(tabFragmentDailyWorkout, dw.getName());
-            }
-            viewPager.setAdapter(sectionsPageAdapter);
-
-            if(viewPager.getAdapter().getCount() > 0)
-                new PageChangeListener(tabLayout).onPageSelected(0);
         }
     }
 }

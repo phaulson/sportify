@@ -12,7 +12,7 @@ import android.widget.ListView;
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.adapter.PlansListAdapter;
 import com.spogss.sportifycommunity.data.Plan;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
 import com.spogss.sportifycommunity.model.PlanModel;
 
 import java.util.ArrayList;

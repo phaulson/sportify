@@ -1,13 +1,23 @@
-package com.spogss.sportifycommunity.data.Connection;
-
-import android.os.AsyncTask;
+package com.spogss.sportifycommunity.data.connection;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spogss.sportifycommunity.data.Comment;
-import com.spogss.sportifycommunity.data.Connection.asynctasks.ClientQueryListener;
-import com.spogss.sportifycommunity.data.Connection.asynctasks.UserLoginTask;
-import com.spogss.sportifycommunity.data.Connection.asynctasks.UserRegisterTask;
+import com.spogss.sportifycommunity.data.ProUser;
+import com.spogss.sportifycommunity.data.connection.asynctasks.AddPostTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ConnectTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.FollowUserTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.GetProfileTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.LoadDailyWorkoutsTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.LoadPostModelsTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.SearchPlansTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.SearchUsersTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.SetDescriptionTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.SetLikeTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.SubscribeTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.UserLoginTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.UserRegisterTask;
 import com.spogss.sportifycommunity.data.Coordinate;
 import com.spogss.sportifycommunity.data.DailyWorkout;
 import com.spogss.sportifycommunity.data.Exercise;
@@ -17,6 +27,7 @@ import com.spogss.sportifycommunity.data.Plan;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.User;
 import com.spogss.sportifycommunity.data.Workout;
+import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 
 import org.json.JSONObject;
 
@@ -46,6 +57,16 @@ public class SportifyClient {
 
 
     private static URL url;
+
+    /**
+     * the ConnectTask calls newInstance for the first time
+     * @param listener
+     */
+    public static void connectAsync(ClientQueryListener listener) {
+        ConnectTask t = new ConnectTask();
+        t.setListener(listener);
+        t.execute();
+    }
     /**
      * singleton for SportifyClient
      * @return the static SportifyClient
@@ -53,7 +74,8 @@ public class SportifyClient {
     public static SportifyClient newInstance(){
         if (client == null) {
             try {
-                URL url = new URL("http", "192.168.142.188", 8080, "SportifyWebService/webresources");
+                //URL url = new URL("http", "192.168.142.188", 8080, "SportifyWebService/webresources");
+                URL url = new URL("http", "10.0.0.8", 8080, "SportifyWebservice/webresources");
                 client = new SportifyClient(url);
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
@@ -81,39 +103,30 @@ public class SportifyClient {
     public int getCurrentUserID() {
         return currentUser.getId();
     }
-
     public User getCurrentUser() {
         return currentUser;
     }
-
     public int getNumberOfPosts() {
         return numberOfPosts;
     }
-
     public void setNumberOfPosts(int numberOfPosts) {
         this.numberOfPosts = numberOfPosts;
     }
-
     public int getNumberOfUsers() {
         return numberOfUsers;
     }
-
     public void setNumberOfUsers(int numberOfUsers) {
         this.numberOfUsers = numberOfUsers;
     }
-
     public int getNumberOfPlans() {
         return numberOfPlans;
     }
-
     public void setNumberOfPlans(int numberOfPlans) {
         this.numberOfPlans = numberOfPlans;
     }
-
     public int getNumberOfComments() {
         return numberOfComments;
     }
-
     public void setNumberOfComments(int numberOfComments) {
         this.numberOfComments = numberOfComments;
     }
@@ -124,7 +137,7 @@ public class SportifyClient {
      * @param password
      * @return userId if successful, else -1
      */
-    public int login(String username, String password) throws Exception{
+    public int login(String username, String password) {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("username", username);
@@ -135,21 +148,8 @@ public class SportifyClient {
             //currentUser = manager.login(username, password);
             return getCurrentUserID();
         } catch (Exception e) {
-            throw new Exception("Couldn't get user data!");
+            return -1;
         }
-    }
-
-    /**
-     *
-     * @param un
-     * @param pw
-     * @param listener
-     * @return calls listener with (userid, username, password)
-     */
-    public void loginAsync(String un, String pw, ClientQueryListener listener){
-        UserLoginTask t = new UserLoginTask(un, pw);
-        t.setListener(listener);
-        t.execute();
     }
 
     /**
@@ -170,22 +170,8 @@ public class SportifyClient {
             //currentUser = manager.register(username, password, isPro);
             return getCurrentUserID();
         } catch (Exception e) {
-            e.printStackTrace();
+            return -1;
         }
-        return -1;
-    }
-
-    /**
-     * calls listener with (id, un, pw)
-     * @param un
-     * @param pw
-     * @param listener
-     *
-     */
-    public void registerAsync(String un, String pw, ClientQueryListener listener){
-        UserRegisterTask t = new UserRegisterTask(un, pw);
-        t.setListener(listener);
-        t.execute();
     }
 
     /**
@@ -195,7 +181,12 @@ public class SportifyClient {
      */
     public User getProfile(int idUser){
         try {
-            return GSON.fromJson(get(HttpMethod.POST, "getProfile", idUser + ""), User.class);
+            boolean isPro = GSON.fromJson(get(HttpMethod.POST, "isPro", idUser + ""), Boolean.class);
+
+            if(isPro)
+                return GSON.fromJson(get(HttpMethod.POST, "getProfile", idUser + ""), ProUser.class);
+            else
+                return GSON.fromJson(get(HttpMethod.POST, "getProfile", idUser + ""), User.class);
         } catch (Exception e) {
             return null;
         }
@@ -1016,5 +1007,151 @@ public class SportifyClient {
         } catch (Exception e) {
             return -1;
         }
+    }
+
+
+    //AsyncMethods
+    /**
+     * calls listener with (userid, username, password)
+     * @param un
+     * @param pw
+     * @param listener
+     *
+     */
+    public void loginAsync(String un, String pw, ClientQueryListener listener){
+        UserLoginTask t = new UserLoginTask(un, pw);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (id, un, pw)
+     * @param un
+     * @param pw
+     * @param listener
+     *
+     */
+    public void registerAsync(String un, String pw, ClientQueryListener listener){
+        UserRegisterTask t = new UserRegisterTask(un, pw);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (userId, lastPostId, byCreator)
+     * @param userId
+     * @param lastPostId
+     * @param byCreator
+     * @param listener
+     */
+    public void getPostsAsync(int userId, int lastPostId, boolean byCreator, ClientQueryListener listener){
+        LoadPostModelsTask t = new LoadPostModelsTask(userId, lastPostId, byCreator);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (text, fragment, isPro)
+     * @param text
+     * @param fragment
+     * @param isPro
+     * @param listener
+     */
+    public void searchUsersAsync(String text, TabFragmentSearch fragment, boolean isPro, ClientQueryListener listener){
+        SearchUsersTask t = new SearchUsersTask(text, fragment, isPro);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (text, fragment)
+     * @param text
+     * @param fragment
+     * @param listener
+     */
+    public void searchPlansAsync(String text, TabFragmentSearch fragment, ClientQueryListener listener){
+        SearchPlansTask t = new SearchPlansTask(text, fragment);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (postId, like)
+     * @param post
+     * @param like
+     * @param listener
+     */
+    public void setLikeAsync(Post post, boolean like, ClientQueryListener listener){
+        SetLikeTask t = new SetLikeTask(post, like);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (planId, subscribe)
+     * @param planId
+     * @param subscribe
+     * @param listener
+     */
+    public void setPlanSubscriptionAsync(int planId, boolean subscribe, ClientQueryListener listener){
+        SubscribeTask t = new SubscribeTask(planId, subscribe);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (description)
+     * @param description
+     * @param listener
+     */
+    public void changeDescriptionAsync(String description, ClientQueryListener listener){
+        SetDescriptionTask t = new SetDescriptionTask(description);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (postId)
+     * @param postId
+     * @param listener
+     */
+    public void getDailyWorkoutsAsync(int postId, ClientQueryListener listener){
+        LoadDailyWorkoutsTask t = new LoadDailyWorkoutsTask(postId);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (caption)
+     * @param caption
+     * @param listener
+     */
+    public void addPostAsync(String caption, ClientQueryListener listener){
+        AddPostTask t = new AddPostTask(caption);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (userId)
+     * @param userId
+     * @param listener
+     */
+    public void getProfileAsync(int userId, ClientQueryListener listener){
+        GetProfileTask t = new GetProfileTask(userId);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (followsId, follow)
+     * @param followsId
+     * @param follow
+     * @param listener
+     */
+    public void setUserFollowAsync(int followsId, boolean follow, ClientQueryListener listener){
+        FollowUserTask t = new FollowUserTask(followsId, follow);
+        t.setListener(listener);
+        t.execute();
     }
 }

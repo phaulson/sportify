@@ -31,15 +31,17 @@ import com.spogss.sportifycommunity.adapter.FeedListAdapter;
 import com.spogss.sportifycommunity.adapter.ListMenuModelAdapter;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.ProUser;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.QueryType;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 import com.spogss.sportifycommunity.model.ListMenuModel;
 import com.spogss.sportifycommunity.model.PostModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class ProfileActivity extends AppCompatActivity implements View.OnClickListener, ClientQueryListener {
     private CollapsingToolbarLayout collapsingToolbar;
     private TextView textView_description;
 
@@ -64,7 +66,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     //for loading
     private boolean isLoading = false;
-    private Handler loadingHandler;
     private int lastPostID = -1;
 
 
@@ -95,9 +96,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         footerView = layoutInflater.inflate(R.layout.list_footer_feed, null);
-        loadingHandler = new LoadingHandler();
 
-        new SetUserTask().execute(userId);
+        client.getProfileAsync(userId, this);
     }
 
     private void initialize() {
@@ -227,12 +227,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.fab_editProfile:
                 switch (correlationState) {
                     case NOT_FOLLOWING:
-                        new FollowUserTask(displayedUser.getId(), true).execute((Void) null);
+                        client.setUserFollowAsync(displayedUser.getId(), true, this);
                         refreshCorellationState(true);
                         refresh_fab_editOrFollow();
                         break;
                     case FOLLOWING:
-                        new FollowUserTask(displayedUser.getId(), false).execute((Void) null);
+                        client.setUserFollowAsync(displayedUser.getId(), false, this);
                         refreshCorellationState(false);
                         refresh_fab_editOrFollow();
                         break;
@@ -263,7 +263,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_EDIT_PROFILE) {
-            new SetUserTask().execute(displayedUser.getId());
+            client.getProfileAsync(displayedUser.getId(), this);
         }
     }
 
@@ -325,24 +325,50 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    /**
-     * loads Post, creator, numberOfLikes and isLiked from database and returns the PostModels
-     *
-     * @return a collection of PostModels
-     */
-    private Collection<PostModel> loadPosts() {
-        // TODO: find way to implement with better performance
-        ArrayList<PostModel> postModels = new ArrayList<PostModel>();
-        ArrayList<Post> posts = (ArrayList<Post>) client.getPostsByCreator(displayedUser.getId(), lastPostID);
-        for (Post p : posts) {
-            int numberOfLikes = client.getNumberOfLikes(p.getId());
-            boolean liked = client.isLiked(client.getCurrentUserID(), p.getId());
-            postModels.add(new PostModel(p, displayedUser, numberOfLikes, liked));
-        }
-        if (postModels.size() > 0)
-            lastPostID = (postModels).get(postModels.size() - 1).getPost().getId();
+    @Override
+    public void onSuccess(Object... results) {
+        QueryType type = (QueryType)results[0];
+        switch (type) {
+            case GET_PROFILE:
+                User u = (User)results[1];
+                setUser(u, isUserFollowed(u));
+                showProgress(false);
 
-        return postModels;
+                lastPostID = -1;
+                client.getPostsAsync(u.getId(), lastPostID, true, this);
+                listViewPosts.addHeaderView(footerView);
+                break;
+
+            case GET_POSTS:
+                Collection<PostModel> posts = (Collection<PostModel>)results[1];
+
+                if(lastPostID == -1)
+                    feedListAdapter.clear();
+                if(posts.size() > 0)
+                    isLoading = false;
+
+                feedListAdapter.addPosts(posts);
+                listViewPosts.removeHeaderView(footerView);
+                listViewPosts.removeFooterView(footerView);
+                ViewCompat.setNestedScrollingEnabled(listViewPosts, true);
+                break;
+        }
+    }
+
+    @Override
+    public void onFail(Object... errors) {
+        QueryType type = (QueryType)errors[0];
+        switch (type) {
+            case GET_PROFILE:
+                Toast.makeText(this, "Error while loading profile", Toast.LENGTH_SHORT).show();
+                break;
+            case GET_POSTS:
+                Toast.makeText(this, "Error while loading posts", Toast.LENGTH_SHORT).show();
+                break;
+            case FOLLOW:
+                Toast.makeText(this, "Error while following user", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     /**
@@ -359,104 +385,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         public void onScroll(AbsListView absListView, int i, int i1, int i2) {
             if ((listViewPosts.getCount() % client.getNumberOfPosts() == 0) && absListView.getLastVisiblePosition() == i2 - 1 && listViewPosts.getCount() >= client.getNumberOfPosts() && !isLoading) {
                 isLoading = true;
-                Thread thread = new ThreadLoadMorePosts();
-                thread.start();
+                client.getPostsAsync(displayedUser.getId(), lastPostID, true, ProfileActivity.this);
+                listViewPosts.addFooterView(footerView);
             }
-        }
-    }
-
-    /**
-     * Handler that handles the loading Threads
-     */
-    private class LoadingHandler extends Handler {
-        @Override
-        public void dispatchMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    //add footer when loading started
-                    listViewPosts.addFooterView(footerView);
-                    break;
-                case 1:
-                    //add new posts and remove footer
-                    ArrayList<PostModel> models = (ArrayList<PostModel>) msg.obj;
-                    if (models.size() > 0) {
-                        feedListAdapter.addPosts(models);
-                        isLoading = false;
-                    }
-                    listViewPosts.removeFooterView(footerView);
-                    break;
-            }
-        }
-    }
-
-    /**
-     * Thread that handles the loading event
-     */
-    private class ThreadLoadMorePosts extends Thread {
-        @Override
-        public void run() {
-            //message for footer view
-            loadingHandler.sendEmptyMessage(0);
-
-            //send new Data
-            loadingHandler.sendMessage(loadingHandler.obtainMessage(1, loadPosts()));
-        }
-    }
-
-    private class SetUserTask extends AsyncTask<Integer, Void, User> {
-        private boolean isUserFollowed;
-
-        @Override
-        protected void onPreExecute() {
-            showProgress(true);
-        }
-
-        @Override
-        protected User doInBackground(Integer... integers) {
-            User u = client.getProfile(integers[0]);
-            isUserFollowed = isUserFollowed(u);
-            return u;
-        }
-
-        @Override
-        protected void onPostExecute(User u) {
-            setUser(u, isUserFollowed);
-            showProgress(false);
-
-            lastPostID = -1;
-            new LoadPostsTask().execute((Void) null);
-            listViewPosts.addHeaderView(footerView);
-        }
-    }
-
-    private class FollowUserTask extends AsyncTask<Void, Void, Void> {
-        private boolean follow;
-        private int userId;
-
-        public FollowUserTask(int userId, boolean follow) {
-            this.userId = userId;
-            this.follow = follow;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            client.setUserFollow(client.getCurrentUserID(), userId, follow);
-            return null;
-        }
-    }
-
-    private class LoadPostsTask extends AsyncTask<Void, Void, Collection<PostModel>> {
-        @Override
-        protected Collection<PostModel> doInBackground(Void... params) {
-            return loadPosts();
-        }
-
-        @Override
-        protected void onPostExecute(final Collection<PostModel> posts) {
-            feedListAdapter.clear();
-            feedListAdapter.addPosts(posts);
-            listViewPosts.removeHeaderView(footerView);
-            ViewCompat.setNestedScrollingEnabled(listViewPosts, true);
         }
     }
 }

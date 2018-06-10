@@ -1,4 +1,4 @@
-package com.spogss.sportifycommunity.data.Connection.asynctasks;
+package com.spogss.sportifycommunity.data.connection.asynctasks;
 
 import android.os.AsyncTask;
 

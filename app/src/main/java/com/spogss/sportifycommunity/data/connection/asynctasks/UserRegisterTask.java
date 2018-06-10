@@ -1,8 +1,7 @@
-package com.spogss.sportifycommunity.data.Connection.asynctasks;
+package com.spogss.sportifycommunity.data.connection.asynctasks;
 
-import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Connection.QueryType;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.QueryType;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
 
 public class UserRegisterTask extends ClientTask<Void, Void, Integer> {
     private final String mEmail;

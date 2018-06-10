@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -19,9 +18,9 @@ import android.widget.EditText;
 import android.widget.TabHost;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Connection.QueryType;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
-import com.spogss.sportifycommunity.data.Connection.asynctasks.ClientQueryListener;
+import com.spogss.sportifycommunity.data.connection.QueryType;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 
 /**
  * A login screen that offers login via email/password.
@@ -63,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
 
         initialize();
         getSupportActionBar().hide();
-        new ConnectTask().execute();
+        SportifyClient.connectAsync(this);
     }
 
     private void initialize(){
@@ -229,7 +228,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
                 showProgress(true);
-
                 client.registerAsync(username, password, this);
         }
     }
@@ -293,6 +291,13 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
         }
     }
 
+    private void afterConnect() {
+        if(!attemptLoginWithSavedCredentials()) {
+            getSupportActionBar().show();
+            constraintLayout_initializeOverlay.setVisibility(View.GONE);
+        }
+    }
+
     private void afterLogin(int id, String un, String pw){
         showProgress(false);
         constraintLayout_initializeOverlay.setVisibility(View.GONE);
@@ -345,6 +350,10 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
             case REGISTER:
                 afterRegister((int) results[1], (String) results[2], (String) results[3]);
                 break;
+            case CONNECT:
+                client = (SportifyClient)results[1];
+                afterConnect();
+                break;
         }
     }
 
@@ -353,59 +362,6 @@ public class LoginActivity extends AppCompatActivity implements OnClickListener,
         authTask = null;
         getSupportActionBar().show();
         showProgress(false);
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-
-    private class ConnectTask extends AsyncTask<Void, Void, Void>{
-        @Override
-        protected Void doInBackground(Void... voids) {
-            client = SportifyClient.newInstance();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            if(!attemptLoginWithSavedCredentials()) {
-                getSupportActionBar().show();
-                constraintLayout_initializeOverlay.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private class UserRegisterTask extends AsyncTask<Void, Void, Integer> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserRegisterTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Integer doInBackground(Void... params) {
-            if (isUsernameValid(mEmail) && isPasswordValid(mPassword)) {
-                int u = client.register(mEmail, mPassword, false);
-                return u;
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(final Integer success) {
-
-        }
-
-        @Override
-        protected void onCancelled() {
-            authTask = null;
-            showProgress(false);
-        }
     }
 }
 

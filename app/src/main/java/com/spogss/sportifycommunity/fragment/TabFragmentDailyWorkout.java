@@ -9,14 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.activity.ExerciseActivity;
 import com.spogss.sportifycommunity.adapter.ExpandableListAdapter;
 import com.spogss.sportifycommunity.data.DailyWorkout;
 import com.spogss.sportifycommunity.data.Exercise;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
 import com.spogss.sportifycommunity.data.Workout;
 
 import java.util.ArrayList;
