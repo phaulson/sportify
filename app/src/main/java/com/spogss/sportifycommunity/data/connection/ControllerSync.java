@@ -1,6 +1,4 @@
-package com.spogss.sportifycommunity.data.Connection;
-
-import android.os.AsyncTask;
+package com.spogss.sportifycommunity.data.connection;
 
 
 import java.io.BufferedReader;
@@ -51,6 +49,7 @@ public class ControllerSync {
             return result;
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             return null;
         }
     }

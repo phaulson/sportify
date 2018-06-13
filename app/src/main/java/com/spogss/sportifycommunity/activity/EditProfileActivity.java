@@ -11,11 +11,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 
 
-public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener, ClientQueryListener {
 
     private Button button_saveChanges;
     private EditText editText_description;
@@ -56,7 +57,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         button_saveChanges.setVisibility(View.GONE);
         Toast.makeText(getApplicationContext(), "Saving Changes...", Toast.LENGTH_SHORT).show();
         String desc = editText_description.getText().toString();
-        new SetDescriptionTask(desc).execute();
+        client.changeDescriptionAsync(desc, this);
         edited = true;
     }
 
@@ -80,25 +81,16 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private class SetDescriptionTask extends AsyncTask<Void, Void, Void> {
-        private String description;
+    @Override
+    public void onSuccess(Object... results) {
+        Toast.makeText(getApplicationContext(), "Changes Saved.", Toast.LENGTH_SHORT).show();
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
 
-        public SetDescriptionTask(String description){
-            this.description = description;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            client.changeDescription(client.getCurrentUserID(), description);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Toast.makeText(getApplicationContext(), "Changes Saved.", Toast.LENGTH_SHORT).show();
-            setResult(Activity.RESULT_OK);
-            finish();
-        }
+    @Override
+    public void onFail(Object... errors) {
+        Toast.makeText(this, "Error while changing description", Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -8,17 +8,19 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.adapter.PlansListAdapter;
 import com.spogss.sportifycommunity.data.Plan;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 import com.spogss.sportifycommunity.model.PlanModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ShowPlansActivity extends AppCompatActivity {
+public class ShowPlansActivity extends AppCompatActivity implements ClientQueryListener {
     private ListView listViewPlans;
     private View footerView;
 
@@ -46,7 +48,7 @@ public class ShowPlansActivity extends AppCompatActivity {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         footerView = layoutInflater.inflate(R.layout.list_footer_feed, null);
 
-        new LoadPlansTask().execute((Void) null);
+        client.getPlansAsync(userid, this);
         listViewPlans.addHeaderView(footerView);
     }
 
@@ -61,42 +63,14 @@ public class ShowPlansActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * loads Plan and numberOfSubscribers from database and returns the PlanModels
-     *
-     * @return a collection of PlanModels
-     */
-    private Collection<PlanModel> loadPlans() {
-        // TODO: find way to implement with better performance
-        ArrayList<PlanModel> planModels = new ArrayList<PlanModel>();
-        ArrayList<Plan> plans = new ArrayList<>();
-
-        if(userid == -1)
-            plans = (ArrayList<Plan>) client.getSubscribedPlans(client.getCurrentUserID());
-        else if (userid > -1)
-            plans = (ArrayList<Plan>) client.getPlans(userid);
-
-        for (Plan p : plans) {
-            boolean subscribed = client.isPlanSubscribed(client.getCurrentUserID(), p.getId());
-            int numberOfSubscribers = client.getNumberOfSubscribers(p.getId());
-            planModels.add(new PlanModel(p, numberOfSubscribers, subscribed));
-        }
-
-        return planModels;
+    @Override
+    public void onSuccess(Object... results) {
+        plansListAdapter.addPlans((Collection<PlanModel>)results[1]);
+        listViewPlans.removeHeaderView(footerView);
     }
 
-
-    //AsyncTasks
-    private class LoadPlansTask extends AsyncTask<Void, Void, Collection<PlanModel>> {
-        @Override
-        protected Collection<PlanModel> doInBackground(Void... params) {
-            return loadPlans();
-        }
-
-        @Override
-        protected void onPostExecute(final Collection<PlanModel> plans) {
-            plansListAdapter.addPlans(plans);
-            listViewPlans.removeHeaderView(footerView);
-        }
+    @Override
+    public void onFail(Object... errors) {
+        Toast.makeText(this, "Error while loading plans", Toast.LENGTH_SHORT).show();
     }
 }

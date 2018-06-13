@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,10 +13,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.activity.PlanActivity;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
+import com.spogss.sportifycommunity.data.connection.asynctasks.SubscribeTask;
 import com.spogss.sportifycommunity.model.PlanModel;
 
 import java.util.ArrayList;
@@ -28,14 +30,16 @@ import java.util.HashMap;
  * Created by Pauli on 25.04.2018.
  */
 
-public class PlansListAdapter extends BaseAdapter implements View.OnTouchListener, View.OnClickListener {
+public class PlansListAdapter extends BaseAdapter implements View.OnTouchListener, View.OnClickListener, ClientQueryListener {
     private Context context;
+    SportifyClient client;
 
     private HashMap<Integer, PlanModel> content = new HashMap<Integer, PlanModel>();
     private ArrayList<Integer> keys = new ArrayList<Integer>();
 
     public PlansListAdapter(Context context) {
         this.context = context;
+        client = SportifyClient.newInstance();
     }
 
     @Override
@@ -119,7 +123,7 @@ public class PlansListAdapter extends BaseAdapter implements View.OnTouchListene
                 TextView subscribers = (TextView) ((RelativeLayout)button.getParent()).findViewById(R.id.textView_show_plans_subscribers);
 
                 if(planModel.isSubscribed()) {
-                    new SubscribeTask(planModel.getPlan().getId(), false).execute((Void) null);
+                    client.setPlanSubscriptionAsync(planModel.getPlan().getId(), false, this);
                     planModel.setSubscribed(false);
                     planModel.setNumberOfSubscribers(planModel.getNumberOfSubscribers() - 1);
                     button.setText("Subscribe");
@@ -127,7 +131,7 @@ public class PlansListAdapter extends BaseAdapter implements View.OnTouchListene
                     button.setBackgroundResource(R.drawable.sp_button_white);
                 }
                 else {
-                    new SubscribeTask(planModel.getPlan().getId(), true).execute((Void) null);
+                    client.setPlanSubscriptionAsync(planModel.getPlan().getId(), true, this);
                     planModel.setSubscribed(true);
                     planModel.setNumberOfSubscribers(planModel.getNumberOfSubscribers() + 1);
                     button.setText("Unubscribe");
@@ -139,19 +143,13 @@ public class PlansListAdapter extends BaseAdapter implements View.OnTouchListene
         }
     }
 
-    private class SubscribeTask extends AsyncTask<Void, Void, Boolean> {
-        private int planId;
-        private boolean subscribe;
+    @Override
+    public void onSuccess(Object... results) {
+        //implement if needed
+    }
 
-        public SubscribeTask(int planId, boolean subscribe) {
-            this.planId = planId;
-            this.subscribe = subscribe;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            SportifyClient client = SportifyClient.newInstance();
-            return  client.setPlanSubscription(planId, client.getCurrentUserID(), subscribe);
-        }
+    @Override
+    public void onFail(Object... errors) {
+        Toast.makeText(context, "Error while subscribing to plan", Toast.LENGTH_SHORT).show();
     }
 }

@@ -19,9 +19,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 
-public class PostActivity extends AppCompatActivity implements View.OnClickListener {
+public class PostActivity extends AppCompatActivity implements View.OnClickListener, ClientQueryListener {
 
     private ImageView postPic;
     private EditText caption;
@@ -66,7 +67,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     //TODO: check if caption and picture not set
                     if (caption.getText().toString().trim().equals(""))
                         throw new Exception("Please write a caption or post a pic");
-                    new AddPostTask().execute((Void) null);
+                    client.addPostAsync(caption.getText().toString(), this);
                     Toast.makeText(this, "Post added", Toast.LENGTH_SHORT).show();
                     onBackPressed();
                     return true;
@@ -143,11 +144,13 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //AsyncTask
-    private class AddPostTask extends AsyncTask<Void, Void, Integer> {
-        @Override
-        protected Integer doInBackground(Void... params) {
-            return client.addPost(client.getCurrentUserID(), caption.getText().toString());
-        }
+    @Override
+    public void onSuccess(Object... results) {
+        //implement if needed
+    }
+
+    @Override
+    public void onFail(Object... errors) {
+        Toast.makeText(this, "Error while posting", Toast.LENGTH_SHORT).show();
     }
 }

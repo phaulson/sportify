@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -39,8 +38,10 @@ import com.spogss.sportifycommunity.adapter.SearchListAdapter;
 import com.spogss.sportifycommunity.adapter.SectionsPageAdapter;
 import com.spogss.sportifycommunity.data.Plan;
 import com.spogss.sportifycommunity.data.Post;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.QueryType;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
 import com.spogss.sportifycommunity.data.User;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 import com.spogss.sportifycommunity.fragment.TabFragmentSearch;
 import com.spogss.sportifycommunity.model.PlanModel;
 import com.spogss.sportifycommunity.model.PostModel;
@@ -49,7 +50,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class FeedActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, ClientQueryListener {
 
     //UI Controls
     private ViewPager viewPager;
@@ -71,7 +72,6 @@ public class FeedActivity extends AppCompatActivity
     private FeedListAdapter feedListAdapter;
     //for loading
     private boolean isLoading = false;
-    private Handler loadingHandler;
 
     private int lastPostID = -1;
 
@@ -129,9 +129,8 @@ public class FeedActivity extends AppCompatActivity
         //loading
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         footerView = layoutInflater.inflate(R.layout.list_footer_feed, null);
-        loadingHandler = new LoadingHandler();
 
-        new LoadPostsTask().execute((Void) null);
+        client.getPostsAsync(client.getCurrentUserID(), lastPostID, false, this);
         listViewFeed.addHeaderView(footerView);
 
         //Map
@@ -247,7 +246,7 @@ public class FeedActivity extends AppCompatActivity
     @Override
     public void onRefresh() {
         lastPostID = -1;
-        new LoadPostsTask().execute((Void) null);
+        client.getPostsAsync(client.getCurrentUserID(), lastPostID, false, this);
     }
 
     /**
@@ -259,36 +258,67 @@ public class FeedActivity extends AppCompatActivity
         TabFragmentSearch fragment = ((TabFragmentSearch) sectionsPageAdapter.getItem(viewPager.getCurrentItem()));
         switch (tabLayout.getSelectedTabPosition()) {
             case 0:
-                new SearchUsersTask(newText.toLowerCase(), fragment, false).execute((Void) null);
+                client.searchUsersAsync(newText.toLowerCase(), fragment, false, this);
                 break;
             case 1:
-                new SearchUsersTask(newText.toLowerCase(), fragment, true).execute((Void) null);
+                client.searchUsersAsync(newText.toLowerCase(), fragment, true, this);
                 break;
             case 2:
-                new SearchPlansTask(newText.toLowerCase(), fragment).execute((Void) null);
+                client.searchPlansAsync(newText.toLowerCase(), fragment, this);
                 break;
         }
     }
 
-    /**
-     * loads Post, creator, numberOfLikes and isLiked from database and returns the PostModels
-     *
-     * @return a collection of PostModels
-     */
-    private Collection<PostModel> loadPosts() {
-        // TODO: find way to implement with better performance
-        ArrayList<PostModel> postModels = new ArrayList<PostModel>();
-        ArrayList<Post> posts = (ArrayList<Post>) client.getPosts(client.getCurrentUserID(), lastPostID);
-        for (Post p : posts) {
-            User u = client.getProfile(p.getCreatorId());
-            int numberOfLikes = client.getNumberOfLikes(p.getId());
-            boolean liked = client.isLiked(client.getCurrentUserID(), p.getId());
-            postModels.add(new PostModel(p, u, numberOfLikes, liked));
-        }
-        if (postModels.size() > 0)
-            lastPostID = (postModels).get(postModels.size() - 1).getPost().getId();
+    @Override
+    public void onSuccess(Object... results) {
+        QueryType type = (QueryType)results[0];
+        switch (type) {
+            case LOAD_POSTS:
+                Collection<PostModel> postModels = (Collection<PostModel>) results[1];
 
-        return postModels;
+                if(lastPostID == -1)
+                    feedListAdapter.clear();
+                if(postModels.size() > 0)
+                    isLoading = false;
+
+                feedListAdapter.addPosts(postModels);
+                swipeRefreshLayout.setRefreshing(false);
+                listViewFeed.removeHeaderView(footerView);
+                listViewFeed.removeFooterView(footerView);
+
+                lastPostID = (int)results[2];
+                break;
+
+            case SEARCH_USERS:
+                SearchListAdapter<User> adapter = new SearchListAdapter<User>(this);
+                for(User u : (Collection<User>)results[1])
+                    adapter.addGeneric(u, u.getId());
+                ((TabFragmentSearch)(results[2])).fillList(adapter);
+                break;
+
+            case SEARCH_PLANS:
+                SearchListAdapter<PlanModel> a = new SearchListAdapter<PlanModel>(this);
+                for(PlanModel p : (Collection<PlanModel>)results[1])
+                    a.addGeneric(p, p.getPlan().getId());
+                ((TabFragmentSearch)(results[2])).fillList(a);
+                break;
+        }
+    }
+
+    @Override
+    public void onFail(Object... errors) {
+        QueryType type = (QueryType)errors[0];
+        switch (type){
+            case LOAD_POSTS:
+                Toast.makeText(this, "Error while loading posts", Toast.LENGTH_SHORT).show();
+                break;
+            case SEARCH_USERS:
+                Toast.makeText(this, "Error while searching for users", Toast.LENGTH_SHORT).show();
+                break;
+            case SEARCH_PLANS:
+                Toast.makeText(this, "Error while searching plans", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     private boolean isServicesOK(){
@@ -311,7 +341,6 @@ public class FeedActivity extends AppCompatActivity
 
 
     //innerclass
-
     /**
      * Listener that handles the searchViewTextChange event
      */
@@ -382,128 +411,9 @@ public class FeedActivity extends AppCompatActivity
         public void onScroll(AbsListView absListView, int i, int i1, int i2) {
             if ((listViewFeed.getCount() % client.getNumberOfPosts() == 0) && absListView.getLastVisiblePosition() == i2 - 1 && listViewFeed.getCount() >= client.getNumberOfPosts() && !isLoading) {
                 isLoading = true;
-                Thread thread = new ThreadLoadMorePosts();
-                thread.start();
+                listViewFeed.addFooterView(footerView);
+                client.getPostsAsync(client.getCurrentUserID(), lastPostID, false, FeedActivity.this);
             }
-        }
-    }
-
-    /**
-     * Handler that handles the loading Threads
-     */
-    private class LoadingHandler extends Handler {
-        @Override
-        public void dispatchMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    //add footer when loading started
-                    listViewFeed.addFooterView(footerView);
-                    break;
-                case 1:
-                    //add new posts and remove footer
-                    ArrayList<PostModel> models = (ArrayList<PostModel>) msg.obj;
-                    if (models.size() > 0) {
-                        feedListAdapter.addPosts(models);
-                        isLoading = false;
-                    }
-                    listViewFeed.removeFooterView(footerView);
-                break;
-            }
-        }
-    }
-
-    /**
-     * Thread that handles the loading event
-     */
-    private class ThreadLoadMorePosts extends Thread {
-        @Override
-        public void run() {
-            //message for footer view
-            loadingHandler.sendEmptyMessage(0);
-
-            //send new Data
-            loadingHandler.sendMessage(loadingHandler.obtainMessage(1
-                    , loadPosts()));
-        }
-    }
-
-
-    //AsyncTasks
-    private class LoadPostsTask extends AsyncTask<Void, Void, Collection<PostModel>> {
-        @Override
-        protected Collection<PostModel> doInBackground(Void... params) {
-            return loadPosts();
-        }
-
-        @Override
-        protected void onPostExecute(final Collection<PostModel> posts) {
-            feedListAdapter.clear();
-            feedListAdapter.addPosts(posts);
-            swipeRefreshLayout.setRefreshing(false);
-            listViewFeed.removeHeaderView(footerView);
-        }
-    }
-
-    private class SearchUsersTask extends AsyncTask<Void, Void, Collection<User>> {
-        private String name;
-        private TabFragmentSearch fragment;
-        private boolean isPro;
-
-        public SearchUsersTask(String name, TabFragmentSearch fragment, boolean isPro) {
-            this.name = name;
-            this.fragment = fragment;
-            this.isPro = isPro;
-        }
-
-        @Override
-        protected Collection<User> doInBackground(Void... params) {
-            // TODO: implement with lastUserID
-            if(name.equals(""))
-                return new ArrayList<User>();
-            return client.searchUsers(name, isPro, -1);
-        }
-
-        @Override
-        protected void onPostExecute(final Collection<User> users) {
-            SearchListAdapter<User> adapter = new SearchListAdapter<User>(FeedActivity.this);
-            for(User u : users)
-                adapter.addGeneric(u, u.getId());
-            fragment.fillList(adapter);
-        }
-    }
-
-    private class SearchPlansTask extends AsyncTask<Void, Void, Collection<PlanModel>> {
-        private String name;
-        private TabFragmentSearch fragment;
-
-        public SearchPlansTask(String name, TabFragmentSearch fragment) {
-            this.name = name;
-            this.fragment = fragment;
-        }
-
-        @Override
-        protected Collection<PlanModel> doInBackground(Void... params) {
-            // TODO: implement with lastPlanID
-            if(name.equals(""))
-                return new ArrayList<PlanModel>();
-
-            ArrayList<PlanModel> planModels = new ArrayList<PlanModel>();
-            ArrayList<Plan> plans = (ArrayList<Plan>) client.searchPlans(name, -1);
-            for (Plan p : plans) {
-                boolean subscribed = client.isPlanSubscribed(client.getCurrentUserID(), p.getId());
-                int numberOfSubscribers = client.getNumberOfSubscribers(p.getId());
-                planModels.add(new PlanModel(p, numberOfSubscribers, subscribed));
-            }
-
-            return planModels;
-        }
-
-        @Override
-        protected void onPostExecute(final Collection<PlanModel> plans) {
-            SearchListAdapter<PlanModel> adapter = new SearchListAdapter<PlanModel>(FeedActivity.this);
-            for(PlanModel p : plans)
-                adapter.addGeneric(p, p.getPlan().getId());
-            fragment.fillList(adapter);
         }
     }
 }

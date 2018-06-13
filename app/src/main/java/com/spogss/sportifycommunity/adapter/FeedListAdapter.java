@@ -14,11 +14,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.activity.ProfileActivity;
 import com.spogss.sportifycommunity.data.Post;
-import com.spogss.sportifycommunity.data.Connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.SportifyClient;
+import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 import com.spogss.sportifycommunity.model.PostModel;
 
 import java.text.SimpleDateFormat;
@@ -30,7 +32,7 @@ import java.util.HashMap;
  * Created by Pauli on 26.03.2018.
  */
 
-public class FeedListAdapter extends BaseAdapter implements View.OnClickListener, View.OnTouchListener {
+public class FeedListAdapter extends BaseAdapter implements View.OnClickListener, View.OnTouchListener, ClientQueryListener {
     private Context context;
     private SportifyClient client;
 
@@ -180,13 +182,13 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
             heart.setImageResource(R.drawable.sp_heart_blank);
             postModel.setNumberOfLikes(postModel.getNumberOfLikes() - 1);
             postModel.setLiked(false);
-            new SetLikeTask(postModel.getPost(), false).execute((Void) null);
+            client.setLikeAsync(postModel.getPost(), false, this);
         }
         else {
             heart.setImageResource(R.drawable.sp_heart_filled);
             postModel.setNumberOfLikes(postModel.getNumberOfLikes() + 1);
             postModel.setLiked(true);
-            new SetLikeTask(postModel.getPost(), true).execute((Void) null);
+            client.setLikeAsync(postModel.getPost(), true, this);
         }
         likes.setText(postModel.getNumberOfLikes() + " like" + (postModel.getNumberOfLikes() != 1 ? "s": ""));
     }
@@ -194,7 +196,6 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if(motionEvent.getAction() == motionEvent.ACTION_UP) {
-            // TODO: open the ProfileActivity
             RelativeLayout rl = (RelativeLayout) view.getParent();
             int idRl = Integer.parseInt(rl.getTag().toString());
             PostModel postModel = posts.get(idRl);
@@ -204,6 +205,16 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
             context.startActivity(intent);
         }
         return true;
+    }
+
+    @Override
+    public void onSuccess(Object... results) {
+        //implement if needed
+    }
+
+    @Override
+    public void onFail(Object... errors) {
+        Toast.makeText(context, "Error while liking post", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -227,22 +238,6 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
         public boolean onDoubleTap(MotionEvent e) {
             like(view);
             return true;
-        }
-    }
-
-
-    //AsyncTasks
-    private class SetLikeTask extends AsyncTask<Void, Void, Boolean> {
-        private Post post;
-        private boolean like;
-
-        public SetLikeTask(Post post, boolean like) {
-            this.post = post;
-            this.like = like;
-        }
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            return client.setLike(client.getCurrentUserID(), post.getId(), like);
         }
     }
 }
