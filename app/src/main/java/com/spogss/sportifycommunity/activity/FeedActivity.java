@@ -1,5 +1,6 @@
 package com.spogss.sportifycommunity.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +29,10 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.spogss.sportifycommunity.R;
 import com.spogss.sportifycommunity.adapter.FeedListAdapter;
 import com.spogss.sportifycommunity.adapter.SearchListAdapter;
@@ -55,6 +60,9 @@ public class FeedActivity extends AppCompatActivity
     private ListView listViewFeed;
     private View footerView;
     private View navHeader;
+
+    //Google Maps API
+    private static final int ERROR_DIALOG_REQUEST = 9001;
 
     private SportifyClient client;
     //Adapter for tabs
@@ -126,6 +134,9 @@ public class FeedActivity extends AppCompatActivity
         new LoadPostsTask().execute((Void) null);
         listViewFeed.addHeaderView(footerView);
 
+        //Map
+        isServicesOK();
+
     }
 
     /**
@@ -181,8 +192,9 @@ public class FeedActivity extends AppCompatActivity
             intent.putExtra("userid", -1);
             startActivity(intent);
         } else if (id == R.id.nav_map) {
-            Snackbar.make(getWindow().getDecorView().getRootView(), "The MapActivity will be implemented soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            Intent intent = new Intent(this, MapActivity.class);
+            intent.putExtra("userid", -1);
+            startActivity(intent);
 
         } else if (id == R.id.nav_settings) {
             Snackbar.make(getWindow().getDecorView().getRootView(), "The SettingsActivity will be implemented soon", Snackbar.LENGTH_LONG)
@@ -277,6 +289,24 @@ public class FeedActivity extends AppCompatActivity
             lastPostID = (postModels).get(postModels.size() - 1).getPost().getId();
 
         return postModels;
+    }
+
+    private boolean isServicesOK(){
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(FeedActivity.this);
+
+        if(available == ConnectionResult.SUCCESS){
+            //everything is fine
+            return true;
+        }
+        else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+            //error occured but we can resolve it
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(FeedActivity.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }else{
+            Toast.makeText(this,"You can't make map requests",Toast.LENGTH_SHORT).show();
+        }
+        return false;
+
     }
 
 
