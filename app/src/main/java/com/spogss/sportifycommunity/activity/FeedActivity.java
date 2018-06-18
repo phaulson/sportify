@@ -83,9 +83,9 @@ public class FeedActivity extends AppCompatActivity
 
         client = SportifyClient.newInstance();
         client.setNumberOfPosts(6);
-        client.setNumberOfUsers(10);
-        client.setNumberOfPlans(10);
-        client.setNumberOfComments(10);
+        client.setNumberOfUsers(14);
+        client.setNumberOfPlans(14);
+        client.setNumberOfComments(14);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

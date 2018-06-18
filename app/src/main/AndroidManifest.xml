@@ -56,6 +56,7 @@
         <activity android:name=".activity.ShowPlansActivity" />
         <activity android:name=".activity.PlanActivity" />
         <activity android:name=".activity.ExerciseActivity"/>
+        <activity android:name=".activity.CommentActivity"/>
         <activity android:name=".activity.MapActivity"/>
     </application>
 

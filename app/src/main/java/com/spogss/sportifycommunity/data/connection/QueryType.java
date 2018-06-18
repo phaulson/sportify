@@ -15,5 +15,7 @@ public enum QueryType {
     GET_PROFILE,
     FOLLOW,
     LOAD_PLANS,
-    LOAD_WORKOUTS
+    LOAD_WORKOUTS,
+    LOAD_COMMENTS,
+    ADD_COMMENT
 }

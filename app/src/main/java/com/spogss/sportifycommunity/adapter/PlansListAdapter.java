@@ -32,7 +32,7 @@ import java.util.HashMap;
 
 public class PlansListAdapter extends BaseAdapter implements View.OnTouchListener, View.OnClickListener, ClientQueryListener {
     private Context context;
-    SportifyClient client;
+    private SportifyClient client;
 
     private HashMap<Integer, PlanModel> content = new HashMap<Integer, PlanModel>();
     private ArrayList<Integer> keys = new ArrayList<Integer>();

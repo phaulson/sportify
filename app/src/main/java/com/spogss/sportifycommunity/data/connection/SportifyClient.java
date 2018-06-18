@@ -4,11 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.spogss.sportifycommunity.data.Comment;
 import com.spogss.sportifycommunity.data.ProUser;
+import com.spogss.sportifycommunity.data.connection.asynctasks.AddCommentTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.AddPostTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 import com.spogss.sportifycommunity.data.connection.asynctasks.ConnectTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.FollowUserTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.GetProfileTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.LoadCommentModelsActivity;
 import com.spogss.sportifycommunity.data.connection.asynctasks.LoadDailyWorkoutsTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.LoadPlanModelsTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.LoadPostModelsTask;
@@ -76,8 +78,8 @@ public class SportifyClient {
     public static SportifyClient newInstance(){
         if (client == null) {
             try {
-                //URL url = new URL("http", "192.168.142.188", 8080, "SportifyWebService/webresources");
-                URL url = new URL("http", "10.0.0.8", 8080, "SportifyWebservice/webresources");
+                URL url = new URL("http", "192.168.142.188", 8080, "SportifyWebService/webresources");
+                //URL url = new URL("http", "10.0.0.8", 8080, "SportifyWebservice/webresources");
                 client = new SportifyClient(url);
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
@@ -798,17 +800,17 @@ public class SportifyClient {
      * @param text
      * @return true if successful, false if failed
      */
-    public boolean addComment(int userId, int postId, String text) {
+    public int addComment(int userId, int postId, String text) {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("userID", userId);
             jsonObject.put("postID", postId);
             jsonObject.put("text", text);
 
-            return GSON.fromJson(get(HttpMethod.POST, "addComment", jsonObject.toString()), Boolean.class);
+            return GSON.fromJson(get(HttpMethod.POST, "addComment", jsonObject.toString()), Integer.class);
             //return manager.addComment(userId, postId, text);
         } catch (Exception e) {
-            return false;
+            return -1;
         }
     }
 
@@ -1175,6 +1177,30 @@ public class SportifyClient {
      */
     public void getWorkoutsAsync(int dailyWorkoutId, ClientQueryListener listener){
         LoadWorkoutsTask t = new LoadWorkoutsTask(dailyWorkoutId);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (postId, lastCommentId)
+     * @param postId
+     * @param lastCommentId
+     * @param listener
+     */
+    public void getCommentsAsync(int postId, int lastCommentId, ClientQueryListener listener){
+        LoadCommentModelsActivity t = new LoadCommentModelsActivity(postId, lastCommentId);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    /**
+     * calls listener with (postId, text)
+     * @param postId
+     * @param text
+     * @param listener
+     */
+    public void addCommentAsync(int postId, String text, ClientQueryListener listener){
+        AddCommentTask t = new AddCommentTask(postId, text);
         t.setListener(listener);
         t.execute();
     }

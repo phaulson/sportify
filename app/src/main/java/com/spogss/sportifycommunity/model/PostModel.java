@@ -3,11 +3,13 @@ package com.spogss.sportifycommunity.model;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.User;
 
+import java.io.Serializable;
+
 /**
  * Created by Pauli on 17.04.2018.
  */
 
-public class PostModel {
+public class PostModel implements Serializable {
     private Post post;
     private User user;
     private int numberOfLikes;

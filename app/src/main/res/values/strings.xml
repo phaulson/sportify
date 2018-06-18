@@ -57,6 +57,11 @@
     <string name="image_show_plans_description">The image of the plan</string>
     <string name="button_show_plans_unsubscribe">Unsubscribe</string>
 
+    <!-- Strings related to comment -->
+    <string name="editText_hint_comment">Comment</string>
+    <string name="send">Send</string>
+
+
     <!-- Strings related to exercise -->
     <string name="image_exercise_description">An image to illustrate the exercise</string>
 

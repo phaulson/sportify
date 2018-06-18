@@ -30,4 +30,8 @@
     <dimen name="plan_text_size_name">36dp</dimen>
     <dimen name="workout_text_size">28dp</dimen>
     <dimen name="exercise_text_size">20dp</dimen>
+
+    <!-- dimens related to comment -->
+    <dimen name="comment_user_text_size">16sp</dimen>
+    <dimen name="comment_text_text_size">16sp</dimen>
 </resources>

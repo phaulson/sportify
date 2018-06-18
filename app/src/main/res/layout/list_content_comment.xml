@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relativeLayout_comments"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingBottom="@dimen/feed_margin_small">
+
+    <ImageView
+        android:id="@+id/imageView_comment_profile"
+        android:layout_width="@dimen/image_users_square_dimen"
+        android:layout_height="@dimen/image_users_square_dimen"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/feed_margin_medium"
+        android:layout_marginTop="@dimen/feed_margin_medium"
+        android:contentDescription="@string/image_users_profile_description"
+        android:scaleType="fitCenter" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/imageView_comment_profile"
+        android:layout_toEndOf="@+id/imageView_comment_profile"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView_comment_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/feed_margin_medium"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textSize="@dimen/comment_user_text_size" />
+
+        <com.borjabravo.readmoretextview.ReadMoreTextView
+            android:id="@+id/textView_comment_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/feed_margin_medium"
+            android:textSize="@dimen/comment_text_text_size"
+            app:colorClickableText="@android:color/darker_gray"
+            app:trimCollapsedText="@string/textView_feed_caption_expandText"
+            app:trimExpandedText="@string/textView_feed_caption_collapseText"
+            app:trimLength="25"
+            app:trimMode="trimModeLength"/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/textView_comment_timeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/feed_margin_medium"
+        android:layout_marginTop="@dimen/feed_margin_small" />
+</RelativeLayout>

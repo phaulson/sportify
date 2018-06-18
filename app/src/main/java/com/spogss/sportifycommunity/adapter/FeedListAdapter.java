@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.spogss.sportifycommunity.R;
+import com.spogss.sportifycommunity.activity.CommentActivity;
 import com.spogss.sportifycommunity.activity.ProfileActivity;
 import com.spogss.sportifycommunity.data.Post;
 import com.spogss.sportifycommunity.data.connection.SportifyClient;
@@ -160,9 +161,13 @@ public class FeedListAdapter extends BaseAdapter implements View.OnClickListener
             like(view);
         }
         else if(id == R.id.imageView_feed_comment) {
-            // TODO: implement comment activity
-            Snackbar.make(view, "The CommentActivity will be implemented soon", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
+            RelativeLayout rl = (RelativeLayout)view.getParent();
+            int idRl = Integer.parseInt(rl.getTag().toString());
+            PostModel postModel = posts.get(idRl);
+
+            Intent intent = new Intent(context, CommentActivity.class);
+            intent.putExtra("post", postModel);
+            context.startActivity(intent);
         }
     }
 
