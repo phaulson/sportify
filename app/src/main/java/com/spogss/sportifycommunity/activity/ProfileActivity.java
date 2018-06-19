@@ -242,7 +242,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case V_ID_MENUITEM_SHOW_LOCATIONS:
-                Toast.makeText(getApplicationContext(), "show locations", Toast.LENGTH_SHORT).show();
+                Intent intent2 = new Intent(this, MapActivity.class);
+                intent2.putExtra("user", displayedUser.getUser());
+                startActivity(intent2);
                 break;
             case V_ID_MENUITEM_SHOW_PLANS:
                 Intent intent = new Intent(this, ShowPlansActivity.class);

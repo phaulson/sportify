@@ -192,7 +192,6 @@ public class FeedActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_map) {
             Intent intent = new Intent(this, MapActivity.class);
-            intent.putExtra("userid", -1);
             startActivity(intent);
 
         } else if (id == R.id.nav_settings) {

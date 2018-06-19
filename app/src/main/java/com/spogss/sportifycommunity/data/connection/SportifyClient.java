@@ -9,6 +9,8 @@ import com.spogss.sportifycommunity.data.connection.asynctasks.AddPostTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.ClientQueryListener;
 import com.spogss.sportifycommunity.data.connection.asynctasks.ConnectTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.FollowUserTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.GetLocationsTask;
+import com.spogss.sportifycommunity.data.connection.asynctasks.GetNearbyLocationsTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.GetProfileTask;
 import com.spogss.sportifycommunity.data.connection.asynctasks.LoadCommentModelsActivity;
 import com.spogss.sportifycommunity.data.connection.asynctasks.LoadDailyWorkoutsTask;
@@ -845,10 +847,13 @@ public class SportifyClient {
      */
     public Collection<Location> getNearbyLocations(Coordinate coordinate, double radius, Collection<LocationType> types) {
         try {
+            JSONObject jsonCoordinate = new JSONObject();
+            jsonCoordinate.put("lat",coordinate.getLat());
+            jsonCoordinate.put("lng",coordinate.getLng());
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("coordinates", coordinate);
+            jsonObject.put("coordinates", jsonCoordinate);
             jsonObject.put("radius", radius);
-            jsonObject.put("types", types);
+            //jsonObject.put("types", types);
 
             return GSON.fromJson(get(HttpMethod.POST, "getNearbyLocations", jsonObject.toString()), new TypeToken<Collection<Location>>(){}.getType());
             //return manager.getNearbyLocations(coordinate, radius, (ArrayList<LocationType>) types);
@@ -1181,24 +1186,24 @@ public class SportifyClient {
         t.execute();
     }
 
-    /**
-     * calls listener with (postId, lastCommentId)
-     * @param postId
-     * @param lastCommentId
-     * @param listener
-     */
+    public void getNearbyLocationsAsync(Coordinate position,double radius,Collection<LocationType> types, ClientQueryListener listener){
+        GetNearbyLocationsTask t = new GetNearbyLocationsTask(position,radius,types);
+        t.setListener(listener);
+        t.execute();
+    }
+
+    public void getLocationsAsync(int userid, ClientQueryListener listener){
+        GetLocationsTask t = new GetLocationsTask(userid);
+        t.setListener(listener);
+        t.execute();
+    }
+
     public void getCommentsAsync(int postId, int lastCommentId, ClientQueryListener listener){
         LoadCommentModelsActivity t = new LoadCommentModelsActivity(postId, lastCommentId);
         t.setListener(listener);
         t.execute();
     }
 
-    /**
-     * calls listener with (postId, text)
-     * @param postId
-     * @param text
-     * @param listener
-     */
     public void addCommentAsync(int postId, String text, ClientQueryListener listener){
         AddCommentTask t = new AddCommentTask(postId, text);
         t.setListener(listener);

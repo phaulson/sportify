@@ -16,6 +16,8 @@ public enum QueryType {
     FOLLOW,
     LOAD_PLANS,
     LOAD_WORKOUTS,
+    GET_NEARBY_LOCATIONS,
+    GET_LOCATIONS,
     LOAD_COMMENTS,
     ADD_COMMENT
 }
