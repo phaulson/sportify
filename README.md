@@ -14,3 +14,4 @@ This is a fitness app
 * Sportify Webservice: [Link](https://github.com/phaulson/SportifyWebservice)
 * Sportify Webservice Links: [Link](https://htlvillachat-my.sharepoint.com/:w:/g/personal/ofnerm_edu_htl-villach_at/EcjTyfLlKbhEs7tBi7pwswQBuTBRodNw0UNrbZNWyGmCqg?e=pQq8ds)
 * Kriterien: [Word](https://htlvillachat-my.sharepoint.com/:w:/r/personal/schadens_edu_htl-villach_at/_layouts/15/Doc.aspx?sourcedoc={9438041f-c709-4958-8265-788714775981}&action=editnew&wdPreviousSession=99571abc-2566-4bb4-842a-c9b5633f6abb&wdNewAndOpenCt=1528095408897&wdo=7&wdOrigin=wacAppStartPages&wdTpl=blank&wdLcid=1031&wdPreviousCorrelation=0d0e2522-0ad1-4195-bda9-7c0f868569e7)
+* Manual: [Word](https://htlvillachat-my.sharepoint.com/:w:/g/personal/muehlbap_edu_htl-villach_at/EXgXIOqkTLRMnfQmjiDdLVwBDJeOOvm0WH_zvVGLJ8wY9Q?e=meMGae)
