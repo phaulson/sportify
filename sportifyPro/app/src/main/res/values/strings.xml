@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Sportify Pro</string>
+
+    <!-- Strings related to login -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="description">Profile description</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="action_show_more">Show more</string>
+    <string name="action_show_less">Show less</string>
+    <string name="retype_password">Confirm password</string>
+    <string name="new_password">New password</string>
+
+    <string name="error_invalid_username">This username is invalid</string>
+    <string name="error_invalid_password">This password is not allowed</string>
+    <string name="error_incorrect_username_or_password">Incorrect username or password</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_password_match">Passwords don\'t match</string>
+
+    <string name="not_specified">Not specified.</string>
+
+
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+</resources>
