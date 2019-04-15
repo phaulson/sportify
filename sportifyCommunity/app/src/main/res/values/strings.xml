@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">Sportify</string>
+
+    <!-- Strings related to login -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="description">Profile description</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register</string>
+    <string name="action_show_more">Show more</string>
+    <string name="action_show_less">Show less</string>
+    <string name="retype_password">Confirm password</string>
+
+    <string name="error_invalid_username">This username is invalid</string>
+    <string name="error_invalid_password">This password is not allowed</string>
+    <string name="error_incorrect_username_or_password">Incorrect username or password</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_password_match">Passwords don\'t match</string>
+
+
+    <!-- Strings related to search -->
+    <string name="action_search">Search...</string>
+
+
+    <!-- Strings related to menu -->
+    <string name="menu_home">Home</string>
+    <string name="menu_plans">Plans</string>
+    <string name="menu_map">Map</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_settings">Settings</string>
+
+
+    <!-- Strings related to feed -->
+    <string name="image_feed_profile_description">The user\'s profile picture</string>
+    <string name="image_feed_post_description">The image posted by the user</string>
+    <string name="image_feed_heart_description">The heart-image which indicates if a post is liked</string>
+    <string name="image_feed_comment_description">The comment-image which opens the CommentActivity if pressed</string>
+    <string name="textView_feed_caption_expandText">Show more</string>
+    <string name="textView_feed_caption_collapseText">&#160;Show less</string>
+
+
+    <!-- Strings related to users -->
+    <string name="image_users_profile_description">The user\'s profile picture</string>
+
+    <!-- Strings related to add post -->
+    <string name="textView_addpost">POST</string>
+    <string name="action_post">POST</string>
+    <string name="action_picture">Add pic</string>
+    <string name="editText_hint_caption">Caption</string>
+    <string name="action_post_cancel">Cancel</string>
+    <string name="imageView_post_post_description">The image to be posted by the user</string>
+
+    <!-- Strings related to profile -->
+    <string name="not_specified">Not specified.</string>
+
+    <!-- Strings related to show_plans -->
+    <string name="image_show_plans_description">The image of the plan</string>
+    <string name="button_show_plans_unsubscribe">Unsubscribe</string>
+
+    <!-- Strings related to comment -->
+    <string name="editText_hint_comment">Comment</string>
+    <string name="send">Send</string>
+
+
+    <!-- Strings related to exercise -->
+    <string name="image_exercise_description">An image to illustrate the exercise</string>
+
+    <!-- auto-generated Strings -->
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+</resources>
