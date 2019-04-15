@@ -1,5 +1,5 @@
 # Sportify
-This is android app combines workouts with social media
+The sportify android app combines working out with social media
 
 ## External links 
 * Daily Scrum: [Excel](https://htlvillachat-my.sharepoint.com/:x:/g/personal/muehlbap_edu_htl-villach_at/EYBPGfyhlgpDkawx6I-jknUB1V5iuuSlw0b_lZaodwujjQ?e=swYrRp)
